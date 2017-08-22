@@ -13,8 +13,8 @@ import StylizedModal from '../../../components/Modal/Modal.ui'
 import * as WALLET_API from '../../../../Core/Wallets/api.js'
 import {AddressInput} from './AddressInput.js'
 import {AddressInputButtons} from './AddressInputButtons.js'
-import type {AbcCurrencyWallet, AbcParsedUri} from 'airbitz-core-types'
-
+import type {AbcCurrencyWallet, AbcSpendInfo} from 'airbitz-core-types'
+import * as UTILS from '../../../../utils'
 import styles from '../style'
 
 type Props = {
@@ -22,7 +22,7 @@ type Props = {
   currencyCode: string,
   addressModalVisible: boolean,
   toggleAddressModal():void,
-  updateParsedURI(AbcParsedUri):void,
+  updateSpendInfo(AbcSpendInfo):void,
   loginWithEdge(string): void,
   onExitButtonFxn: void
 }
@@ -33,12 +33,10 @@ type State = {
 
 export default class AddressModal extends Component<Props,State> {
   componentWillMount () {
-    this.setState(
-      {
-        uri: '',
-        clipboard: ''
-      }
-    )
+    this.setState({
+      uri: '',
+      clipboard: ''
+    })
   }
 
   _setClipboard (props: Props) {
@@ -117,10 +115,9 @@ export default class AddressModal extends Component<Props,State> {
     try {
       const parsedURI = WALLET_API.parseURI(coreWallet, uri)
       parsedURI.currencyCode = this.props.currencyCode // remove when Ethereum addresses support indicating currencyCodes
-
-      // console.log('AddressModal parsedURI', parsedURI)
+      const spendInfo = UTILS.makeSpendInfo(parsedURI)
       this.props.toggleAddressModal()
-      this.props.updateParsedURI(parsedURI)
+      this.props.updateSpendInfo(spendInfo)
       Actions.sendConfirmation()
     } catch (e) {
       Alert.alert(

@@ -22,6 +22,7 @@ const mapStateToProps = (state: State) => ({
   autoLogoutTimeInSeconds: SETTINGS_SELECTORS.getAutoLogoutTimeInSeconds(state)
 })
 const mapDispatchToProps = (dispatch: Dispatch) => ({
+  dispatch,
   dispatchEnableScan: () => {
     return dispatch(enableScan())
   },

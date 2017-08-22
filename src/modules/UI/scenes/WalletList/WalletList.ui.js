@@ -33,7 +33,6 @@ import DeleteIcon from './components/DeleteIcon.ui'
 import RenameIcon from './components/RenameIcon.ui'
 import platform from '../../../../theme/variables/platform.js'
 
-
 const options = [
   {
     value: 'rename',

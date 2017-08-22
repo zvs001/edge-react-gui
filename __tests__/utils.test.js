@@ -337,3 +337,33 @@ describe('isCompleteExchangeData', function () {
     expect(actual).toBe(expected)
   })
 })
+
+describe('makeSpendInfo', function () {
+  test('AbcParsedUri -> AbcSpendInfo', function () {
+    const input = {
+      nativeAmount: '1',
+      currencyCode: 'BTC',
+      publicAddress: '1038q47fhqpaefwcd',
+      metadata: {
+        name: 'qweqwe',
+        amountFiat: '7000'
+      }
+    }
+    const expected = {
+      currencyCode: 'BTC',
+      metadata: {
+        name: 'qweqwe',
+        amountFiat: '7000'
+      },
+      spendTargets: [
+        {
+          publicAddress: '1038q47fhqpaefwcd',
+          nativeAmount: '1'
+        }
+      ]
+    }
+      // $FlowExpectedError
+    const actual = UTILS.makeSpendInfo(input)
+    expect(actual).toEqual(expected)
+  })
+})

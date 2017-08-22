@@ -1,11 +1,11 @@
 // @flow
 import {connect} from 'react-redux'
-import SendConfirmation, {type Props, type DispatchProps} from './SendConfirmation.ui'
+import SendConfirmation from './SendConfirmation.ui'
 import type {FlipInputFieldInfo} from '../../components/FlipInput/FlipInput.ui'
 
 import type {State, Dispatch} from '../../../ReduxTypes'
 import type {GuiWallet, GuiDenomination} from '../../../../types'
-import type {AbcCurrencyWallet, AbcTransaction, AbcParsedUri} from 'airbitz-core-types'
+import type {AbcCurrencyWallet, AbcTransaction, AbcSpendInfo} from 'airbitz-core-types'
 
 import {bns} from 'biggystring'
 
@@ -15,19 +15,19 @@ import * as UI_SELECTORS from '../../selectors.js'
 import * as SETTINGS_SELECTORS from '../../Settings/selectors.js'
 
 import {
+  signTx,
   signBroadcastAndSave,
   updateSpendPending,
-  processParsedUri
+  processSpendInfo
 } from './action.js'
 
-
-const mapStateToProps = (state: State): Props => {
+const mapStateToProps = (state: State, ownProps: any) => {
   const sendConfirmation = UI_SELECTORS.getSceneState(state, 'sendConfirmation')
   let fiatPerCrypto = 0
   const currencyConverter = CORE_SELECTORS.getCurrencyConverter(state)
   const guiWallet: GuiWallet = UI_SELECTORS.getSelectedWallet(state)
   const abcWallet: AbcCurrencyWallet = CORE_SELECTORS.getWallet(state, guiWallet.id)
-  const currencyCode = UI_SELECTORS.getSelectedCurrencyCode(state)
+  const currencyCode: string = UI_SELECTORS.getSelectedCurrencyCode(state)
   const primaryDisplayDenomination: GuiDenomination = SETTINGS_SELECTORS.getDisplayDenomination(state, currencyCode)
   const primaryExchangeDenomination: GuiDenomination = UI_SELECTORS.getExchangeDenomination(state, currencyCode)
   const secondaryExchangeDenomination: GuiDenomination = UTILS.getDenomFromIsoCode(guiWallet.fiatCurrencyCode)
@@ -50,17 +50,20 @@ const mapStateToProps = (state: State): Props => {
   }
 
   const {
-    parsedUri,
     error,
     transaction,
     pending
   } = state.ui.scenes.sendConfirmation
 
-  const nativeAmount = parsedUri.nativeAmount || '0'
-  parsedUri.currencyCode = currencyCode
+  const abcSpendInfo = ownProps.abcSpendInfo || state.ui.scenes.sendConfirmation.abcSpendInfo
+  const nativeAmount = abcSpendInfo.spendTargets[0].nativeAmount || '0'
+
+  if (abcSpendInfo) {
+    abcSpendInfo.currencyCode = currencyCode
+  }
 
   let errorMsg = null
-  if (error && parsedUri.nativeAmount && bns.gt(parsedUri.nativeAmount, '0')) {
+  if (error && nativeAmount && bns.gt(nativeAmount, '0')) {
     errorMsg = error.message
   }
 
@@ -70,7 +73,12 @@ const mapStateToProps = (state: State): Props => {
     sliderDisabled = false
   }
 
+  const lockInputs = ownProps.lockInputs || state.ui.scenes.sendConfirmation.lockInputs
+  const broadcast = ownProps.broadcast || state.ui.scenes.sendConfirmation.broadcast
+
   return {
+    lockInputs,
+    broadcast,
     sendConfirmation,
     abcWallet,
     nativeAmount,
@@ -85,10 +93,11 @@ const mapStateToProps = (state: State): Props => {
   }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => ({
-  processParsedUri: (parsedUri: AbcParsedUri): any => dispatch(processParsedUri(parsedUri)),
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  processSpendInfo: (abcSpendInfo: AbcSpendInfo): any => dispatch(processSpendInfo(abcSpendInfo)),
   updateSpendPending: (pending: boolean): any => dispatch(updateSpendPending(pending)),
-  signBroadcastAndSave: (abcTransaction: AbcTransaction): any => dispatch(signBroadcastAndSave(abcTransaction))
+  signTx: (abcTransaction: AbcTransaction, finishCallback: () => void): any => dispatch(signTx(abcTransaction, finishCallback)),
+  signBroadcastAndSave: (abcTransaction: AbcTransaction, finishCallback: () => void): any => dispatch(signBroadcastAndSave(abcTransaction, finishCallback))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SendConfirmation)

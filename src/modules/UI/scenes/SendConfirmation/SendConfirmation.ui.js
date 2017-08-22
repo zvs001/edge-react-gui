@@ -1,4 +1,5 @@
 // @flow
+
 import React, {Component} from 'react'
 import {
   View,
@@ -20,12 +21,13 @@ import Gradient from '../../components/Gradient/Gradient.ui'
 import * as UTILS from '../../../utils.js'
 
 import type {GuiWallet, CurrencyConverter} from '../../../../types'
-import type {AbcCurrencyWallet, AbcParsedUri, AbcTransaction} from 'airbitz-core-types'
+import type {AbcCurrencyWallet, AbcSpendInfo, AbcTransaction} from 'airbitz-core-types'
 import type {SendConfirmationState} from './reducer'
 
 const DIVIDE_PRECISION = 18
 
 export type Props = {
+  lockInputs: boolean,
   sendConfirmation: SendConfirmationState,
   abcWallet: AbcCurrencyWallet,
   nativeAmount: string,
@@ -36,13 +38,13 @@ export type Props = {
   primaryInfo: FlipInputFieldInfo,
   sliderDisabled: boolean,
   secondaryInfo: FlipInputFieldInfo,
-  currencyConverter: CurrencyConverter
-}
-
-export type DispatchProps = {
-  processParsedUri: (AbcParsedUri) => void,
+  currencyConverter: CurrencyConverter,
+  abcSpendInfo?: AbcSpendInfo,
+  processSpendInfo: (AbcSpendInfo) => void,
   updateSpendPending: (boolean) => void,
-  signBroadcastAndSave: (AbcTransaction) => void
+  signTx: (AbcTransaction, Function) => void,
+  signBroadcastAndSave: (AbcTransaction, Function) => void,
+  finishCallback: (error: Error, abcTransaction: AbcTransaction) => void,
 }
 
 type State = {
@@ -51,32 +53,32 @@ type State = {
   keyboardVisible: boolean
 }
 
-export default class SendConfirmation extends Component<Props & DispatchProps, State> {
-  constructor (props: Props & DispatchProps) {
+export default class SendConfirmation extends Component<Props, State> {
+  constructor (props: Props) {
     super(props)
-    const amt = props.sendConfirmation.transaction ? props.sendConfirmation.transaction.nativeAmount : '0'
+    const primaryNativeAmount = props.sendConfirmation.transaction
+      ? props.sendConfirmation.transaction.nativeAmount
+      : '0'
 
     this.state = {
-      primaryNativeAmount: amt,
+      primaryNativeAmount,
       secondaryNativeAmount: '',
       keyboardVisible: false,
     }
   }
 
   componentDidMount () {
-    this.props.processParsedUri(this.props.sendConfirmation.parsedUri)
+    if (this.props.sendConfirmation.abcSpendInfo) {
+      this.props.processSpendInfo(this.props.sendConfirmation.abcSpendInfo)
+    }
   }
 
   render () {
     let networkFee, cryptoFeeSymbol, cryptoFeeAmount, cryptoFeeString, fiatFeeSymbol, fiatFeeAmount
     let fiatFeeAmountPretty, cryptoFeeExchangeAmount, fiatFeeAmountString, fiatFeeString, networkFeeSyntax
+    const {label,publicAddress,transaction} = this.props.sendConfirmation
     const {
-      label,
-      publicAddress,
-      transaction
-
-     } = this.props.sendConfirmation
-    const {
+      lockInputs,
       primaryInfo,
       secondaryInfo,
       fiatPerCrypto,
@@ -124,6 +126,7 @@ export default class SendConfirmation extends Component<Props & DispatchProps, S
 
           <View style={[styles.main, UTILS.border('yellow'), {flex: this.state.keyboardVisible ? 0 : 1}]}>
             <ExchangedFlipInput
+              disabled={lockInputs}
               primaryInfo={{...primaryInfo, nativeAmount}}
               secondaryInfo={secondaryInfo}
               secondaryToPrimaryRatio={fiatPerCrypto}
@@ -132,7 +135,7 @@ export default class SendConfirmation extends Component<Props & DispatchProps, S
             <View style={[styles.feeArea]}>
               <Text style={[styles.feeAreaText]}>{networkFeeSyntax}</Text>
             </View>
-            <Recipient label={label} link={''} publicAddress={publicAddress}  style={styles.recipient} />
+            <Recipient label={label} link={''} publicAddress={publicAddress} style={styles.recipient} />
           </View>
           <View style={[styles.pendingSymbolArea]}>
             {this.props.sendConfirmation.pending
@@ -151,33 +154,40 @@ export default class SendConfirmation extends Component<Props & DispatchProps, S
   }
 
   onAmountsChange = ({primaryDisplayAmount, secondaryDisplayAmount}: {primaryDisplayAmount: string, secondaryDisplayAmount: string}) => {
-    const primaryNativeToDenominationRatio = this.props.primaryInfo.displayDenomination.multiplier.toString()
-    const secondaryNativeToDenominationRatio = this.props.secondaryInfo.displayDenomination.multiplier.toString()
+    const primaryNativeToDenominationRatio = this.props.primaryInfo.displayDenomination.multiplier
+    const secondaryNativeToDenominationRatio = this.props.secondaryInfo.displayDenomination.multiplier
 
     const primaryNativeAmount = UTILS.convertDisplayToNative(primaryNativeToDenominationRatio)(primaryDisplayAmount)
     const secondaryNativeAmount = UTILS.convertDisplayToNative(secondaryNativeToDenominationRatio)(secondaryDisplayAmount)
 
     const secondaryExchangeAmount = this.convertSecondaryDisplayToSecondaryExchange(secondaryDisplayAmount)
 
-    const parsedUri = this.props.sendConfirmation.parsedUri
-    parsedUri.metadata = {
-      amountFiat: parseFloat(secondaryExchangeAmount)
+    const abcSpendInfo = this.props.abcSpendInfo
+    if (abcSpendInfo) {
+      if (abcSpendInfo.metadata) {
+        // $FlowFixMe
+        abcSpendInfo.metadata.amountFiat = parseFloat(secondaryExchangeAmount)
+      }
+      abcSpendInfo.spendTargets[0].nativeAmount = primaryNativeAmount
+
+      this.props.processSpendInfo(abcSpendInfo)
+
+      this.setState({
+        primaryNativeAmount,
+        secondaryNativeAmount
+      })
     }
-    parsedUri.nativeAmount = primaryNativeAmount
-
-    this.props.processParsedUri(parsedUri)
-
-    this.setState({
-      primaryNativeAmount,
-      secondaryNativeAmount
-    })
   }
 
   signBroadcastAndSave = () => {
     const abcTransaction: AbcTransaction | null = this.props.sendConfirmation.transaction
     if (abcTransaction) {
       this.props.updateSpendPending(true)
-      this.props.signBroadcastAndSave(abcTransaction)
+      if (this.props.broadcast) {
+        this.props.signBroadcastAndSave(abcTransaction, this.props.finishCallback)
+      } else {
+        this.props.signTx(abcTransaction, this.props.finishCallback)
+      }
     }
   }
 
