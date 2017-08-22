@@ -1,50 +1,44 @@
-// @flow
-
 import React from 'react'
-import {WebView, FlatList, Text, View, Image} from 'react-native'
+import {WebView, FlatList, Text, View, Image, TouchableWithoutFeedback} from 'react-native'
 import {connect} from 'react-redux'
-import type {AbcCurrencyWallet, AbcTransaction} from 'airbitz-core-types'
-import type {GuiWallet} from '../../../../types'
+import {Actions} from 'react-native-router-flux'
 
 import {openABAlert} from '../../components/ABAlert/action'
-import {toggleScanToWalletListModal} from '../../components/WalletListModal/action'
-import {Actions} from 'react-native-router-flux'
-import * as CORE_SELECTORS from '../../../Core/selectors.js'
+import * as Constants from '../../../../constants/indexConstants'
+import WalletListModal from '../../../UI/components/WalletListModal/WalletListModalConnector'
 
-// import * as actions from '../../../../actions/pluginsActions.js'
+import * as CORE_SELECTORS from '../../../Core/selectors.js'
+import * as UI_SELECTORS from '../../selectors.js'
 
 import {BUY_SELL, SPEND} from './plugins'
 import {PluginBridge} from './api'
 
-type PluginListProps = {}
-type PluginListState = {}
-class PluginList extends React.Component<PluginListProps, PluginListState> {
+class PluginList extends React.Component {
   _onPress = (plugin) => {
     Actions.plugin({plugin: plugin})
   }
 
   _renderPlugin = ({item}) => (
-    <View style={{flex: 1, flexDirection: 'row'}}>
-      <Image
-        style={{width: 50, height: 50}}
-        source={{uri: item.imageUrl}}
-      />
-      <View style={{flex: 1, flexDirection: 'column'}}>
-        <Text id={item.key} key={item.key} onPress={() => this._onPress(item)}>{item.key}</Text>
-        <Text>{item.subtitle}</Text>
+    <TouchableWithoutFeedback onPress={() => this._onPress(item)} key={item.name}>
+      <View style={{flex: 1, flexDirection: 'row'}} key={item.name}>
+        <Image
+          style={{width: 50, height: 50}}
+          source={{uri: item.imageUrl}}
+        />
+        <View style={{flex: 1, flexDirection: 'column'}}>
+          <Text>{item.name}</Text>
+          <Text>{item.subtitle}</Text>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   )
 
   render () {
     return (
-      <View>
-        <FlatList
-          // $FlowFixMe
-          data={this.plugins}
-          renderItem={this._renderPlugin}
-        />
-      </View>
+      <FlatList
+        data={this.plugins}
+        renderItem={this._renderPlugin}
+      />
     )
   }
 }
@@ -52,7 +46,6 @@ class PluginList extends React.Component<PluginListProps, PluginListState> {
 class PluginBuySell extends PluginList {
   constructor () {
     super()
-    // $FlowFixMe
     this.plugins = BUY_SELL
   }
 }
@@ -60,60 +53,62 @@ class PluginBuySell extends PluginList {
 class PluginSpend extends PluginList {
   constructor () {
     super()
-    // $FlowFixMe
     this.plugins = SPEND
   }
 }
 
-type PluginViewProps = {
-  abcWallets: Array<AbcCurrencyWallet>,
-  account: any,
-  plugin: any,
-  walletId: string,
-  walletName: string,
-  wallets: Array<GuiWallet>
-}
-type PluginViewState = {}
-class PluginView extends React.Component<PluginViewProps, PluginViewState> {
+class PluginView extends React.Component {
   constructor (props) {
     super(props)
-    // $FlowFixMe
+    this.state = {
+      showWalletList:false
+    }
     this.webview = null
-    // $FlowFixMe
     this.plugin = this.props.plugin
     this.updateBridge(this.props)
   }
 
   updateBridge (props) {
-    // $FlowFixMe
     this.bridge = new PluginBridge({
       plugin:props.plugin,
       account:props.account,
-      abcWallets:props.abcWallets,
+      coreWallets:props.coreWallets,
       wallets:props.wallets,
       walletName:props.walletName,
       walletId:props.walletId,
-      // $FlowFixMe
-      folder:props.account.folder.folder(this.plugin.key),
+      navigationState:this.props.navigation.state,
+      folder:props.account.folder.folder(this.plugin.name),
+      toggleWalletList:this.toggleWalletList,
+      showAlert:this.props.showAlert,
+      back:this._webviewBack,
     })
+  }
+
+  toggleWalletList = () => {
+    this.setState({showWalletList:!this.state.showWalletList})
   }
 
   componentWillReceiveProps (nextProps) {
     this.updateBridge(nextProps)
   }
 
+  componentDidMount () {
+    this.bridge.componentDidMount()
+  }
+
   _renderWebView = () => {
-    // $FlowFixMe
     return this.plugin.sourceFile
   }
 
+  _webviewBack = () => {
+    this.webview.injectJavaScript('window.history.back()')
+  }
+
   _pluginReturn = (data) => {
-    // $FlowFixMe
     this.webview.injectJavaScript(`window.PLUGIN_RETURN('${JSON.stringify(data)}')`)
   }
 
   _nextMessage = (datastr) => {
-    // $FlowFixMe
     this.webview.injectJavaScript(`window.PLUGIN_NEXT('${datastr}')`)
   }
 
@@ -122,14 +117,12 @@ class PluginView extends React.Component<PluginViewProps, PluginViewState> {
     if (!this.webview) {
       return
     }
-    this._nextMessage(event.nativeEvent.data)
     const data = JSON.parse(event.nativeEvent.data)
     const {cbid, func} = data
+    this._nextMessage(cbid)
 
     console.log(func)
-    // $FlowFixMe
     if (this.bridge[func]) {
-      // $FlowFixMe
       this.bridge[func](data)
         .then((res) => {
           this._pluginReturn({cbid, func, err:null, res})
@@ -143,40 +136,46 @@ class PluginView extends React.Component<PluginViewProps, PluginViewState> {
   }
 
   _setWebview = (webview) => {
-    // $FlowFixMe
     this.webview = webview
   }
 
   render () {
     return (
-      <View>
-        <Text onPress={() => Actions.sendConfirmation({
-          abcSpendInfo: {spendTargets: [{publicAddress: '123123123', nativeAmount: '1230000000000000'}]},
-          finishCallback: (error: Error | null, abcTransaction: AbcTransaction | null) => {
-            console.log('finishCallback')
-            console.log('abcTransaction', abcTransaction)
-          },
-          lockInputs: false,
-          broadcast: false })}>
-          Send Confirmation
-        </Text>
+      <View style={{flex: 1}}>
+        {this.state.showWalletList && (
+          <WalletListModal
+            topDisplacement={Constants.SCAN_WALLET_DIALOG_TOP}
+            type={Constants.FROM}
+          />
+        )}
         <WebView ref={this._setWebview} onMessage={this._onMessage} source={this._renderWebView()} />
       </View>
     )
   }
 }
-const mapStateToProps = (state) => ({
-  account: CORE_SELECTORS.getAccount(state),
-  abcWallets: state.core.wallets.byId,
-  wallets: state.ui.wallets.byId,
-  walletName: state.ui.scenes.walletList.walletName,
-  walletId: state.ui.scenes.walletList.walletId,
-})
-const mapDispatchToProps = (dispatch) => ({
-  dispatch,
-  toggleScanToWalletListModal: () => dispatch(toggleScanToWalletListModal()),
-  openABAlert: (alertSyntax) => dispatch(openABAlert(alertSyntax))
-})
-const PluginViewConnect = connect(mapStateToProps, mapDispatchToProps)(PluginView)
 
+const mapStateToProps = (state) => {
+  const account = CORE_SELECTORS.getAccount(state)
+  const guiWallet = UI_SELECTORS.getSelectedWallet(state)
+  const abcWallet = CORE_SELECTORS.getWallet(state, guiWallet.id)
+  const coreWallets = state.core.wallets.byId
+  const wallets = state.ui.wallets.byId
+  const walletName = state.ui.scenes.walletList.walletName
+  const walletId = state.ui.scenes.walletList.walletId
+  return {
+    account,
+    guiWallet,
+    abcWallet,
+    coreWallets,
+    wallets,
+    walletName,
+    walletId,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => ({
+  showAlert: (alertSyntax) => dispatch(openABAlert(Constants.OPEN_AB_ALERT, alertSyntax))
+})
+
+const PluginViewConnect = connect(mapStateToProps, mapDispatchToProps)(PluginView)
 export {PluginViewConnect, PluginBuySell, PluginSpend}

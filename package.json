@@ -60,6 +60,7 @@
     "edge-currency-bitcoin": "^2.7.1",
     "edge-currency-ethereum": "^0.6.2",
     "edge-exchange-plugins": "^0.1.1",
+    "edge-plugin-skeleton": "https://github.com/teneighty/edge-plugin-skeleton.git",
     "https-browserify": "0.0.1",
     "lodash": "^4.17.2",
     "native-base": "^2.2.1",
@@ -184,5 +185,13 @@
     "timers": "timers-browserify",
     "tty": "tty-browserify",
     "vm": "vm-browserify"
+  },
+  "plugins": {
+    "buysell": [
+      "edge-plugin-skeleton"
+    ],
+    "spend": [
+      "edge-plugin-skeleton"
+    ]
   }
 }

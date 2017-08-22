@@ -62,6 +62,7 @@ import DefaultFiatSettingConnector from './UI/scenes/Settings/DefaultFiatSetting
 import SendConfirmationOptions from './UI/scenes/SendConfirmation/SendConfirmationOptionsConnector.js'
 import ChangeMiningFeeSendConfirmation from './UI/scenes/ChangeMiningFee/ChangeMiningFeeSendConfirmationConnector.ui'
 import ChangeMiningFeeExchange from './UI/scenes/ChangeMiningFee/ChangeMiningFeeExchangeConnector.ui'
+import {PluginView, PluginBuySell, PluginSpend} from './UI/scenes/Plugins'
 
 // $FlowFixMe
 import CardStackStyleInterpolator from 'react-navigation/src/views/CardStack/CardStackStyleInterpolator'
@@ -340,10 +341,31 @@ export default class Main extends Component<Props, State> {
                           renderLeftButton={this.renderBackButton()}
                           renderRightButton={this.renderEmptyButton} />
                       </Stack>
+
+                      <Stack key='buySellTab'>
+                        <Scene key={Constants.BUYSELL}
+                          component={PluginBuySell}
+                          renderTitle='Buy/Sell'
+                          onLeft={Actions.pop} leftTitle='Back' />
+                        <Scene key={Constants.PLUGIN}
+                          component={PluginView}
+                          renderTitle='Plugin' />
+                      </Stack>
+                      <Stack key='spendTab'>
+                        <Scene key={Constants.SPEND}
+                          component={PluginSpend}
+                          renderTitle='Spend'
+                          onLeft={Actions.pop}
+                          leftTitle='Back' />
+                        <Scene key={Constants.PLUGIN}
+                          component={PluginView}
+                          renderTitle='Plugin' />
+                      </Stack>
+
+                      {/*</Gradient>*/}
                     </Scene>
                   </Drawer>
                 </Stack>
-
               </Modal>
             </Overlay>
           </RouterWithRedux>

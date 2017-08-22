@@ -68,8 +68,9 @@ export default class SendConfirmation extends Component<Props, State> {
   }
 
   componentDidMount () {
-    if (this.props.sendConfirmation.abcSpendInfo) {
-      this.props.processSpendInfo(this.props.sendConfirmation.abcSpendInfo)
+    const abcSpendInfo = this.props.abcSpendInfo || this.props.sendConfirmation.abcSpendInfo
+    if (abcSpendInfo) {
+      this.props.processSpendInfo(abcSpendInfo)
     }
   }
 
@@ -162,7 +163,7 @@ export default class SendConfirmation extends Component<Props, State> {
 
     const secondaryExchangeAmount = this.convertSecondaryDisplayToSecondaryExchange(secondaryDisplayAmount)
 
-    const abcSpendInfo = this.props.abcSpendInfo
+    const abcSpendInfo = this.props.abcSpendInfo || this.props.sendConfirmation.abcSpendInfo
     if (abcSpendInfo) {
       if (abcSpendInfo.metadata) {
         // $FlowFixMe
@@ -171,6 +172,8 @@ export default class SendConfirmation extends Component<Props, State> {
       abcSpendInfo.spendTargets[0].nativeAmount = primaryNativeAmount
 
       this.props.processSpendInfo(abcSpendInfo)
+        .then(d => console.log(d))
+        .catch(e => console.log(e))
 
       this.setState({
         primaryNativeAmount,

@@ -21,6 +21,9 @@ export const CHANGE_MINING_FEE_SEND_CONFIRMATION = 'changeMiningFeeSendConfirmat
 export const CHANGE_MINING_FEE_EXCHANGE = 'changeMiningFeeExchange'
 export const REQUEST = 'request'
 export const SETTINGS_OVERVIEW = 'settingsOverview'
+export const BUYSELL = 'buysell'
+export const SPEND = 'spend'
+export const PLUGIN = 'plugin'
 export const CURRENCY_SETTINGS = {
   'btcSettings': {
     pluginName: 'bitcoin',

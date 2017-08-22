@@ -101,13 +101,14 @@ const strings = {
   settings_button_change_password: 'Change password',
   settings_button_debug: 'Debug',
   settings_button_lock_settings: 'Tap to lock Account Settings',
-  
+
   settings_button_logout: 'Logout',
   settings_button_pin: 'Change PIN',
   settings_button_send_logs: 'Send logs',
   settings_button_setup_two_factor: 'Setup 2 Factor',
   settings_button_unlock_settings: 'Tap to unlock Account Settings',
   settings_button_use_touchID: 'Use TouchID',
+  settings_buy_sell: 'Buy/Sell',
   settings_days: 'Day(s)',
   settings_denominations_title: 'Denominations',
   settings_hours: 'Hour(s)',
@@ -116,6 +117,7 @@ const strings = {
   settings_options_title_cap: 'Options',
   settings_seconds: 'Second(s)',
   settings_select_currency: 'Select a currency',
+  settings_spend: 'Spend',
   settings_title_auto_logoff: 'Auto log off after',
   settings_title_currency: 'Default Currency',
   settings_title_pin_login: 'PIN Re-login',
