@@ -51,6 +51,7 @@ import SettingsOverview from './UI/scenes/Settings/SettingsOverviewConnector'
 import CurrencySettings from './UI/scenes/Settings/CurrencySettingsConnector'
 import DefaultFiatSettingConnector from './UI/scenes/Settings/DefaultFiatSettingConnector'
 import SendConfirmationOptions from './UI/scenes/SendConfirmation/SendConfirmationOptionsConnector.js'
+import {PluginView, PluginBuySell, PluginSpend} from './UI/scenes/Plugins'
 
 // $FlowFixMe
 import CardStackStyleInterpolator from 'react-navigation/src/views/CardStack/CardStackStyleInterpolator'
@@ -267,6 +268,14 @@ export default class Main extends Component<Props, State> {
                         <Scene key={Constants.ETH_SETTINGS} component={CurrencySettings} currencyCode={'ETH'} tintColor={styles.backButtonColor} navTransparent={true} pluginName={'ethereum'}    title='ETH Settings' animation={'fade'} duration={600} />
                         <Scene key={Constants.LTC_SETTINGS} component={CurrencySettings} currencyCode={'LTC'} tintColor={styles.backButtonColor} navTransparent={true} pluginName={'litecoin'}    title='LTC Settings' animation={'fade'} duration={600} />
                         <Scene key='defaultFiatSetting' component={DefaultFiatSettingConnector} title='Default Fiat' animation={'fade'} duration={600} />
+                      </Stack>
+                      <Stack key='buySellTab' title='Buy/Sell' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} hideDrawerButton={true} >
+                        <Scene key={Constants.BUYSELL} tintColor={styles.backButtonColor} component={PluginBuySell} title='Buy/Sell' onLeft={Actions.pop} leftTitle='Back' animation={'fade'} duration={600} />
+                        <Scene key={Constants.PLUGIN} component={PluginView} title='Plugin' animation={'fade'} duration={600} />
+                      </Stack>
+                      <Stack key='spendTab' title='Spend' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} hideDrawerButton={true} >
+                        <Scene key={Constants.SPEND} tintColor={styles.backButtonColor} component={PluginSpend} title='Spend' onLeft={Actions.pop} leftTitle='Back' animation={'fade'} duration={600} />
+                        <Scene key={Constants.PLUGIN} component={PluginView} title='Plugin' animation={'fade'} duration={600} />
                       </Stack>
                       {/*</Gradient>*/}
                     </Scene>
