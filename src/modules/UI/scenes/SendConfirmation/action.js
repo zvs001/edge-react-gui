@@ -1,9 +1,7 @@
 // @flow
+
 const PREFIX = 'UI/SendConfimation/'
 export const UPDATE_AMOUNT_SATOSHI = PREFIX + 'UPDATE_AMOUNT_SATOSHI'
-// export const UPDATE_AMOUNT_FIAT = PREFIX + 'UPDATE_AMOUNT_FIAT'
-// export const UPDATE_FIAT_PER_CRYPTO = PREFIX + 'UPDATE_FIAT_PER_CRYPTO'
-// export const UPDATE_INPUT_CURRENCY_SELECTED = PREFIX + 'UPDATE_INPUT_CURRENCY_SELECTED'
 export const UPDATE_LABEL = PREFIX + 'UPDATE_LABEL'
 export const UPDATE_MAX_AVAILABLE_TO_SPEND_IN_CRYPTO = PREFIX + 'UPDATE_MAX_AVAILABLE_TO_SPEND_IN_CRYPTO'
 export const ENABLE_SLIDER = PREFIX + 'ENABLE_SLIDER'
@@ -20,7 +18,6 @@ export const RESET = PREFIX + 'RESET'
 
 export const UPDATE_CRYPTO_AMOUNT_REQUEST = PREFIX + 'UPDATE_CRYPTO_AMOUNT_REQUEST'
 export const USE_MAX_CRYPTO_AMOUNT = PREFIX + 'USE_MAX_CRYPTO_AMOUNT'
-export const UPDATE_PARSED_URI = PREFIX + 'UPDATE_PARSED_URI'
 export const UPDATE_TRANSACTION = PREFIX + 'UPDATE_TRANSACTION'
 
 export const UPDATE_NATIVE_AMOUNT = PREFIX + 'UPDATE_NATIVE_AMOUNT'
@@ -31,42 +28,9 @@ import {openABAlert} from '../../components/ABAlert/action'
 import * as Constants from '../../../../constants/indexConstants'
 import * as CORE_SELECTORS from '../../../Core/selectors.js'
 import * as UI_SELECTORS from '../../../UI/selectors.js'
-// import * as SETTINGS_SELECTORS from '../../Settings/selectors.js'
 import * as WALLET_API from '../../../Core/Wallets/api.js'
-// import { convertDenominationToNative } from '../../../utils.js'
-import type {
-  AbcParsedUri,
-  AbcSpendInfo,
-  AbcTransaction,
-  AbcCurrencyWallet,
-  AbcSpendTarget
-} from 'airbitz-core-types'
+import type {AbcSpendInfo, AbcTransaction, AbcCurrencyWallet} from 'airbitz-core-types'
 
-// export const updateFee = (feeSatoshi:string) => ({
-//   type: UPDATE_FEE,
-//   data: {feeSatoshi}
-// })
-//
-// export const updateAmountFiat = (amountFiat:number) => ({
-//   type: UPDATE_AMOUNT_FIAT,
-//   data: {amountFiat}
-// })
-//
-// export const updateFiatPerCrypto = (fiatPerCrypto) => ({
-//   type: UPDATE_FIAT_PER_CRYPTO,
-//   data: {fiatPerCrypto}
-// })
-//
-// export const updateInputCurrencySelected = (inputCurrencySelected) => ({
-//   type: UPDATE_INPUT_CURRENCY_SELECTED,
-//   data: {inputCurrencySelected}
-// })
-//
-// export const updateDraftStatus = (draftStatus) => ({
-//   type: UPDATE_DRAFT_STATUS,
-//   data: {draftStatus}
-// })
-//
 export type UpdateTransactionAction = {
   type: typeof UPDATE_TRANSACTION,
   data: {
@@ -81,11 +45,10 @@ export const updateAmountSatoshi = (amountSatoshi: string) => ({
 })
 
 export const updateTransactionAction = (
-  parsedUri: AbcParsedUri,
   transaction: AbcTransaction | null,
   error: Error | null): UpdateTransactionAction => ({
     type: UPDATE_TRANSACTION,
-    data: {parsedUri, transaction, error}
+    data: {transaction, error}
   })
 
 export const updateSpendPending = (pending: boolean) => ({
@@ -98,16 +61,46 @@ export const updateNativeAmount = (nativeAmount: string) => ({
   data: {nativeAmount}
 })
 
-export const signBroadcastAndSave = (abcUnsignedTransaction: AbcTransaction) => (dispatch: any, getState: any) => {
+export const signTx = (
+  abcUnsignedTransaction: AbcTransaction,
+  finishCallback: (error: Error | null, abcTransaction: AbcTransaction | null) => void
+) => (dispatch: any, getState: any) => {
   const state = getState()
   const selectedWalletId = UI_SELECTORS.getSelectedWalletId(state)
   const wallet = CORE_SELECTORS.getWallet(state, selectedWalletId)
 
   WALLET_API.signTransaction(wallet, abcUnsignedTransaction)
-    .then((abcSignedTransaction: AbcTransaction) => WALLET_API.broadcastTransaction(wallet, abcSignedTransaction))
-    .then((abcSignedTransaction: AbcTransaction) => WALLET_API.saveTransaction(wallet, abcSignedTransaction))
-    .then(() => {
+    .then((abcTransaction: AbcTransaction) => {
       dispatch(updateSpendPending(false))
+      if (typeof finishCallback === 'function') {
+        finishCallback(null, abcTransaction)
+      }
+      Actions.pop()
+    })
+    .catch((error) => {
+      dispatch(updateSpendPending(false))
+      if (typeof finishCallback === 'function') {
+        finishCallback(error, null)
+      }
+      Actions.pop()
+    })
+}
+
+export const signBroadcastAndSave = (
+  abcUnsignedTransaction: AbcTransaction,
+  finishCallback: (error: Error | null, abcTransaction: AbcTransaction | null) => void
+) => (dispatch: any, getState: any) => {
+  const state = getState()
+  const selectedWalletId = UI_SELECTORS.getSelectedWalletId(state)
+  const wallet = CORE_SELECTORS.getWallet(state, selectedWalletId)
+
+  WALLET_API.signTransaction(wallet, abcUnsignedTransaction)
+    .then((abcSignedTransaction: AbcTransaction) => {
+      WALLET_API.broadcastTransaction(wallet, abcSignedTransaction)
+      dispatch(updateSpendPending(false))
+      if (typeof finishCallback === 'function') {
+        finishCallback(null, abcSignedTransaction)
+      }
       Actions.pop()
       const successInfo = {
         success: true,
@@ -115,7 +108,9 @@ export const signBroadcastAndSave = (abcUnsignedTransaction: AbcTransaction) => 
         message: 'Your transaction has been successfully sent.'
       }
       dispatch(openABAlert(Constants.OPEN_AB_ALERT, successInfo))
+      return abcSignedTransaction
     })
+    .then((abcSignedTransaction: AbcTransaction) => WALLET_API.saveTransaction(wallet, abcSignedTransaction))
     .catch((e) => {
       // console.log(e)
       dispatch(updateSpendPending(false))
@@ -123,6 +118,9 @@ export const signBroadcastAndSave = (abcUnsignedTransaction: AbcTransaction) => 
         success: false,
         title: 'Transaction Failure',
         message: e.message
+      }
+      if (typeof finishCallback === 'function') {
+        finishCallback(e, null)
       }
       dispatch(openABAlert(Constants.OPEN_AB_ALERT, errorInfo))
     })
@@ -134,9 +132,7 @@ export const updateMaxSatoshiRequest = () => (dispatch: any, getState: any) => {
   const wallet = CORE_SELECTORS.getWallet(state, selectedWalletId)
 
   wallet.getMaxSpendable()
-    .then((amountSatoshi) => {
-      dispatch(updateMaxSatoshi(amountSatoshi))
-    })
+    .then((amountSatoshi) => dispatch(updateMaxSatoshi(amountSatoshi)))
 }
 
 export const updateMaxSatoshi = (maxSatoshi: string) => ({
@@ -173,24 +169,17 @@ export const processParsedUri = (parsedUri: AbcParsedUri) => (dispatch: any, get
 
 export const getMaxSpendable = () => (dispatch: any, getState: any) => {
   const state = getState()
-
-  const parsedUri: AbcParsedUri = state.ui.scenes.sendConfirmation.parsedUri
-
   const walletId = UI_SELECTORS.getSelectedWalletId(state)
   const abcWallet = CORE_SELECTORS.getWallet(state, walletId)
   const spendInfo: AbcSpendInfo = makeSpendInfo(parsedUri)
   spendInfo.networkFeeOption = state.ui.scenes.sendConfirmation.feeSetting
   spendInfo.customNetworkFee = state.ui.scenes.sendConfirmation.feeSatoshi
 
-  return WALLET_API.getMaxSpendable(abcWallet, spendInfo)
+  return WALLET_API.getMaxSpendable(abcWallet, abcSpendInfo)
     .then((maxSpendable) => dispatch(updateNativeAmount(maxSpendable)))
     .catch((error) => console.log(error))
 }
 
-export const updateParsedURI = (parsedUri: AbcParsedUri) => ({
-  type: UPDATE_PARSED_URI,
-  data: {parsedUri}
-})
 export const updateLabel = (label: string) => ({
   type: UPDATE_LABEL,
   data: {label}
@@ -201,18 +190,14 @@ export const reset = () => ({
   data: {}
 })
 
-const makeSpendInfo = (parsedUri: AbcParsedUri): AbcSpendInfo => {
-  const nativeAmount = parsedUri.nativeAmount ? parsedUri.nativeAmount : '0'
-  const spendTarget:AbcSpendTarget = {
-    publicAddress: parsedUri.publicAddress,
-    nativeAmount
-  }
-  const spendInfo:AbcSpendInfo = {
-    currencyCode: parsedUri.currencyCode,
-    metadata: parsedUri.metadata,
-    spendTargets: [spendTarget]
-  }
-  return spendInfo
+export const processSpendInfo = (abcSpendInfo: AbcSpendInfo) => (dispatch: any, getState: any) => {
+  const state = getState()
+  const walletId = UI_SELECTORS.getSelectedWalletId(state)
+  const abcWallet = CORE_SELECTORS.getWallet(state, walletId)
+
+  return WALLET_API.makeSpend(abcWallet, abcSpendInfo)
+    .then((abcTransaction: AbcTransaction) => dispatch(updateTransactionAction(abcTransaction, null)))
+    .catch((error: Error) => dispatch(updateTransactionAction(null, error)))
 }
 
 export const changeFee = (feeSetting: string) => ({

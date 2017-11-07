@@ -343,7 +343,7 @@ export default class Main extends Component<Props, State> {
                     </Scene>
                   </Drawer>
                 </Stack>
-                {/*</Lightbox>*/}
+
               </Modal>
             </Overlay>
           </RouterWithRedux>

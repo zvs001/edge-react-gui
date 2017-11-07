@@ -30,6 +30,8 @@ export default class Left extends Component {
       return makeBackButton(CANCEL_TEXT, Constants.SETTINGS_OVERVIEW)
     case Constants.RECOVER_PASSWORD:
       return makeBackButton(CANCEL_TEXT, Constants.SETTINGS_OVERVIEW)
+    case Constants.PLUGIN:
+      return (<BackButton label={BACK_TEXT} onPress={() => Actions.pop()} />)
     default:
       if (Object.keys(Constants.CURRENCY_SETTINGS).indexOf(sceneName) !== -1) {
         return makeBackButton(BACK_TEXT, Constants.SETTINGS_OVERVIEW)
