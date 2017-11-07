@@ -4,11 +4,12 @@ import AddressModal from './AddressModal'
 import {toggleAddressModal} from '../action'
 import * as UI_SELECTORS from '../../../selectors.js'
 import * as CORE_SELECTORS from '../../../../Core/selectors.js'
-import {updateParsedURI} from '../../SendConfirmation/action.js'
+import {updateSpendInfo} from '../../SendConfirmation/action.js'
 import {loginWithEdge} from '../../../../../actions/indexActions'
-import type {AbcParsedUri, AbcCurrencyWallet} from 'airbitz-core-types'
+import type {AbcCurrencyWallet, AbcSpendInfo} from 'airbitz-core-types'
 import {Actions} from 'react-native-router-flux'
 import * as Constants from '../../../../../constants/indexConstants'
+
 const mapStateToProps = (state: any) => {
   const walletId:string = UI_SELECTORS.getSelectedWalletId(state)
   const coreWallet: AbcCurrencyWallet = CORE_SELECTORS.getWallet(state, walletId)
@@ -23,7 +24,7 @@ const mapStateToProps = (state: any) => {
 
 const mapDispatchToProps = (dispatch: any) => ({
   toggleAddressModal: () => dispatch(toggleAddressModal()),
-  updateParsedURI: (parsedURI: AbcParsedUri) => dispatch(updateParsedURI(parsedURI)),
+  updateSpendInfo: (spendInfo: AbcSpendInfo) => dispatch(updateSpendInfo(spendInfo)),
   loginWithEdge: (url: string) => {
     Actions[Constants.EDGE_LOGIN]() ,
     dispatch(loginWithEdge(url))

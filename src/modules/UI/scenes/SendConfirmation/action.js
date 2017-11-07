@@ -215,6 +215,16 @@ const makeSpendInfo = (parsedUri: AbcParsedUri): AbcSpendInfo => {
   return spendInfo
 }
 
+export const processSpendInfo = (spendInfo: AbcSpendInfo) => (dispatch: any, getState: any) => {
+  const state = getState()
+  const walletId = UI_SELECTORS.getSelectedWalletId(state)
+  const abcWallet = CORE_SELECTORS.getWallet(state, walletId)
+
+  return WALLET_API.makeSpend(abcWallet, spendInfo)
+    .then((abcTransaction: AbcTransaction) => dispatch(updateTransactionAction(abcTransaction, null)))
+    .catch((error: Error) => dispatch(updateTransactionAction(null, error)))
+}
+
 export const changeFee = (feeSetting: string) => ({
   type: CHANGE_MINING_FEE,
   feeSetting,

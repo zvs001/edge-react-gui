@@ -21,7 +21,7 @@ import Camera from 'react-native-camera'
 // $FlowFixMe Doesn't know how to find platform specific imports
 import * as PERMISSIONS from '../../permissions'
 import * as WALLET_API from '../../../Core/Wallets/api.js'
-import type {AbcCurrencyWallet, AbcParsedUri} from 'airbitz-core-types'
+import type {AbcCurrencyWallet, AbcSpendInfo} from 'airbitz-core-types'
 import * as UTILS from '../../../utils.js'
 
 import styles, {styles as styleRaw} from './style'
@@ -44,7 +44,7 @@ type Props = {
   toggleEnableTorch(): void,
   toggleAddressModal():void,
   toggleWalletListModal(): void,
-  updateParsedURI(AbcParsedUri): void,
+  updateSpendInfo(AbcSpendInfo): void,
   loginWithEdge(string): void
 }
 
@@ -208,7 +208,8 @@ export default class Scan extends Component<any, any> {
       }
       // console.log('uri', uri)
       const parsedURI = WALLET_API.parseURI(this.props.abcWallet, uri)
-      this.props.updateParsedURI(parsedURI)
+      const spendInfo = UTILS.makeSpendInfo(parsedURI)
+      this.props.updateSpendInfo(spendInfo)
       Actions.sendConfirmation()
     } catch (error) {
       this.props.dispatchDisableScan()

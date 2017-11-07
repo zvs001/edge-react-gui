@@ -16,6 +16,7 @@ export type FlipInputAmountsChanged = {
 }
 
 type Props = {
+  disabled: boolean,
   color: string,
   primaryInfo: FlipInputFieldInfo,
   secondaryInfo: FlipInputFieldInfo,
@@ -170,6 +171,7 @@ export default class ExchangedFlipInput extends Component<Props, State> {
   }
 
   render () {
+    const {disabled} = this.props
     const primaryInfo: FlipInputFieldInfo = {
       displayAmount: this.state.primaryDisplayAmount,
       ...this.props.primaryInfo
@@ -181,6 +183,7 @@ export default class ExchangedFlipInput extends Component<Props, State> {
 
     return (
       <FlipInput
+        disabled={disabled}
         color={this.props.color}
         isValidInput={UTILS.isValidInput}
 

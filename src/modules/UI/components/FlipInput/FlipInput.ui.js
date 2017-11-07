@@ -29,6 +29,7 @@ type State = {
 }
 
 type Props = {
+  disabled: boolean,
   primaryInfo: FlipInputFieldInfo,
   secondaryInfo: FlipInputFieldInfo,
   primaryDisplayAmount: string,
@@ -39,6 +40,7 @@ type Props = {
 }
 
 const getInitialState = (props: Props) => ({
+  disabled: false,
   isToggled: false,
   primaryDisplayAmount: props.primaryDisplayAmount || '',
   secondaryDisplayAmount: props.secondaryDisplayAmount || ''
@@ -181,7 +183,7 @@ export default class FlipInput extends Component<Props, State> {
   }
 
   render () {
-    const {primaryInfo, secondaryInfo} = this.props
+    const {disabled, primaryInfo, secondaryInfo} = this.props
     const {isToggled} = this.state
     const frontAnimatedStyle = {
       transform: [
@@ -224,7 +226,7 @@ export default class FlipInput extends Component<Props, State> {
         <View style={styles.flipButton}>
           <FAIcon style={[styles.flipIcon]} onPress={this.onToggleFlipInput} name={Constants.SWAP_VERT} size={36} />
         </View>
-        {this.renderRows(primaryInfo, secondaryInfo, isToggled)}
+        {this.renderRows(primaryInfo, secondaryInfo, isToggled, disabled)}
         <View style={styles.spacer} />
       </View>
     )
