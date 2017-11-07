@@ -21,7 +21,7 @@ import Camera from 'react-native-camera'
 // $FlowFixMe Doesn't know how to find platform specific imports
 import * as PERMISSIONS from '../../permissions'
 import * as WALLET_API from '../../../Core/Wallets/api.js'
-import type {AbcCurrencyWallet, AbcParsedUri} from 'airbitz-core-types'
+import type {AbcCurrencyWallet, AbcSpendInfo} from 'airbitz-core-types'
 import * as UTILS from '../../../utils.js'
 
 import styles, {styles as styleRaw} from './style'
@@ -40,17 +40,16 @@ type Props = {
   toggleEnableTorch(): void,
   toggleAddressModal():void,
   toggleWalletListModal(): void,
-  updateParsedURI(AbcParsedUri): void,
+  updateSpendInfo(AbcSpendInfo): void,
   loginWithEdge(string): void
 }
 
-const HEADER_TEXT     = strings.enUS['send_scan_header_text']
-
+const HEADER_TEXT = strings.enUS['send_scan_header_text']
 const DENIED_PERMISSION_TEXT = '' // blank string because way off-centered (not sure reason why)
 // const TRANSFER_TEXT = strings.enUS['fragment_send_transfer']
-const ADDRESS_TEXT  = strings.enUS['fragment_send_address']
+const ADDRESS_TEXT = strings.enUS['fragment_send_address']
 // const PHOTOS_TEXT   = strings.enUS['fragment_send_photos']
-const FLASH_TEXT    = strings.enUS['fragment_send_flash']
+const FLASH_TEXT = strings.enUS['fragment_send_flash']
 
 export default class Scan extends Component<any, any> {
   static defaultProps: any;
@@ -191,7 +190,8 @@ export default class Scan extends Component<any, any> {
       }
       // console.log('uri', uri)
       const parsedURI = WALLET_API.parseURI(this.props.abcWallet, uri)
-      this.props.updateParsedURI(parsedURI)
+      const spendInfo = UTILS.makeSpendInfo(parsedURI)
+      this.props.updateSpendInfo(spendInfo)
       Actions.sendConfirmation()
     } catch (error) {
       this.props.dispatchDisableScan()

@@ -7,10 +7,10 @@ import * as CORE_SELECTORS from '../../../Core/selectors.js'
 
 import {toggleScanToWalletListModal} from '../../components/WalletListModal/action'
 import {loginWithEdge} from '../../../../actions/indexActions'
-import type {AbcParsedUri, AbcCurrencyWallet} from 'airbitz-core-types'
+import type {AbcCurrencyWallet, AbcSpendInfo} from 'airbitz-core-types'
 import {toggleEnableTorch, toggleAddressModal, disableScan, enableScan} from './action'
 import {
-  updateParsedURI,
+  updateSpendInfo,
   updateWalletTransfer
 } from '../SendConfirmation/action.js'
 import {Actions} from 'react-native-router-flux'
@@ -41,7 +41,7 @@ const mapDispatchToProps = (dispatch: any) => ({
   toggleEnableTorch: () => dispatch(toggleEnableTorch()),
   toggleAddressModal: () => dispatch(toggleAddressModal()),
   toggleWalletListModal: () => dispatch(toggleWalletListModal()),
-  updateParsedURI: (parsedURI: AbcParsedUri) => dispatch(updateParsedURI(parsedURI)),
+  updateSpendInfo: (spendInfo: AbcSpendInfo) => dispatch(updateSpendInfo(spendInfo)),
   updateWalletTransfer: (wallet) => dispatch(updateWalletTransfer(wallet)),
   toggleScanToWalletListModal: () => dispatch(toggleScanToWalletListModal()),
   loginWithEdge: (url: string) => {

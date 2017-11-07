@@ -2,7 +2,7 @@
 import borderColors from '../theme/variables/css3Colors'
 import {div, mul, gte, eq, toFixed} from 'biggystring'
 import getSymbolFromCurrency from 'currency-symbol-map'
-import type {AbcDenomination, AbcCurrencyInfo, AbcCurrencyPlugin, AbcTransaction} from 'airbitz-core-types'
+import type {AbcCurrencyInfo, AbcCurrencyPlugin, AbcDenomination, AbcParsedUri, AbcSpendInfo, AbcSpendTarget, AbcTransaction} from 'airbitz-core-types'
 import type {GuiDenomination, ExchangeData, GuiWallet} from '../types'
 
 const DIVIDE_PRECISION = 18
@@ -248,3 +248,17 @@ export const isReceivedTransaction = (abcTransaction: AbcTransaction): boolean =
   gte(abcTransaction.nativeAmount, '0')
 export const isSentTransaction = (abcTransaction: AbcTransaction): boolean =>
   !isReceivedTransaction(abcTransaction)
+
+export const makeSpendInfo = (parsedUri: AbcParsedUri): AbcSpendInfo => {
+  const nativeAmount = parsedUri.nativeAmount || '0'
+  const spendTarget: AbcSpendTarget = {
+    publicAddress: parsedUri.publicAddress,
+    nativeAmount
+  }
+  const spendInfo: AbcSpendInfo = {
+    currencyCode: parsedUri.currencyCode,
+    metadata: parsedUri.metadata,
+    spendTargets: [spendTarget]
+  }
+  return spendInfo
+}
