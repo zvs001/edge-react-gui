@@ -87,24 +87,24 @@ export default class FlipInput extends Component<Props, State> {
   bottomDisplayAmount = () => this.state.isToggled ? this.state.primaryDisplayAmount : this.state.secondaryDisplayAmount
 
   topRow = (denominationInfo: FlipInputFieldInfo, onChangeText: ((string) => void), disabled: boolean) => <View style={top.row} key={'top'}>
-      <Text style={[top.symbol]}>
-        {denominationInfo.displayDenomination.symbol}
-      </Text>
-      <TextInput style={[top.amount]}
-        editable={!disabled}
-        placeholder={'0'}
-        placeholderTextColor={'rgba(255, 255, 255, 0.60)'}
-        value={this.topDisplayAmount()}
-        onChangeText={onChangeText}
-        autoCorrect={false}
-        keyboardType='numeric'
-        selectionColor='white'
-        returnKeyType='done'
-      />
-      <Text style={[top.currencyCode]}>
-        {denominationInfo.displayDenomination.name}
-      </Text>
-    </View>
+    <Text style={[top.symbol]}>
+      {denominationInfo.displayDenomination.symbol}
+    </Text>
+    <TextInput style={[top.amount]}
+      editable={!disabled}
+      placeholder={'0'}
+      placeholderTextColor={'rgba(255, 255, 255, 0.60)'}
+      value={this.topDisplayAmount()}
+      onChangeText={onChangeText}
+      autoCorrect={false}
+      keyboardType='numeric'
+      selectionColor='white'
+      returnKeyType='done'
+    />
+    <Text style={[top.currencyCode]}>
+      {denominationInfo.displayDenomination.name}
+    </Text>
+  </View>
 
   bottomRow = (denominationInfo: FlipInputFieldInfo) => {
     const amount = this.bottomDisplayAmount()
@@ -125,23 +125,22 @@ export default class FlipInput extends Component<Props, State> {
   }
 
   renderRows = (primaryInfo: FlipInputFieldInfo, secondaryInfo: FlipInputFieldInfo, isToggled: boolean, disabled: boolean) => (
-      <View style={[styles.rows]}>
-        {isToggled
-          ? [
-            this.topRow(secondaryInfo, this.onSecondaryAmountChange, disabled),
-            this.bottomRow(primaryInfo)
-          ]
-          : [
-            this.topRow(primaryInfo, this.onPrimaryAmountChange, disabled),
-            this.bottomRow(secondaryInfo)
-          ]}
-      </View>
-    )
+    <View style={[styles.rows]}>
+      {isToggled
+        ? [
+          this.topRow(secondaryInfo, this.onSecondaryAmountChange, disabled),
+          this.bottomRow(primaryInfo)
+        ]
+        : [
+          this.topRow(primaryInfo, this.onPrimaryAmountChange, disabled),
+          this.bottomRow(secondaryInfo)
+        ]}
+    </View>
+  )
 
   render () {
     const {disabled, primaryInfo, secondaryInfo} = this.props
     const {isToggled} = this.state
-    // console.log('this.state', this.state)
     return (
       <View style={[styles.container]}>
         <View style={styles.flipButton}>

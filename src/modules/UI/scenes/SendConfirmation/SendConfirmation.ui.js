@@ -133,7 +133,7 @@ export default class SendConfirmation extends Component<Props, State> {
             <View style={[styles.feeArea]}>
               <Text style={[styles.feeAreaText]}>{networkFeeSyntax}</Text>
             </View>
-            <Recipient label={label} link={''} publicAddress={publicAddress}  style={styles.recipient} />
+            <Recipient label={label} link={''} publicAddress={publicAddress} style={styles.recipient} />
           </View>
           <View style={[styles.pendingSymbolArea]}>
             {this.props.sendConfirmation.pending

@@ -20,7 +20,7 @@ import {
   processSpendInfo
 } from './action.js'
 
-const mapStateToProps = (state: State) => {
+const mapStateToProps = (state: State, ownProps) => {
   const sendConfirmation = UI_SELECTORS.getSceneState(state, 'sendConfirmation')
   let fiatPerCrypto = 0
   const currencyConverter = CORE_SELECTORS.getCurrencyConverter(state)
@@ -49,12 +49,12 @@ const mapStateToProps = (state: State) => {
   }
 
   const {
-    spendInfo,
     error,
     transaction,
     pending
   } = state.ui.scenes.sendConfirmation
 
+  const spendInfo = state.ui.scenes.sendConfirmation.spendInfo || ownProps.spendInfo
   const nativeAmount = spendInfo.spendTargets[0].nativeAmount || '0'
 
   if (spendInfo) {
@@ -73,6 +73,7 @@ const mapStateToProps = (state: State) => {
   }
 
   return {
+    lockedInputs: false,
     sendConfirmation,
     abcWallet,
     nativeAmount,
