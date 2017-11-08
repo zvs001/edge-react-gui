@@ -74,7 +74,7 @@ import * as CONTEXT_API from './Core/Context/api'
 import {makeFakeContexts, makeReactNativeContext} from 'airbitz-core-react-native'
 import {coinbasePlugin, shapeshiftPlugin} from 'edge-exchange-plugins'
 // $FlowFixMe
-import {BitcoinCurrencyPluginFactory, LitecoinCurrencyPluginFactory, BitcoincashCurrencyPluginFactory} from 'edge-currency-bitcoin'
+// import {BitcoinCurrencyPluginFactory, LitecoinCurrencyPluginFactory, BitcoincashCurrencyPluginFactory} from 'edge-currency-bitcoin'
 import {EthereumCurrencyPluginFactory} from 'edge-currency-ethereum'
 
 const pluginFactories: Array<AbcCorePlugin> = [
@@ -82,9 +82,9 @@ const pluginFactories: Array<AbcCorePlugin> = [
   shapeshiftPlugin
 ]
 pluginFactories.push((EthereumCurrencyPluginFactory: any))
-pluginFactories.push(BitcoinCurrencyPluginFactory)
-pluginFactories.push(LitecoinCurrencyPluginFactory)
-pluginFactories.push(BitcoincashCurrencyPluginFactory)
+// pluginFactories.push(BitcoinCurrencyPluginFactory)
+// pluginFactories.push(LitecoinCurrencyPluginFactory)
+// pluginFactories.push(BitcoincashCurrencyPluginFactory)
 
 const localeInfo = Locale.constants() // should likely be moved to login system and inserted into Redux
 
@@ -225,54 +225,51 @@ export default class Main extends Component<Props, State> {
           <RouterWithRedux backAndroidHandler={this.handleBack}>
             <Overlay>
               <Modal hideNavBar transitionConfig={() => ({screenInterpolator: CardStackStyleInterpolator.forFadeFromBottomAndroid})}>
-                {/*<Lightbox>*/}
                 <Stack hideNavBar key='root' navigationBarStyle={{backgroundColor: THEME.COLORS.TRANSPARENT}} backButtonTintColor='white' titleStyle={{color: THEME.COLORS.WHITE, alignSelf: 'center'}}>
                   <Scene key={Constants.LOGIN} component={LoginConnector} title='login' animation={'fade'} duration={600} initial username={this.props.username} />
                   <Scene key={Constants.TRANSACTION_DETAILS} navTransparent={true} component={TransactionDetails} back clone title='Transaction Details' animation={'fade'} duration={600} />
                   <Drawer hideNavBar key='edge' contentComponent={ControlPanel} hideDrawerButton={true} drawerPosition='right'>
-                    {/*
-                     Wrapper Scene needed to fix a bug where the tabs would
-                     reload as a modal ontop of itself
-                     */}
+                    {/* Wrapper Scene needed to fix a bug where the tabs would reload as a modal ontop of itself */}
                     <Scene hideNavBar>
-                      {/*<Gradient>*/}
+
                       <Tabs key='edge' swipeEnabled={true} navTransparent={true} tabBarPosition={'bottom'} showLabel={true}>
                         <Stack key={Constants.WALLET_LIST} navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} title='Wallets' icon={this.icon(Constants.WALLET_LIST)} activeTintColor={'transparent'} tabBarLabel='Wallets'>
                           <Scene key='walletList_notused' component={WalletList} navTransparent={true} title='Wallets' onRight={() => Actions.drawerOpen()} renderLeftButton={() => <HelpButton/>} rightButtonImage={MenuIcon} />
                           <Scene key={Constants.CREATE_WALLET} component={CreateWallet} tintColor={styles.backButtonColor} title='Create Wallet' navTransparent={true} animation={'fade'} duration={600} />
-                          <Scene key={Constants.TRANSACTION_LIST} tintColor={styles.backButtonColor} navTransparent={true} icon={this.icon(Constants.TRANSACTION_LIST)}renderTitle={this.renderWalletListNavBar} component={TransactionListConnector} onRight={() => Actions.drawerOpen()} rightButtonImage={MenuIcon} tabBarLabel='Transactions' title='Transactions' animation={'fade'} duration={600} />
+                          <Scene key={Constants.TRANSACTION_LIST} tintColor={styles.backButtonColor} navTransparent={true} icon={this.icon(Constants.TRANSACTION_LIST)} renderTitle={this.renderWalletListNavBar} component={TransactionListConnector} onRight={() => Actions.drawerOpen()} rightButtonImage={MenuIcon} tabBarLabel='Transactions' title='Transactions' animation={'fade'} duration={600} />
                         </Stack>
+
                         <Scene key={Constants.REQUEST} renderTitle={this.renderWalletListNavBar} navTransparent={true} icon={this.icon(Constants.REQUEST)} component={Request} tabBarLabel='Request' title='Request' renderLeftButton={() => <HelpButton/>} onRight={() => Actions.drawerOpen()} rightButtonImage={MenuIcon} animation={'fade'} duration={600} />
+
                         <Stack key={Constants.SCAN} title='Send' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} icon={this.icon(Constants.SCAN)} tabBarLabel='Send' >
                           <Scene key='scan_notused' renderTitle={this.renderWalletListNavBar} component={Scan} tintColor={styles.backButtonColor} navTransparent={true} onRight={() => Actions.drawerOpen()} rightButtonImage={MenuIcon} onEnter={this.props.dispatchEnableScan} onExit={this.props.dispatchDisableScan} renderLeftButton={() => <HelpButton/>} tabBarLabel='Send' title='Send' animation={'fade'} duration={600} />
-                          <Scene key={Constants.EDGE_LOGIN}
-                            renderTitle={'Edge Login'}
-                            component={EdgeLoginSceneConnector}
-                            renderLeftButton={() => <HelpButton/>}
-                            animation={'fade'}
-                            duration={200} />
+                          <Scene key={Constants.SEND_CONFIRMATION} navTransparent={true} hideTabBar component={SendConfirmation} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
+                          <Scene key={Constants.EDGE_LOGIN} renderTitle={'Edge Login'} component={EdgeLoginSceneConnector} renderLeftButton={() => <HelpButton/>} animation={'fade'} duration={200} />
                         </Stack>
                         <Scene key={Constants.EXCHANGE} navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} icon={this.icon(Constants.EXCHANGE)} renderLeftButton={() => <ExchangeDropMenu/>} component={ExchangeConnector} onRight={() => Actions.drawerOpen()} rightButtonImage={MenuIcon} tabBarLabel='Exchange' title='Exchange' animation={'fade'} duration={600} />
                       </Tabs>
-                      <Stack key={Constants.SEND_CONFIRMATION} navTransparent={true} hideTabBar title='Send Confirmation' >
-                        <Scene key='sendconfirmation_notused' hideTabBar component={SendConfirmation} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
+
+                      <Stack key='settingsOverviewTab' title='Settings' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} hideDrawerButton={true}>
+                        <Scene key={Constants.SETTINGS_OVERVIEW} title='Settings'          component={SettingsOverview}          tintColor={styles.backButtonColor} navTransparent={true} onLeft={Actions.pop} leftTitle='Back' animation={'fade'} duration={600} />
+                        <Scene key={Constants.CHANGE_PASSWORD}   title='Change Password'   component={ChangePasswordConnector}   tintColor={styles.backButtonColor} navTransparent={true} animation={'fade'} duration={600} />
+                        <Scene key={Constants.CHANGE_PIN}        title='Change Pin'        component={ChangePinConnector}        tintColor={styles.backButtonColor} navTransparent={true} animation={'fade'} duration={600} />
+                        <Scene key={Constants.RECOVER_PASSWORD}  title='Password Recovery' component={PasswordRecoveryConnector} tintColor={styles.backButtonColor} animation={'fade'}    duration={600} />
+                        <Scene key={Constants.BTC_SETTINGS}      title='BTC Settings'      component={CurrencySettings}          tintColor={styles.backButtonColor} currencyCode={'BTC'}  navTransparent={true} pluginName={'bitcoin'}      animation={'fade'} duration={600} />
+                        <Scene key={Constants.BCH_SETTINGS}      title='BCH Settings'      component={CurrencySettings}          tintColor={styles.backButtonColor} currencyCode={'BCH'}  navTransparent={true} pluginName={'bitcoinCash'}  animation={'fade'} duration={600} />
+                        <Scene key={Constants.ETH_SETTINGS}      title='ETH Settings'      component={CurrencySettings}          tintColor={styles.backButtonColor} currencyCode={'ETH'}  navTransparent={true} pluginName={'ethereum'}     animation={'fade'} duration={600} />
+                        <Scene key={Constants.LTC_SETTINGS}      title='LTC Settings'      component={CurrencySettings}          tintColor={styles.backButtonColor} currencyCode={'LTC'}  navTransparent={true} pluginName={'litecoin'}     animation={'fade'} duration={600} />
+                        <Scene key='defaultFiatSetting'          title='Default Fiat'      component={DefaultFiatSettingConnector}  animation={'fade'} duration={600} />
                       </Stack>
-                      <Stack key='settingsOverviewTab' title='Settings' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} hideDrawerButton={true} >
-                        <Scene key={Constants.SETTINGS_OVERVIEW} tintColor={styles.backButtonColor} navTransparent={true} component={SettingsOverview} title='Settings' onLeft={Actions.pop} leftTitle='Back' animation={'fade'} duration={600} />
-                        <Scene key={Constants.CHANGE_PASSWORD} tintColor={styles.backButtonColor} navTransparent={true} component={ChangePasswordConnector}   title='Change Password' animation={'fade'} duration={600} />
-                        <Scene key={Constants.CHANGE_PIN}        component={ChangePinConnector}       navTransparent={true}  title='Change Pin' tintColor={styles.backButtonColor} animation={'fade'} duration={600} />
-                        <Scene key={Constants.RECOVER_PASSWORD}  component={PasswordRecoveryConnector} title='Password Recovery' tintColor={styles.backButtonColor} animation={'fade'} duration={600} />
-                        <Scene key={Constants.BTC_SETTINGS} component={CurrencySettings} currencyCode={'BTC'} tintColor={styles.backButtonColor} navTransparent={true} pluginName={'bitcoin'}     title='BTC Settings' animation={'fade'} duration={600} />
-                        <Scene key={Constants.BCH_SETTINGS} component={CurrencySettings} currencyCode={'BCH'} tintColor={styles.backButtonColor} navTransparent={true} pluginName={'bitcoinCash'} title='BCH Settings' animation={'fade'} duration={600} />
-                        <Scene key={Constants.ETH_SETTINGS} component={CurrencySettings} currencyCode={'ETH'} tintColor={styles.backButtonColor} navTransparent={true} pluginName={'ethereum'}    title='ETH Settings' animation={'fade'} duration={600} />
-                        <Scene key={Constants.LTC_SETTINGS} component={CurrencySettings} currencyCode={'LTC'} tintColor={styles.backButtonColor} navTransparent={true} pluginName={'litecoin'}    title='LTC Settings' animation={'fade'} duration={600} />
-                        <Scene key='defaultFiatSetting' component={DefaultFiatSettingConnector} title='Default Fiat' animation={'fade'} duration={600} />
+
+                      <Stack key={'plugins'} title='Plugins' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} icon={this.icon(Constants.SCAN)} tabBarLabel='Plugins'>
+                        <Scene key='scan_notused' renderTitle={this.renderWalletListNavBar} component={Scan} tintColor={styles.backButtonColor} navTransparent={true} onRight={() => Actions.drawerOpen()} rightButtonImage={MenuIcon} onEnter={this.props.dispatchEnableScan} onExit={this.props.dispatchDisableScan} renderLeftButton={() => <HelpButton/>} tabBarLabel='Send' title='Send' animation={'fade'} duration={600} />
+                        <Scene key={Constants.SEND_CONFIRMATION} navTransparent={true} hideTabBar component={SendConfirmation} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
+                        <Scene key={Constants.EDGE_LOGIN} renderTitle={'Edge Login'} component={EdgeLoginSceneConnector} renderLeftButton={() => <HelpButton/>} animation={'fade'} duration={200} />
                       </Stack>
-                      {/*</Gradient>*/}
+
                     </Scene>
                   </Drawer>
                 </Stack>
-                {/*</Lightbox>*/}
               </Modal>
             </Overlay>
           </RouterWithRedux>
