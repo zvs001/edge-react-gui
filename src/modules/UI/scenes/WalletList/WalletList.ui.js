@@ -165,7 +165,7 @@ export default class WalletList extends Component<any, {
         <Gradient style={{height: 66, width: '100%'}} />
 
         {/* <TouchableOpacity onPress={this.handleOnBalanceBoxPress}> */}
-        <TouchableOpacity onPress={() => Actions.sendConfirmation({lockedInputs: true, spendInfo})}>
+        <TouchableOpacity onPress={() => Actions.plugins({plugin: {}})}>
           {this.state.balanceBoxVisible
           ? this.balanceBox(fiatBalanceString)
           : this.hiddenBalanceBox()}

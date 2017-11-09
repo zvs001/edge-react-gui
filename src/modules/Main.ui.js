@@ -69,6 +69,8 @@ import exchangeIcon from '../assets/images/tabbar/exchange.png'
 import exchangeIconSelected from '../assets/images/tabbar/exchange_selected.png'
 import styles from './style.js'
 
+import {PluginView} from './UI/scenes/Plugins'
+
 import * as CONTEXT_API from './Core/Context/api'
 
 import {makeFakeContexts, makeReactNativeContext} from 'airbitz-core-react-native'
@@ -225,6 +227,7 @@ export default class Main extends Component<Props, State> {
           <RouterWithRedux backAndroidHandler={this.handleBack}>
             <Overlay>
               <Modal hideNavBar transitionConfig={() => ({screenInterpolator: CardStackStyleInterpolator.forFadeFromBottomAndroid})}>
+
                 <Stack hideNavBar key='root' navigationBarStyle={{backgroundColor: THEME.COLORS.TRANSPARENT}} backButtonTintColor='white' titleStyle={{color: THEME.COLORS.WHITE, alignSelf: 'center'}}>
                   <Scene key={Constants.LOGIN} component={LoginConnector} title='login' animation={'fade'} duration={600} initial username={this.props.username} />
                   <Scene key={Constants.TRANSACTION_DETAILS} navTransparent={true} component={TransactionDetails} back clone title='Transaction Details' animation={'fade'} duration={600} />
@@ -261,15 +264,15 @@ export default class Main extends Component<Props, State> {
                         <Scene key='defaultFiatSetting'          title='Default Fiat'      component={DefaultFiatSettingConnector}  animation={'fade'} duration={600} />
                       </Stack>
 
-                      <Stack key={'plugins'} title='Plugins' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} icon={this.icon(Constants.SCAN)} tabBarLabel='Plugins'>
-                        <Scene key='scan_notused' renderTitle={this.renderWalletListNavBar} component={Scan} tintColor={styles.backButtonColor} navTransparent={true} onRight={() => Actions.drawerOpen()} rightButtonImage={MenuIcon} onEnter={this.props.dispatchEnableScan} onExit={this.props.dispatchDisableScan} renderLeftButton={() => <HelpButton/>} tabBarLabel='Send' title='Send' animation={'fade'} duration={600} />
-                        <Scene key={Constants.SEND_CONFIRMATION} navTransparent={true} hideTabBar component={SendConfirmation} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
-                        <Scene key={Constants.EDGE_LOGIN} renderTitle={'Edge Login'} component={EdgeLoginSceneConnector} renderLeftButton={() => <HelpButton/>} animation={'fade'} duration={200} />
-                      </Stack>
-
                     </Scene>
                   </Drawer>
                 </Stack>
+
+                <Stack key={'plugins'} title='Plugins' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}}>
+                  <Scene key='plugins_notused' component={PluginView} tintColor={styles.backButtonColor} />
+                  <Scene key={Constants.SEND_CONFIRMATION} navTransparent={true} hideTabBar component={SendConfirmation} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
+                </Stack>
+
               </Modal>
             </Overlay>
           </RouterWithRedux>
