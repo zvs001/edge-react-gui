@@ -69,8 +69,6 @@ import exchangeIcon from '../assets/images/tabbar/exchange.png'
 import exchangeIconSelected from '../assets/images/tabbar/exchange_selected.png'
 import styles from './style.js'
 
-import {PluginView} from './UI/scenes/Plugins'
-
 import * as CONTEXT_API from './Core/Context/api'
 
 import {makeFakeContexts, makeReactNativeContext} from 'airbitz-core-react-native'
@@ -266,11 +264,6 @@ export default class Main extends Component<Props, State> {
 
                     </Scene>
                   </Drawer>
-                </Stack>
-
-                <Stack key={'plugins'} title='Plugins' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}}>
-                  <Scene key='plugins_notused' component={PluginView} tintColor={styles.backButtonColor} />
-                  <Scene key={Constants.SEND_CONFIRMATION} navTransparent={true} hideTabBar component={SendConfirmation} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
                 </Stack>
 
               </Modal>

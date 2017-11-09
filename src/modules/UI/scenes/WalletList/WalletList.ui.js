@@ -31,7 +31,6 @@ import RenameWalletButtons from './components/RenameWalletButtonsConnector'
 import DeleteIcon from './components/DeleteIcon.ui'
 import RenameIcon from './components/RenameIcon.ui'
 import platform from '../../../../theme/variables/platform.js'
-import type {AbcSpendInfo} from 'airbitz-core-types'
 
 const options = [
   {
@@ -150,22 +149,13 @@ export default class WalletList extends Component<any, {
       fiatBalanceString = fiatSymbol + ' ' + this.tallyUpTotalCrypto() + ' ' + settings.defaultFiat
     }
 
-    const spendInfo: AbcSpendInfo = {
-      currencyCode: 'ETH',
-      spendTargets: [{
-        nativeAmount: '123',
-        publicAddress: '1028435672098764350'
-      }]
-    }
-
     return (
       <View style={styles.container}>
         {this.renderDeleteWalletModal()}
         {this.renderRenameWalletModal()}
         <Gradient style={{height: 66, width: '100%'}} />
 
-        {/* <TouchableOpacity onPress={this.handleOnBalanceBoxPress}> */}
-        <TouchableOpacity onPress={() => Actions.plugins({plugin: {}})}>
+        <TouchableOpacity onPress={this.handleOnBalanceBoxPress}>
           {this.state.balanceBoxVisible
           ? this.balanceBox(fiatBalanceString)
           : this.hiddenBalanceBox()}
