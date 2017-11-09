@@ -1,3 +1,3 @@
-import Container from './Container.ui.js'
+import Main from './Main.ui.js'
 
-export default Container
+export default Main

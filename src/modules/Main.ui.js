@@ -51,6 +51,7 @@ import SettingsOverview from './UI/scenes/Settings/SettingsOverviewConnector'
 import CurrencySettings from './UI/scenes/Settings/CurrencySettingsConnector'
 import DefaultFiatSettingConnector from './UI/scenes/Settings/DefaultFiatSettingConnector'
 import SendConfirmationOptions from './UI/scenes/SendConfirmation/SendConfirmationOptionsConnector.js'
+import {PluginView, PluginBuySell, PluginSpend} from './UI/scenes/Plugins'
 
 // $FlowFixMe
 import CardStackStyleInterpolator from 'react-navigation/src/views/CardStack/CardStackStyleInterpolator'
@@ -261,7 +262,17 @@ export default class Main extends Component<Props, State> {
                         <Scene key={Constants.LTC_SETTINGS}      title='LTC Settings'      component={CurrencySettings}          tintColor={styles.backButtonColor} currencyCode={'LTC'}  navTransparent={true} pluginName={'litecoin'}     animation={'fade'} duration={600} />
                         <Scene key='defaultFiatSetting'          title='Default Fiat'      component={DefaultFiatSettingConnector}  animation={'fade'} duration={600} />
                       </Stack>
-
+                      <Stack key='buySellTab' title='Buy/Sell' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} hideDrawerButton={true} >
+                        <Scene key={Constants.BUYSELL} tintColor={styles.backButtonColor} component={PluginBuySell} title='Buy/Sell' onLeft={Actions.pop} leftTitle='Back' animation={'fade'} duration={600} />
+                        <Scene key={Constants.PLUGIN} component={PluginView} title='Plugin' animation={'fade'} duration={600} />
+                        <Scene key={'sendConfirmationBuy'} test={'buysell'} hideTabBar component={SendConfirmationPlugins} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
+                      </Stack>
+                      <Stack key='spendTab' title='Spend' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} hideDrawerButton={true} >
+                        <Scene key={Constants.SPEND} tintColor={styles.backButtonColor} component={PluginSpend} title='Spend' onLeft={Actions.pop} leftTitle='Back' animation={'fade'} duration={600} />
+                        <Scene key={Constants.PLUGIN} component={PluginView} title='Plugin' animation={'fade'} duration={600} />
+                        <Scene key={'sendConfirmationSpend'} test={'spend'} hideTabBar component={SendConfirmationPlugins} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
+                      </Stack>
+                      {/*</Gradient>*/}
                     </Scene>
                   </Drawer>
                 </Stack>
