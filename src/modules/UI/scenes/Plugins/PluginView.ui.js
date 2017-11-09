@@ -21,6 +21,7 @@ class PluginList extends React.Component {
         source={{uri: item.imageUrl}}
       />
       <View style={{flex: 1, flexDirection: 'column'}}>
+        <Text onPress={Actions.sendConfirmation}>Send Confirmation</Text>
         <Text id={item.key} key={item.key} onPress={() => this._onPress(item)}>{item.key}</Text>
         <Text>{item.subtitle}</Text>
       </View>
@@ -29,10 +30,12 @@ class PluginList extends React.Component {
 
   render () {
     return (
-      <FlatList
-        data={this.plugins}
-        renderItem={this._renderPlugin}
-      />
+      <View>
+        <FlatList
+          data={this.plugins}
+          renderItem={this._renderPlugin}
+        />
+      </View>
     )
   }
 }
@@ -116,7 +119,9 @@ class PluginView extends React.Component {
 
   render () {
     return (
-      <WebView ref={this._setWebview} onMessage={this._onMessage} source={this._renderWebView()} />
+      <View>
+        <WebView ref={this._setWebview} onMessage={this._onMessage} source={this._renderWebView()} />
+      </View>
     )
   }
 }
