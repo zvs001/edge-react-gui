@@ -6,7 +6,9 @@ export type SendConfirmationState = {
   transaction: AbcTransaction | null,
   error: Error | null,
 
-  spendInfo: ?AbcSpendInfo,
+  abcSpendInfo: ?AbcSpendInfo,
+  lockInputs: ?boolean,
+  broadcast: ?boolean,
 
   displayAmount: number,
   publicAddress: string,
@@ -26,7 +28,9 @@ export const initialState: SendConfirmationState = {
   transaction: null,
   error: null,
 
-  spendInfo: null,
+  abcSpendInfo: null,
+  lockInputs: false,
+  broadcast: true,
 
   displayAmount: 0,
   publicAddress: '',
@@ -63,10 +67,21 @@ const sendConfirmation = (state: SendConfirmationState = initialState, action: a
     }
   }
   case ACTION.UPDATE_SPEND_INFO: {
-    const {spendInfo} = data
+    const {abcSpendInfo, lockInputs, broadcast} = data
     return {
       ...state,
-      spendInfo
+      abcSpendInfo,
+      lockInputs,
+      broadcast
+    }
+  }
+  case 'PLUGINS/UPDATE_SPEND_INFO': {
+    const {abcSpendInfo, lockInputs, broadcast} = data
+    return {
+      ...state,
+      abcSpendInfo,
+      lockInputs,
+      broadcast
     }
   }
   case ACTION.UPDATE_MAX_SATOSHI: {
@@ -120,3 +135,16 @@ const sendConfirmation = (state: SendConfirmationState = initialState, action: a
 }
 
 export default sendConfirmation
+
+// const a = {
+//   type: 'UI/SendConfirmation/UPDATE_SPEND_INFO',
+//   data: {
+//     spendInfo: {
+//       spendtargets: [{
+//         publicAddress: 'Qweqwe', nativeAmount: '123234234'
+//       }]
+//     },
+//     broadcast: false,
+//     lockInputs: true
+//   }
+// }

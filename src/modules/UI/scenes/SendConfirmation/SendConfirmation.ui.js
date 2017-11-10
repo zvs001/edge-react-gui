@@ -27,7 +27,7 @@ import type {SendConfirmationState} from './reducer'
 const DIVIDE_PRECISION = 18
 
 export type Props = {
-  lockedInputs: boolean,
+  lockInputs: boolean,
   sendConfirmation: SendConfirmationState,
   abcWallet: AbcCurrencyWallet,
   nativeAmount: string,
@@ -76,7 +76,7 @@ export default class SendConfirmation extends Component<Props, State> {
     let fiatFeeAmountPretty, cryptoFeeExchangeAmount, fiatFeeAmountString, fiatFeeString, networkFeeSyntax
     const {label,publicAddress,transaction} = this.props.sendConfirmation
     const {
-      lockedInputs,
+      lockInputs,
       primaryInfo,
       secondaryInfo,
       fiatPerCrypto,
@@ -124,7 +124,7 @@ export default class SendConfirmation extends Component<Props, State> {
 
           <View style={[styles.main, UTILS.border('yellow'), {flex: this.state.keyboardVisible ? 0 : 1}]}>
             <ExchangedFlipInput
-              disabled={lockedInputs}
+              disabled={lockInputs}
               primaryInfo={{...primaryInfo, nativeAmount}}
               secondaryInfo={secondaryInfo}
               secondaryToPrimaryRatio={fiatPerCrypto}

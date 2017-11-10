@@ -6,6 +6,8 @@ import {toggleScanToWalletListModal} from '../../components/WalletListModal/acti
 import {Actions} from 'react-native-router-flux'
 import * as CORE_SELECTORS from '../../../Core/selectors.js'
 
+import * as actions from '../../../../actions/pluginsActions.js'
+
 import {BUY_SELL, SPEND} from './plugins'
 import {PluginBridge} from './api'
 
@@ -21,7 +23,6 @@ class PluginList extends React.Component {
         source={{uri: item.imageUrl}}
       />
       <View style={{flex: 1, flexDirection: 'column'}}>
-        <Text onPress={Actions.sendConfirmation}>Send Confirmation</Text>
         <Text id={item.key} key={item.key} onPress={() => this._onPress(item)}>{item.key}</Text>
         <Text>{item.subtitle}</Text>
       </View>
@@ -120,6 +121,16 @@ class PluginView extends React.Component {
   render () {
     return (
       <View>
+        <Text onPress={() => this.props.requestSignTx({
+          abcSpendInfo: {spendTargets: [{publicAddress: '123123123', nativeAmount: '10000000'}]},
+          lockInputs: true,
+          broadcast: false
+        })}>
+          RequestSignTX
+        </Text>
+        <Text onPress={() => Actions.sendConfirmation({spendInfo: {spendTargets: [{publicAddress: '123123123', nativeAmount: '10000000'}]}})}>
+          Send Confirmation
+        </Text>
         <WebView ref={this._setWebview} onMessage={this._onMessage} source={this._renderWebView()} />
       </View>
     )
@@ -138,6 +149,10 @@ const mapDispatchToProps = (dispatch) => ({
   toggleScanToWalletListModal: () => dispatch(toggleScanToWalletListModal()),
   openABAlert: (alertSyntax) => dispatch(openABAlert(alertSyntax)),
   closeABAlert: () => dispatch(closeABAlert()),
+  requestSignTx: ({ abcSpendInfo, lockInputs, broadcast }) => {
+    dispatch(actions.requestSignTx({ abcSpendInfo, broadcast, lockInputs }))
+    Actions.sendConfirmation()
+  }
 })
 
 const PluginViewConnect = connect(mapStateToProps, mapDispatchToProps)(PluginView)

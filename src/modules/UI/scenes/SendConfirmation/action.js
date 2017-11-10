@@ -1,5 +1,18 @@
 // @flow
 
+// const a = {
+//   type: 'UI/SendConfimation/UPDATE_SPEND_INFO',
+//   data: {
+//     abcSpendInfo: {
+//       spendTargets: [{
+//         publicAddress: 'Qweqwe', nativeAmount: '123234234'
+//       }]
+//     },
+//     broadcast: false,
+//     lockInputs: true
+//   }
+// }
+
 const PREFIX = 'UI/SendConfimation/'
 export const UPDATE_AMOUNT_SATOSHI = PREFIX + 'UPDATE_AMOUNT_SATOSHI'
 export const UPDATE_LABEL = PREFIX + 'UPDATE_LABEL'
@@ -118,9 +131,9 @@ export const getMaxSpendable = () => (dispatch: any, getState: any) => {
   const state = getState()
   const walletId = UI_SELECTORS.getSelectedWalletId(state)
   const abcWallet = CORE_SELECTORS.getWallet(state, walletId)
-  const spendInfo: AbcSpendInfo = state.ui.sendConfirmation.spendInfo
+  const abcSpendInfo: AbcSpendInfo = state.ui.sendConfirmation.abcSpendInfo
 
-  return WALLET_API.getMaxSpendable(abcWallet, spendInfo)
+  return WALLET_API.getMaxSpendable(abcWallet, abcSpendInfo)
     .then((maxSpendable) => dispatch(updateNativeAmount(maxSpendable)))
     .catch((error) => console.log(error))
 }
@@ -135,17 +148,17 @@ export const reset = () => ({
   data: {}
 })
 
-export const processSpendInfo = (spendInfo: AbcSpendInfo) => (dispatch: any, getState: any) => {
+export const processSpendInfo = (abcSpendInfo: AbcSpendInfo) => (dispatch: any, getState: any) => {
   const state = getState()
   const walletId = UI_SELECTORS.getSelectedWalletId(state)
   const abcWallet = CORE_SELECTORS.getWallet(state, walletId)
 
-  return WALLET_API.makeSpend(abcWallet, spendInfo)
+  return WALLET_API.makeSpend(abcWallet, abcSpendInfo)
     .then((abcTransaction: AbcTransaction) => dispatch(updateTransactionAction(abcTransaction, null)))
     .catch((error: Error) => dispatch(updateTransactionAction(null, error)))
 }
 
-export const updateSpendInfo = (spendInfo: AbcSpendInfo) => ({
+export const updateSpendInfo = (abcSpendInfo: AbcSpendInfo, lockInputs?: boolean, broadcast?: boolean) => ({
   type: UPDATE_SPEND_INFO,
-  data: {spendInfo}
+  data: {abcSpendInfo, lockInputs, broadcast}
 })

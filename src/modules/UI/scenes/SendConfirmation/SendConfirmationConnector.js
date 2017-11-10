@@ -20,7 +20,7 @@ import {
   processSpendInfo
 } from './action.js'
 
-const mapStateToProps = (state: State, ownProps) => {
+const mapStateToProps = (state: State) => {
   const sendConfirmation = UI_SELECTORS.getSceneState(state, 'sendConfirmation')
   let fiatPerCrypto = 0
   const currencyConverter = CORE_SELECTORS.getCurrencyConverter(state)
@@ -54,11 +54,11 @@ const mapStateToProps = (state: State, ownProps) => {
     pending
   } = state.ui.scenes.sendConfirmation
 
-  const spendInfo = state.ui.scenes.sendConfirmation.spendInfo || ownProps.spendInfo
-  const nativeAmount = spendInfo.spendTargets[0].nativeAmount || '0'
+  const abcSpendInfo = state.ui.scenes.sendConfirmation.abcSpendInfo
+  const nativeAmount = abcSpendInfo.spendTargets[0].nativeAmount || '0'
 
-  if (spendInfo) {
-    spendInfo.currencyCode = currencyCode
+  if (abcSpendInfo) {
+    abcSpendInfo.currencyCode = currencyCode
   }
 
   let errorMsg = null
@@ -72,8 +72,12 @@ const mapStateToProps = (state: State, ownProps) => {
     sliderDisabled = false
   }
 
+  const lockInputs = state.ui.scenes.sendConfirmation.lockInputs
+  const broadcast = state.ui.scenes.sendConfirmation.broadcast
+
   return {
-    lockedInputs: false,
+    lockInputs,
+    broadcast,
     sendConfirmation,
     abcWallet,
     nativeAmount,
@@ -89,7 +93,7 @@ const mapStateToProps = (state: State, ownProps) => {
 }
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  processSpendInfo: (spendInfo: AbcSpendInfo): any => dispatch(processSpendInfo(spendInfo)),
+  processSpendInfo: (abcSpendInfo: AbcSpendInfo): any => dispatch(processSpendInfo(abcSpendInfo)),
   updateSpendPending: (pending: boolean): any => dispatch(updateSpendPending(pending)),
   signBroadcastAndSave: (abcTransaction: AbcTransaction): any => dispatch(signBroadcastAndSave(abcTransaction))
 })

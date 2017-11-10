@@ -2,53 +2,26 @@
 
 import type {AbcSpendInfo, AbcTransaction} from 'airbitz-core-types'
 
-export const requestSignTx = (spendInfo: AbcSpendInfo) => {
-  return {
-    type: 'REQUEST_SIGN_TX',
-    data: {
-      spendInfo,
-      shouldBroadcast: false,
-      shouldLockInputs: false
-    }
-  }
+type RequestSignTx = {
+  abcSpendInfo: AbcSpendInfo,
+  lockInputs: boolean,
+  broadcast: boolean
 }
 
-export const requestLockedSignTx = (spendInfo: AbcSpendInfo) => {
+export const requestSignTx = ({abcSpendInfo, lockInputs, broadcast}: RequestSignTx) => {
   return {
-    type: 'REQUEST_LOCKED_SIGN_TX',
+    type: 'PLUGINS/REQUEST_SIGN_TX',
     data: {
-      spendInfo,
-      shouldBroadcast: false,
-      shouldLockInputs: true
-    }
-  }
-}
-
-export const requestSignBroadcastTx = (spendInfo: AbcSpendInfo) => {
-  return {
-    type: 'REQUEST_SIGN_BROADCAST_TX',
-    data: {
-      spendInfo,
-      shouldBroadcast: true,
-      shouldLockInputs: false
-    }
-  }
-}
-
-export const requestLockedSignBroadcastTx = (spendInfo: AbcSpendInfo) => {
-  return {
-    type: 'REQUEST_LOCKED_SIGN_TX',
-    data: {
-      spendInfo,
-      shouldBroadcast: true,
-      shouldLockInputs: true
+      abcSpendInfo,
+      broadcast,
+      lockInputs
     }
   }
 }
 
 export const onBroadcastTxSuccess = (abcTransaction: AbcTransaction) => {
   return {
-    type: 'TX_BROADCAST_SUCCESS',
+    type: 'PLUGINS/TX_BROADCAST_SUCCESS',
     data: {
       status: 'SUCCESS',
       error: null,
@@ -59,7 +32,7 @@ export const onBroadcastTxSuccess = (abcTransaction: AbcTransaction) => {
 
 export const onSignTxSuccess = (abcTransaction: AbcTransaction) => {
   return {
-    type: 'TX_SIGN_SUCCESS',
+    type: 'PLUGINS/TX_SIGN_SUCCESS',
     data: {
       status: 'SUCCESS',
       error: null,
@@ -70,7 +43,7 @@ export const onSignTxSuccess = (abcTransaction: AbcTransaction) => {
 
 export const onSignTxError = (error: Error) => {
   return {
-    type: 'TX_SIGN_ERROR',
+    type: 'PLUGINS/TX_SIGN_ERROR',
     data: {
       status: 'ERROR',
       error,
@@ -81,7 +54,7 @@ export const onSignTxError = (error: Error) => {
 
 export const onSignTxCancel = () => {
   return {
-    type: 'TX_SIGN_CANCEL',
+    type: 'PLUGINS/TX_SIGN_CANCEL',
     data: {
       status: 'CANCEL',
       error: null,

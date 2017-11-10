@@ -21,43 +21,6 @@ type State = {
 export default (state: State = initialState, action: any): State => {
   const {type, data = {}} = action
   switch (type) {
-  case 'REQUEST_SIGN_TX': {
-    const spendInfo = data.spendInfo
-    return {
-      ...state,
-      spendInfo,
-      shouldLockInputs: false,
-      shouldBroadcast: false
-    }
-  }
-  case 'REQUEST_LOCKED_SIGN_TX': {
-    const {spendInfo} = data
-    return {
-      ...state,
-      spendInfo,
-      shouldLockInputs: true,
-      shouldBroadcast: false
-    }
-  }
-  case 'REQUEST_SIGN_BROADCAST_TX': {
-    const {spendInfo} = data
-    return {
-      ...state,
-      spendInfo,
-      shouldLockInputs: false,
-      shouldBroadcast: true
-    }
-  }
-  case 'REQUEST_LOCKED_SIGN_BROADCAST_TX': {
-    const {spendInfo} = data
-    return {
-      ...state,
-      spendInfo,
-      shouldLockInputs: true,
-      shouldBroadcast: true
-    }
-  }
-
   case 'TX_BROADCAST_SUCCESS': {
     const {abcTransaction} = data
     return {
@@ -95,6 +58,10 @@ export default (state: State = initialState, action: any): State => {
       error: null,
       abcTransaction: null
     }
+  }
+
+  case 'RESET': {
+    return initialState
   }
 
   default:

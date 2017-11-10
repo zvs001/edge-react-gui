@@ -265,12 +265,10 @@ export default class Main extends Component<Props, State> {
                       <Stack key='buySellTab' title='Buy/Sell' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} hideDrawerButton={true} >
                         <Scene key={Constants.BUYSELL} tintColor={styles.backButtonColor} component={PluginBuySell} title='Buy/Sell' onLeft={Actions.pop} leftTitle='Back' animation={'fade'} duration={600} />
                         <Scene key={Constants.PLUGIN} component={PluginView} title='Plugin' animation={'fade'} duration={600} />
-                        <Scene key={'sendConfirmationBuy'} test={'buysell'} hideTabBar component={SendConfirmationPlugins} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
                       </Stack>
                       <Stack key='spendTab' title='Spend' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} hideDrawerButton={true} >
                         <Scene key={Constants.SPEND} tintColor={styles.backButtonColor} component={PluginSpend} title='Spend' onLeft={Actions.pop} leftTitle='Back' animation={'fade'} duration={600} />
                         <Scene key={Constants.PLUGIN} component={PluginView} title='Plugin' animation={'fade'} duration={600} />
-                        <Scene key={'sendConfirmationSpend'} test={'spend'} hideTabBar component={SendConfirmationPlugins} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
                       </Stack>
                       {/*</Gradient>*/}
                     </Scene>
