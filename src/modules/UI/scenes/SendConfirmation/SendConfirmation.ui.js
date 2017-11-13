@@ -39,10 +39,12 @@ export type Props = {
   sliderDisabled: boolean,
   secondaryInfo: FlipInputFieldInfo,
   currencyConverter: CurrencyConverter,
-  spendInfo?: AbcSpendInfo,
+  abcSpendInfo?: AbcSpendInfo,
   processSpendInfo: (AbcSpendInfo) => void,
   updateSpendPending: (boolean) => void,
-  signBroadcastAndSave: (AbcTransaction) => void
+  signTx: (AbcTransaction, Function) => void,
+  signBroadcastAndSave: (AbcTransaction, Function) => void,
+  finishCallback: (error: Error, abcTransaction: AbcTransaction) => void,
 }
 
 type State = {
@@ -66,8 +68,8 @@ export default class SendConfirmation extends Component<Props, State> {
   }
 
   componentDidMount () {
-    if (this.props.sendConfirmation.spendInfo) {
-      this.props.processSpendInfo(this.props.sendConfirmation.spendInfo)
+    if (this.props.sendConfirmation.abcSpendInfo) {
+      this.props.processSpendInfo(this.props.sendConfirmation.abcSpendInfo)
     }
   }
 
@@ -160,15 +162,15 @@ export default class SendConfirmation extends Component<Props, State> {
 
     const secondaryExchangeAmount = this.convertSecondaryDisplayToSecondaryExchange(secondaryDisplayAmount)
 
-    const spendInfo = this.props.sendConfirmation.spendInfo
-    if (spendInfo) {
-      if (spendInfo.metadata) {
+    const abcSpendInfo = this.props.abcSpendInfo
+    if (abcSpendInfo) {
+      if (abcSpendInfo.metadata) {
         // $FlowFixMe
-        spendInfo.metadata.amountFiat = parseFloat(secondaryExchangeAmount)
+        abcSpendInfo.metadata.amountFiat = parseFloat(secondaryExchangeAmount)
       }
-      spendInfo.spendTargets[0].nativeAmount = primaryNativeAmount
+      abcSpendInfo.spendTargets[0].nativeAmount = primaryNativeAmount
 
-      this.props.processSpendInfo(spendInfo)
+      this.props.processSpendInfo(abcSpendInfo)
 
       this.setState({
         primaryNativeAmount,
@@ -181,7 +183,11 @@ export default class SendConfirmation extends Component<Props, State> {
     const abcTransaction: AbcTransaction | null = this.props.sendConfirmation.transaction
     if (abcTransaction) {
       this.props.updateSpendPending(true)
-      this.props.signBroadcastAndSave(abcTransaction)
+      if (this.props.broadcast) {
+        this.props.signBroadcastAndSave(abcTransaction, this.props.finishCallback)
+      } else {
+        this.props.signTx(abcTransaction, this.props.finishCallback)
+      }
     }
   }
 

@@ -1,18 +1,5 @@
 // @flow
 
-// const a = {
-//   type: 'UI/SendConfimation/UPDATE_SPEND_INFO',
-//   data: {
-//     abcSpendInfo: {
-//       spendTargets: [{
-//         publicAddress: 'Qweqwe', nativeAmount: '123234234'
-//       }]
-//     },
-//     broadcast: false,
-//     lockInputs: true
-//   }
-// }
-
 const PREFIX = 'UI/SendConfimation/'
 export const UPDATE_AMOUNT_SATOSHI = PREFIX + 'UPDATE_AMOUNT_SATOSHI'
 export const UPDATE_LABEL = PREFIX + 'UPDATE_LABEL'
@@ -73,16 +60,46 @@ export const updateNativeAmount = (nativeAmount: string) => ({
   data: {nativeAmount}
 })
 
-export const signBroadcastAndSave = (abcUnsignedTransaction: AbcTransaction) => (dispatch: any, getState: any) => {
+export const signTx = (
+  abcUnsignedTransaction: AbcTransaction,
+  finishCallback: (error: Error | null, abcTransaction: AbcTransaction | null) => void
+) => (dispatch: any, getState: any) => {
   const state = getState()
   const selectedWalletId = UI_SELECTORS.getSelectedWalletId(state)
   const wallet = CORE_SELECTORS.getWallet(state, selectedWalletId)
 
   WALLET_API.signTransaction(wallet, abcUnsignedTransaction)
-    .then((abcSignedTransaction: AbcTransaction) => WALLET_API.broadcastTransaction(wallet, abcSignedTransaction))
-    .then((abcSignedTransaction: AbcTransaction) => WALLET_API.saveTransaction(wallet, abcSignedTransaction))
-    .then(() => {
+    .then((abcTransaction: AbcTransaction) => {
       dispatch(updateSpendPending(false))
+      if (typeof finishCallback === 'function') {
+        finishCallback(null, abcTransaction)
+      }
+      Actions.pop()
+    })
+    .catch((error) => {
+      dispatch(updateSpendPending(false))
+      if (typeof finishCallback === 'function') {
+        finishCallback(error, null)
+      }
+      Actions.pop()
+    })
+}
+
+export const signBroadcastAndSave = (
+  abcUnsignedTransaction: AbcTransaction,
+  finishCallback: (error: Error | null, abcTransaction: AbcTransaction | null) => void
+) => (dispatch: any, getState: any) => {
+  const state = getState()
+  const selectedWalletId = UI_SELECTORS.getSelectedWalletId(state)
+  const wallet = CORE_SELECTORS.getWallet(state, selectedWalletId)
+
+  WALLET_API.signTransaction(wallet, abcUnsignedTransaction)
+    .then((abcSignedTransaction: AbcTransaction) => {
+      WALLET_API.broadcastTransaction(wallet, abcSignedTransaction)
+      dispatch(updateSpendPending(false))
+      if (typeof finishCallback === 'function') {
+        finishCallback(null, abcSignedTransaction)
+      }
       Actions.pop()
       const successInfo = {
         success: true,
@@ -90,7 +107,9 @@ export const signBroadcastAndSave = (abcUnsignedTransaction: AbcTransaction) => 
         message: 'Your transaction has been successfully sent.'
       }
       dispatch(openABAlert(Constants.OPEN_AB_ALERT, successInfo))
+      return abcSignedTransaction
     })
+    .then((abcSignedTransaction: AbcTransaction) => WALLET_API.saveTransaction(wallet, abcSignedTransaction))
     .catch((e) => {
       // console.log(e)
       dispatch(updateSpendPending(false))
@@ -98,6 +117,9 @@ export const signBroadcastAndSave = (abcUnsignedTransaction: AbcTransaction) => 
         success: false,
         title: 'Transaction Failure',
         message: e.message
+      }
+      if (typeof finishCallback === 'function') {
+        finishCallback(e, null)
       }
       dispatch(openABAlert(Constants.OPEN_AB_ALERT, errorInfo))
     })

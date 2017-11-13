@@ -30,7 +30,7 @@ export const initialState: SendConfirmationState = {
 
   abcSpendInfo: null,
   lockInputs: false,
-  broadcast: true,
+  broadcast: false,
 
   displayAmount: 0,
   publicAddress: '',

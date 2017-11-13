@@ -15,12 +15,13 @@ import * as UI_SELECTORS from '../../selectors.js'
 import * as SETTINGS_SELECTORS from '../../Settings/selectors.js'
 
 import {
+  signTx,
   signBroadcastAndSave,
   updateSpendPending,
   processSpendInfo
 } from './action.js'
 
-const mapStateToProps = (state: State) => {
+const mapStateToProps = (state: State, ownProps: any) => {
   const sendConfirmation = UI_SELECTORS.getSceneState(state, 'sendConfirmation')
   let fiatPerCrypto = 0
   const currencyConverter = CORE_SELECTORS.getCurrencyConverter(state)
@@ -54,7 +55,7 @@ const mapStateToProps = (state: State) => {
     pending
   } = state.ui.scenes.sendConfirmation
 
-  const abcSpendInfo = state.ui.scenes.sendConfirmation.abcSpendInfo
+  const abcSpendInfo = ownProps.abcSpendInfo || state.ui.scenes.sendConfirmation.abcSpendInfo
   const nativeAmount = abcSpendInfo.spendTargets[0].nativeAmount || '0'
 
   if (abcSpendInfo) {
@@ -72,8 +73,8 @@ const mapStateToProps = (state: State) => {
     sliderDisabled = false
   }
 
-  const lockInputs = state.ui.scenes.sendConfirmation.lockInputs
-  const broadcast = state.ui.scenes.sendConfirmation.broadcast
+  const lockInputs = ownProps.lockInputs || state.ui.scenes.sendConfirmation.lockInputs
+  const broadcast = ownProps.broadcast || state.ui.scenes.sendConfirmation.broadcast
 
   return {
     lockInputs,
@@ -95,7 +96,8 @@ const mapStateToProps = (state: State) => {
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   processSpendInfo: (abcSpendInfo: AbcSpendInfo): any => dispatch(processSpendInfo(abcSpendInfo)),
   updateSpendPending: (pending: boolean): any => dispatch(updateSpendPending(pending)),
-  signBroadcastAndSave: (abcTransaction: AbcTransaction): any => dispatch(signBroadcastAndSave(abcTransaction))
+  signTx: (abcTransaction: AbcTransaction, finishCallback: () => void): any => dispatch(signTx(abcTransaction, finishCallback)),
+  signBroadcastAndSave: (abcTransaction: AbcTransaction, finishCallback: () => void): any => dispatch(signBroadcastAndSave(abcTransaction, finishCallback))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SendConfirmation)

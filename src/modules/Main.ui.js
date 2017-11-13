@@ -243,13 +243,17 @@ export default class Main extends Component<Props, State> {
 
                         <Scene key={Constants.REQUEST} renderTitle={this.renderWalletListNavBar} navTransparent={true} icon={this.icon(Constants.REQUEST)} component={Request} tabBarLabel='Request' title='Request' renderLeftButton={() => <HelpButton/>} onRight={() => Actions.drawerOpen()} rightButtonImage={MenuIcon} animation={'fade'} duration={600} />
 
-                        <Stack key={Constants.SCAN} title='Send' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} icon={this.icon(Constants.SCAN)} tabBarLabel='Send' >
+                        <Stack key={Constants.SCAN} title='Send' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} icon={this.icon(Constants.SCAN)} tabBarLabel='Send'>
                           <Scene key='scan_notused' renderTitle={this.renderWalletListNavBar} component={Scan} tintColor={styles.backButtonColor} navTransparent={true} onRight={() => Actions.drawerOpen()} rightButtonImage={MenuIcon} onEnter={this.props.dispatchEnableScan} onExit={this.props.dispatchDisableScan} renderLeftButton={() => <HelpButton/>} tabBarLabel='Send' title='Send' animation={'fade'} duration={600} />
-                          <Scene key={Constants.SEND_CONFIRMATION} navTransparent={true} hideTabBar component={SendConfirmation} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
+
                           <Scene key={Constants.EDGE_LOGIN} renderTitle={'Edge Login'} component={EdgeLoginSceneConnector} renderLeftButton={() => <HelpButton/>} animation={'fade'} duration={200} />
                         </Stack>
                         <Scene key={Constants.EXCHANGE} navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} icon={this.icon(Constants.EXCHANGE)} renderLeftButton={() => <ExchangeDropMenu/>} component={ExchangeConnector} onRight={() => Actions.drawerOpen()} rightButtonImage={MenuIcon} tabBarLabel='Exchange' title='Exchange' animation={'fade'} duration={600} />
                       </Tabs>
+
+                      <Stack key={Constants.SEND_CONFIRMATION} title='SendConfirmation' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} hideDrawerButton={true}>
+                        <Scene key={'send_confirmation_notused'} navTransparent={true} hideTabBar component={SendConfirmation} back title='Send Confirmation' panHandlers={null} renderRightButton={() => <SendConfirmationOptions/>} animation={'fade'} duration={600} />
+                      </Stack>
 
                       <Stack key='settingsOverviewTab' title='Settings' navigationBarStyle={{backgroundColor: THEME.COLORS.PRIMARY}} hideDrawerButton={true}>
                         <Scene key={Constants.SETTINGS_OVERVIEW} title='Settings'          component={SettingsOverview}          tintColor={styles.backButtonColor} navTransparent={true} onLeft={Actions.pop} leftTitle='Back' animation={'fade'} duration={600} />
