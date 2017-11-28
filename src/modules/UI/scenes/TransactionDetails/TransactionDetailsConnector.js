@@ -13,6 +13,7 @@ import {
 const {TransactionDetails} = require('./TransactionDetails.ui')
 
 const mapStateToProps = (state: any, ownProps: any): Props => {
+  global.pnow('TD mapStateToProps')
   const wallets: Array<GuiWallet> = state.ui.wallets.byId
   const contacts: Array<GuiContact> = state.ui.contacts.contactList
   const usableHeight: number = platform.usableHeight
@@ -33,9 +34,12 @@ const mapStateToProps = (state: any, ownProps: any): Props => {
   }
 }
 
-const mapDispatchToProps = (dispatch: any): DispatchProps => ({
-  setTransactionDetails: (txid: string, currencyCode: string, abcMetadata: AbcMetadata) => { dispatch(setTransactionDetails(txid, currencyCode, abcMetadata)) },
-  getSubcategories: () => dispatch(getSubcategories())
-})
+const mapDispatchToProps = (dispatch: any): DispatchProps => {
+  global.pnow('TD mapDispatchToProps')
+  return {
+    setTransactionDetails: (txid: string, currencyCode: string, abcMetadata: AbcMetadata) => { dispatch(setTransactionDetails(txid, currencyCode, abcMetadata)) },
+    getSubcategories: () => dispatch(getSubcategories())
+  }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(TransactionDetails)

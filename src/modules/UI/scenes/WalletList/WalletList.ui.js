@@ -8,6 +8,7 @@ import {
   FlatList
 } from 'react-native'
 // $FlowFixMe: suppressing this error until we can find a workaround
+import * as Constants from '../../../../constants/indexConstants'
 import Permissions from 'react-native-permissions'
 import Contacts from 'react-native-contacts'
 import T from '../../components/FormattedText'
@@ -32,7 +33,6 @@ import RenameWalletButtons from './components/RenameWalletButtonsConnector'
 import DeleteIcon from './components/DeleteIcon.ui'
 import RenameIcon from './components/RenameIcon.ui'
 import platform from '../../../../theme/variables/platform.js'
-
 
 const options = [
   {
@@ -78,15 +78,30 @@ export default class WalletList extends Component<any, {
     }
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
+  shouldComponentUpdate () {
     if (global.currentScene === Constants.WALLET_LIST) {
       return true
     }
     return false
   }
+
+  componentWillUpdate () {
+    global.pnow('WL componentWillUpdate start/end')
+  }
+
+  componentDidUpdate () {
+    global.pnow('WL componentDidUpdate start/end')
+  }
+
+  componentWillMount () {
+    global.pnow('WL componentWillMount start/end')
+  }
+
   componentDidMount () {
+    global.pnow('WL componentDidMount start')
     Permissions.request('contacts').then((response) => {
       if (response === 'authorized') {
+        global.pnow('WL Contacts.getAll start')
         Contacts.getAll((err, contacts) => {
           if (err === 'denied') {
             // error
@@ -94,9 +109,11 @@ export default class WalletList extends Component<any, {
             contacts.sort((a, b) => a.givenName > b.givenName)
             this.props.setContactList(contacts)
           }
+          global.pnow('WL Contacts.getAll end')
         })
       }
     })
+    global.pnow('WL componentDidMount end')
   }
 
   executeWalletRowOption = (walletId: string, option: string) => {
@@ -129,6 +146,7 @@ export default class WalletList extends Component<any, {
     }
   }
   render () {
+    global.pnow('WL render start')
     const {
       wallets,
       activeWalletIds,
@@ -162,7 +180,7 @@ export default class WalletList extends Component<any, {
       fiatBalanceString = fiatSymbol + ' ' + this.tallyUpTotalCrypto() + ' ' + settings.defaultFiat
     }
 
-    return (
+    const out = (
       <View style={styles.container}>
         {this.renderDeleteWalletModal()}
         {this.renderRenameWalletModal()}
@@ -232,6 +250,8 @@ export default class WalletList extends Component<any, {
         </View>
       </View>
     )
+    global.pnow('WL render end')
+    return out
   }
 
   renderActiveSortableList = (activeWalletsArray: any, activeWalletsObject: any) => {

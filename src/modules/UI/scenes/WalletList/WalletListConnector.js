@@ -13,10 +13,11 @@ import * as CORE_SELECTORS from '../../../Core/selectors.js'
 import * as UI_SELECTORS from '../../selectors.js'
 import * as SETTINGS_SELECTORS from '../../Settings/selectors'
 const mapStateToProps = (state: any): {} => {
+  global.pnow('WL mapStateToProps start')
   const currencyConverter = CORE_SELECTORS.getCurrencyConverter(state)
   const settings = SETTINGS_SELECTORS.getSettings(state)
 
-  return {
+  const out = {
     settings,
     coreWallets: state.core.wallets.byId,
     wallets: state.ui.wallets.byId,
@@ -31,15 +32,22 @@ const mapStateToProps = (state: any): {} => {
     currencyConverter,
     dimensions: state.ui.scenes.dimensions
   }
+  global.pnow('WL mapStateToProps end')
+  return out
 }
 
-const mapDispatchToProps = (dispatch: Function): {} => ({
-  updateActiveWalletsOrder: (activeWalletIds) => dispatch(updateActiveWalletsOrder(activeWalletIds)),
-  updateArchivedWalletsOrder: (archivedWalletIds) => dispatch(updateArchivedWalletsOrder(archivedWalletIds)),
-  setContactList: (contacts) => dispatch(setContactList(contacts)),
-  walletRowOption: (walletId, option) => dispatch(walletRowOption(walletId, option)),
-  closeDeleteWalletModal: () => dispatch(closeDeleteWalletModal()),
-  closeRenameWalletModal: () => dispatch(closeRenameWalletModal())
-})
+const mapDispatchToProps = (dispatch: Function): {} => {
+  global.pnow('WL mapDispatchToProps start')
+  const out = {
+    updateActiveWalletsOrder: (activeWalletIds) => dispatch(updateActiveWalletsOrder(activeWalletIds)),
+    updateArchivedWalletsOrder: (archivedWalletIds) => dispatch(updateArchivedWalletsOrder(archivedWalletIds)),
+    setContactList: (contacts) => dispatch(setContactList(contacts)),
+    walletRowOption: (walletId, option) => dispatch(walletRowOption(walletId, option)),
+    closeDeleteWalletModal: () => dispatch(closeDeleteWalletModal()),
+    closeRenameWalletModal: () => dispatch(closeRenameWalletModal())
+  }
+  global.pnow('WL mapDispatchToProps end')
+  return out
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletList)

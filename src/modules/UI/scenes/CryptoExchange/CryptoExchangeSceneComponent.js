@@ -53,26 +53,37 @@ type State = {
   whichWallet: string
 }
 export default class CryptoExchangeSceneComponent extends Component<Props, State> {
-  shouldComponentUpdate (nextProps, nextState) {
+  shouldComponentUpdate () {
     if (global.currentScene === Constants.EXCHANGE) {
       return true
     }
     return false
   }
 
+  componentWillUpdate () {
+    global.pnow('EX componentWillUpdate start/end')
+  }
+
+  componentDidUpdate () {
+    global.pnow('EX componentDidUpdate start/end')
+  }
+
   componentWillMount () {
+    global.pnow('EX componentWillMount start')
     if (this.props.wallets.length > 1) {
       this.props.selectFromWallet(this.props.intialWalletOne)
       this.props.selectToWallet(this.props.intialWalletTwo)
     } else if (this.props.wallets.length > 0) {
       this.props.selectFromWallet(this.props.intialWalletOne)
     }
+    global.pnow('EX componentWillMount setState whichWallet')
     this.setState({
       whichWallet: Constants.FROM
     })
-
+    global.pnow('EX componentWillMount end')
   }
   componentWillReceiveProps (nextProps: Props) {
+    global.pnow('EX componentWillReceiveProps start')
     if (!nextProps.fromWallet && nextProps.intialWalletOne) {
       this.props.selectFromWallet(nextProps.intialWalletOne)
       if (nextProps.wallets.length === 1) {
@@ -82,6 +93,10 @@ export default class CryptoExchangeSceneComponent extends Component<Props, State
     if (!nextProps.toWallet && nextProps.intialWalletTwo) {
       this.props.selectToWallet(nextProps.intialWalletTwo)
     }
+    global.pnow('EX componentWillReceiveProps end')
+  }
+  componentDidMount () {
+    global.pnow('EX componentDidMount start/end')
   }
   renderButton = () => {
     if (this.props.showNextButton) {
@@ -136,8 +151,9 @@ export default class CryptoExchangeSceneComponent extends Component<Props, State
   }
 
   render () {
+    global.pnow('EX render start')
     const style = CryptoExchangeSceneStyle
-    return (
+    const out = (
       <Gradient style={[style.scene]}>
         <KeyboardAwareScrollView
           style={[style.mainScrollView]}
@@ -177,5 +193,7 @@ export default class CryptoExchangeSceneComponent extends Component<Props, State
         {this.renderConfirmation(style.confirmModal)}
       </Gradient>
     )
+    global.pnow('EX render end')
+    return out
   }
 }

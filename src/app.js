@@ -20,7 +20,9 @@ console.log('***********************')
 console.log('App directory: ' + RNFS.DocumentDirectoryPath)
 console.log('***********************')
 
-if (!__DEV__) {
+const forceConsole = true
+
+if (!__DEV__ && !forceConsole) {
   // TODO: Fix logger to append data vs read/modify/write
   // $FlowFixMe: suppressing this error until we can find a workaround
   console.log = log

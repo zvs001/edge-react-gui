@@ -13,6 +13,8 @@ import * as SETTINGS_SELECTORS from '../../Settings/selectors.js'
 import * as UTILS from '../../../utils'
 
 const mapStateToProps = (state) => {
+  global.pnow('TL mapStateToProps start')
+
   const selectedWalletId = UI_SELECTORS.getSelectedWalletId(state)
   const wallet = UI_SELECTORS.getSelectedWallet(state)
   if (!wallet) return {
@@ -37,6 +39,7 @@ const mapStateToProps = (state) => {
   const balanceInCryptoDisplay = UTILS.convertNativeToExchange(exchangeDenomination.multiplier)(balanceInCrypto)
   const balanceInFiat = currencyConverter.convertCurrency(currencyCode, isoFiatCurrencyCode, balanceInCryptoDisplay)
   const displayDenomination = SETTINGS_SELECTORS.getDisplayDenomination(state, currencyCode)
+  global.pnow('TL mapStateToProps end')
   return {
     displayDenomination,
     updatingBalance: false,
@@ -59,12 +62,15 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  getTransactions: (walletId, currencyCode) => dispatch(getTransactionsRequest(walletId, currencyCode)),
-  updateExchangeRates: () => dispatch(updateExchangeRates()),
-  setContactsList: (contacts) => dispatch(setContactsList(contacts)),
-  // transactionsSearchVisible: () => dispatch(transactionsSearchVisible()),
-  // transactionsSearchHidden: () => dispatch(transactionsSearchHidden())
-})
+const mapDispatchToProps = (dispatch) => {
+  global.pnow('TL mapDispatchToProps')
+  return {
+    getTransactions: (walletId, currencyCode) => dispatch(getTransactionsRequest(walletId, currencyCode)),
+    updateExchangeRates: () => dispatch(updateExchangeRates()),
+    setContactsList: (contacts) => dispatch(setContactsList(contacts)),
+    // transactionsSearchVisible: () => dispatch(transactionsSearchVisible()),
+    // transactionsSearchHidden: () => dispatch(transactionsSearchHidden())
+  }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(TransactionList)

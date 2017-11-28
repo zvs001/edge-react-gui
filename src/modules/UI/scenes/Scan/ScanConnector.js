@@ -18,12 +18,14 @@ import {Actions} from 'react-native-router-flux'
 import {toggleWalletListModal} from '../WalletTransferList/action'
 
 const mapStateToProps = (state: any) => {
+  global.pnow('SC mapStateToProps start')
   const walletId: string = UI_SELECTORS.getSelectedWalletId(state)
   const abcWallet: AbcCurrencyWallet = CORE_SELECTORS.getWallet(state, walletId)
   const sceneName:? string = state.routes.scene.children
     ? state.routes.scene.children[state.routes.scene.index].name
     : null
 
+  global.pnow('SC mapStateToProps end')
   return {
     abcWallet,
     sceneName,
@@ -36,19 +38,22 @@ const mapStateToProps = (state: any) => {
   }
 }
 
-const mapDispatchToProps = (dispatch: any) => ({
-  dispatchEnableScan: () => dispatch(enableScan()),
-  dispatchDisableScan: () => dispatch(disableScan()),
-  toggleEnableTorch: () => dispatch(toggleEnableTorch()),
-  toggleAddressModal: () => dispatch(toggleAddressModal()),
-  toggleWalletListModal: () => dispatch(toggleWalletListModal()),
-  updateParsedURI: (parsedURI: AbcParsedUri) => dispatch(updateParsedURI(parsedURI)),
-  updateWalletTransfer: (wallet) => dispatch(updateWalletTransfer(wallet)),
-  toggleScanToWalletListModal: () => dispatch(toggleScanToWalletListModal()),
-  loginWithEdge: (url: string) => {
-    Actions[Constants.EDGE_LOGIN](),
-    dispatch(loginWithEdge(url))
+const mapDispatchToProps = (dispatch: any) => {
+  global.pnow('SC mapDispatchToProps')
+  return {
+    dispatchEnableScan: () => dispatch(enableScan()),
+    dispatchDisableScan: () => dispatch(disableScan()),
+    toggleEnableTorch: () => dispatch(toggleEnableTorch()),
+    toggleAddressModal: () => dispatch(toggleAddressModal()),
+    toggleWalletListModal: () => dispatch(toggleWalletListModal()),
+    updateParsedURI: (parsedURI: AbcParsedUri) => dispatch(updateParsedURI(parsedURI)),
+    updateWalletTransfer: (wallet) => dispatch(updateWalletTransfer(wallet)),
+    toggleScanToWalletListModal: () => dispatch(toggleScanToWalletListModal()),
+    loginWithEdge: (url: string) => {
+      Actions[Constants.EDGE_LOGIN](),
+        dispatch(loginWithEdge(url))
+    }
   }
-})
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(Scan)

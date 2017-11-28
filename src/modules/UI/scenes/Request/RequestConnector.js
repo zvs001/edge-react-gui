@@ -15,6 +15,8 @@ import type {GuiDenomination, GuiWallet} from '../../../../types'
 import type {Dispatch, State} from '../../../ReduxTypes'
 
 const mapStateToProps = (state: State) => {
+  global.pnow('RQ mapStateToProps start')
+
   let secondaryToPrimaryRatio: number = 0
   const guiWallet: GuiWallet = UI_SELECTORS.getSelectedWallet(state)
   const currencyCode: string = UI_SELECTORS.getSelectedCurrencyCode(state)
@@ -51,6 +53,7 @@ const mapStateToProps = (state: State) => {
     secondaryToPrimaryRatio = CORE_SELECTORS.getExchangeRate(state, currencyCode, isoFiatCurrencyCode)
   }
 
+  global.pnow('RQ mapStateToProps end')
   return {
     loading: false,
     request: state.ui.scenes.request,
@@ -63,8 +66,11 @@ const mapStateToProps = (state: State) => {
     showToWalletModal: state.ui.scenes.scan.scanToWalletListModalVisibility
   }
 }
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  saveReceiveAddress: (receiveAddress) => dispatch(saveReceiveAddress(receiveAddress))
-})
+const mapDispatchToProps = (dispatch: Dispatch) => {
+  global.pnow('RQ mapDispatchToProps')
+  return {
+    saveReceiveAddress: (receiveAddress) => dispatch(saveReceiveAddress(receiveAddress))
+  }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(Request)

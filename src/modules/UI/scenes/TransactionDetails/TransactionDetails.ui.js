@@ -85,6 +85,8 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
   fiatSymbol: string
 
   constructor (props: Props & DispatchProps) {
+    global.pnow('TD constructor start')
+
     super(props)
     const dateTime = new Date(props.abcTransaction.date * 1000)
     const dateString = dateTime.toLocaleDateString('en-US', {month: 'short', day: '2-digit', year: 'numeric'})
@@ -148,6 +150,7 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
         symbol: ''
       }
     }
+    global.pnow('TD constructor end')
   }
 
   onFocusPayee = () => {
@@ -377,6 +380,7 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
   }
 
   componentDidMount () {
+    global.pnow('TD componentDidMount start')
     const permissionStatus = ['authorized', 'undetermined']
     if (!this.props.contacts) {
       Permissions.check('contacts').then((response) => {
@@ -393,21 +397,25 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
       })
     }
     this.props.getSubcategories()
+    global.pnow('TD componentDidMount start')
   }
 
   componentWillMount () {
+    global.pnow('TD componentWillMount start')
     // check if metaToken, is not then do not set walletDefaultProps to anything other than initial blank values
     if (UTILS.isCryptoParentCurrency(this.guiWallet, this.props.abcTransaction.currencyCode)) {
       this.setState({walletDefaultDenomProps: UTILS.getWalletDefaultDenomProps(this.guiWallet, this.props.settings)})
     } else {
       this.setState({walletDefaultDenomProps: UTILS.getWalletDefaultDenomProps(this.guiWallet, this.props.settings, this.props.abcTransaction.currencyCode)})
     }
+    global.pnow('TD componentWillMount top')
   }
 
 
   render () {
+    global.pcount('TD render()')
+    global.pnow('TD render start')
     let type
-
     const types = {
       exchange: {
         color: styleRaw.typeExchange.color,
@@ -444,7 +452,7 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
     const categoryColor = type.color
     let sortedSubcategories = this.props.subcategoriesList.length > 0 ? this.props.subcategoriesList.sort() : []
     const txExplorerLink = sprintf(this.props.currencyInfo.transactionExplorer, this.props.abcTransaction.txid)
-    return (
+    const out = (
       <View style={[{width: '100%', height: platform.usableHeight + platform.toolbarHeight}, UTILS.border()]}>
         <Gradient style={styles.headerGradient} />
         <View style={{position: 'relative', top: 66}}>
@@ -599,5 +607,7 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
         </View>
       </View>
     )
+    global.pnow('TD render end')
+    return out
   }
 }

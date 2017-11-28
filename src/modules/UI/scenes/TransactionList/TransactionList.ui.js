@@ -92,14 +92,32 @@ export default class TransactionList extends Component<Props, State> {
     width: undefined
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
+  shouldComponentUpdate () {
     if (global.currentScene === Constants.TRANSACTION_LIST) {
       return true
     }
     return false
   }
+
+  componentWillUpdate () {
+    global.pnow('TL componentWillUpdate start/end')
+  }
+
+  componentDidUpdate () {
+    global.pnow('TL componentDidUpdate start/end')
+  }
+
+  componentWillMount () {
+    global.pnow('TL componentWillMount start/end')
+  }
+
   componentDidMount () {
-    if (this.props.loading) return
+    global.pnow('TL componentDidMount start')
+
+    if (this.props.loading) {
+      global.pnow('TL componentDidMount end')
+      return
+    }
 
     const walletId = this.props.selectedWalletId
     const currencyCode = this.props.selectedCurrencyCode
@@ -110,6 +128,7 @@ export default class TransactionList extends Component<Props, State> {
     if (!this.props.contact) {
       Permissions.check('contacts').then((response) => {
         if (permissionStatus.indexOf(response)) {
+          global.pnow('TL Contact.getAll start')
           Contacts.getAll((err, contacts) => {
             if (err === 'denied') {
               // error
@@ -118,10 +137,12 @@ export default class TransactionList extends Component<Props, State> {
               contacts.sort((a, b) => a.givenName > b.givenName)
               this.props.setContactList(contacts)
             }
+            global.pnow('TL Contact.getAll end')
           })
         }
       })
     }
+    global.pnow('TL componentDidMount end')
   }
 
   _onSearchChange = () => {
@@ -207,6 +228,7 @@ export default class TransactionList extends Component<Props, State> {
   }
 
   render () {
+    global.pnow('TL render start')
     const {
       loading,
       updatingBalance,
@@ -280,7 +302,7 @@ export default class TransactionList extends Component<Props, State> {
     }
     // end of fiat balance
 
-    return (
+    const out = (
       <View style={[{width: '100%', height: platform.usableHeight + platform.toolbarHeight}, UTILS.border()]}>
         <Gradient style={{height: 66, width: '100%'}} />
         <ScrollView style={[UTILS.border(), styles.scrollView]}>
@@ -380,6 +402,8 @@ export default class TransactionList extends Component<Props, State> {
         {this.renderDropUp()}
       </View>
     )
+    global.pnow('TL render end')
+    return out
   }
 
   _goToTxDetail = (abcTransaction, thumbnailPath) => {
@@ -460,7 +484,10 @@ export default class TransactionList extends Component<Props, State> {
           </View>
         }
         <TouchableHighlight
-          onPress={() => this._goToTxDetail(tx, thumbnailPath)}
+          onPress={() => {
+            global.pnow('TOUCH TX')
+            this._goToTxDetail(tx, thumbnailPath)
+          }}
           underlayColor={styleRaw.transactionUnderlay.color}
           style={[
             styles.singleTransaction,

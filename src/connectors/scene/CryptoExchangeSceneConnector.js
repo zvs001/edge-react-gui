@@ -7,6 +7,8 @@ import * as actions from '../../actions/indexActions'
 import * as Constants from '../../constants/indexConstants'
 
 export const mapStateToProps = (state: any) => {
+  global.pnow('EX mapStateToProps start')
+
   const wallets = []
   for (const wallet in state.ui.wallets.byId) {
     wallets.push(state.ui.wallets.byId[wallet])
@@ -14,6 +16,7 @@ export const mapStateToProps = (state: any) => {
   const exchangeRate =  state.cryptoExchange.exchangeRate
   const fromAmountNative =  '.01'
   const toAmountNative = Number(fromAmountNative)*exchangeRate //TODO: math with exchange rate. ( from )
+  global.pnow('EX mapStateToProps end')
   return {
     exchangeRate,
     wallets: wallets,
@@ -38,16 +41,22 @@ export const mapStateToProps = (state: any) => {
   }
 }
 
-export const mapDispatchToProps = (dispatch: any) => ({
-  selectFromWallet: (data: GuiWallet) => dispatch(actions.selectToFromWallet(Constants.SELECT_FROM_WALLET_CRYPTO_EXCHANGE, data)),
-  selectToWallet: (data: GuiWallet) => dispatch(actions.selectToFromWallet(Constants.SELECT_TO_WALLET_CRYPTO_EXCHANGE, data)),
-  swapFromAndToWallets: () => dispatch(actions.dispatchAction(Constants.SWAP_FROM_TO_CRYPTO_WALLETS)),
-  openModal:(data: string) => dispatch(actions.dispatchActionString(Constants.OPEN_WALLET_SELECTOR_MODAL, data)),
-  shift: () => dispatch(actions.shiftCryptoCurrency()),
-  closeConfirmation: () => dispatch(actions.dispatchAction(Constants.CLOSE_CRYPTO_EXC_CONF_MODAL)),
-  openConfirmation: () => dispatch(actions.dispatchAction(Constants.OPEN_CRYPTO_EXC_CONF_MODAL))
+export const mapDispatchToProps = (dispatch: any) => {
+  global.pnow('EX mapDispatchToProps start')
 
-})
+  const out = {
+    selectFromWallet: (data: GuiWallet) => dispatch(actions.selectToFromWallet(Constants.SELECT_FROM_WALLET_CRYPTO_EXCHANGE, data)),
+    selectToWallet: (data: GuiWallet) => dispatch(actions.selectToFromWallet(Constants.SELECT_TO_WALLET_CRYPTO_EXCHANGE, data)),
+    swapFromAndToWallets: () => dispatch(actions.dispatchAction(Constants.SWAP_FROM_TO_CRYPTO_WALLETS)),
+    openModal:(data: string) => dispatch(actions.dispatchActionString(Constants.OPEN_WALLET_SELECTOR_MODAL, data)),
+    shift: () => dispatch(actions.shiftCryptoCurrency()),
+    closeConfirmation: () => dispatch(actions.dispatchAction(Constants.CLOSE_CRYPTO_EXC_CONF_MODAL)),
+    openConfirmation: () => dispatch(actions.dispatchAction(Constants.OPEN_CRYPTO_EXC_CONF_MODAL))
+
+  }
+  global.pnow('EX mapDispatchToProps end')
+  return out
+}
 export default connect(
   mapStateToProps,
   mapDispatchToProps

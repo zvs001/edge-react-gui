@@ -69,12 +69,30 @@ export default class Scan extends Component<any, any> {
     }
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
+  shouldComponentUpdate () {
     if (global.currentScene === Constants.SCAN) {
       return true
     }
     return false
   }
+
+  componentWillUpdate () {
+    global.pnow('SC componentWillUpdate start/end')
+  }
+
+  componentDidUpdate () {
+    global.pnow('SC componentDidUpdate start/end')
+  }
+
+  componentWillMount () {
+    global.pnow('SC componentWillMount')
+  }
+
+  // check the status of a single permission
+  componentDidMount () {
+    global.pnow('SC componentDidMount')
+  }
+
   renderDropUp = () => {
     if (this.props.showToWalletModal) {
       return (
@@ -92,7 +110,8 @@ export default class Scan extends Component<any, any> {
       PERMISSIONS.request('camera')
       .then((resp) => this.setCameraPermission(resp))
     }
-    return (
+    global.pnow('SC render start')
+    const out = (
       <View style={{flex: 1}}>
         <Gradient style={styles.gradient} />
         <View style={styles.topSpacer} />
@@ -178,6 +197,8 @@ export default class Scan extends Component<any, any> {
         {this.renderDropUp()}
       </View>
     )
+    global.pnow('SC render end')
+    return out
   }
 
   setCameraPermission = (cameraPermission: boolean) => {

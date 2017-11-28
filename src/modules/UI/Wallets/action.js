@@ -54,12 +54,19 @@ export const refreshWallet = (walletId: string) =>
 
     if (wallet) {
       // console.log('updating wallet balance', walletId)
-      return dispatch(upsertWallet(wallet))
+      global.pnow('START dispatch upsertWallet')
+      global.pstart('dispatch-upsertWallet')
+      const out = dispatch(upsertWallet(wallet))
+      global.pnow('END dispatch upsertWallet')
+      global.pend('dispatch-upsertWallet')
+      return out
     }
     // console.log('wallet doesn\'t exist yet', walletId)
   }
 
 export const upsertWallet = (wallet: AbcCurrencyWallet) => (dispatch: any, getState: any): ?GuiWallet => {
+  global.pnow('upsertWallet')
+  global.pstart('upsertWallet')
   const state = getState()
   const loginStatus = SETTINGS_SELECTORS.getLoginStatus(state)
   if (!loginStatus) {
@@ -72,6 +79,8 @@ export const upsertWallet = (wallet: AbcCurrencyWallet) => (dispatch: any, getSt
     type: UPSERT_WALLET,
     data: {wallet}
   })
+  global.pend('upsertWallet')
+  global.pnow('upsertWallet')
 }
 
 // setEnabledTokens is specifically for enabling them *within the GUI*, not within the core

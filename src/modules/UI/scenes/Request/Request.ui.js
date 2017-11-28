@@ -33,13 +33,23 @@ export default class Request extends Component {
     }
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
+  shouldComponentUpdate () {
     if (global.currentScene === Constants.REQUEST) {
       return true
     }
     return false
   }
+
+  componentWillUpdate () {
+    global.pnow('RQ componentWillUpdate start/end')
+  }
+
+  componentDidUpdate () {
+    global.pnow('RQ componentDidUpdate start/end')
+  }
+
   componentWillReceiveProps (nextProps) {
+    global.pnow('RQ componentWillReceiveProps start')
     if (nextProps.abcWallet.id !== this.props.abcWallet.id) {
       const {abcWallet, currencyCode} = nextProps
       WALLET_API.getReceiveAddress(abcWallet, currencyCode)
@@ -51,12 +61,15 @@ export default class Request extends Component {
           encodedURI,
           publicAddress
         })
+        global.pnow('RQ componentWillReceiveProps setState address/uri')
       })
       .catch((e) => console.log(e))
     }
+    global.pnow('RQ componentWillReceiveProps end')
   }
 
   componentDidMount () {
+    global.pnow('RQ componentDidMount start')
     const {abcWallet, currencyCode} = this.props
     if (this.props.loading) return
 
@@ -69,8 +82,10 @@ export default class Request extends Component {
         encodedURI,
         publicAddress
       })
+      global.pnow('RQ componentDidMount setState address/uri')
     })
     .catch((e) => console.log(e))
+    global.pnow('RQ componentDidMount end')
   }
 
   onAmountsChange = ({primaryDisplayAmount}) => {
@@ -100,7 +115,9 @@ export default class Request extends Component {
   }
 
   render () {
+    global.pnow('RQ render start')
     if (this.props.loading) {
+      global.pnow('RQ render end spinner')
       return <ActivityIndicator style={{flex: 1, alignSelf: 'center'}} size={'large'}/>
     }
 
@@ -110,7 +127,7 @@ export default class Request extends Component {
       primaryInfo,
       secondaryInfo
     } = this.props
-    return (
+    const out = (
       <Gradient style={styles.view}>
         <Gradient style={{height: 66, width: '100%'}} />
 
@@ -139,6 +156,8 @@ export default class Request extends Component {
         {this.renderDropUp()}
       </Gradient>
     )
+    global.pnow('RQ render end')
+    return out
   }
 
   copyToClipboard = () => {
