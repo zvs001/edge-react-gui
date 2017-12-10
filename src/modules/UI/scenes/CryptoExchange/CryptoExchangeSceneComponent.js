@@ -69,35 +69,18 @@ export default class CryptoExchangeSceneComponent extends Component<Props, State
   }
 
   componentWillMount () {
-    global.pnow('EX componentWillMount start')
-    if (this.props.wallets.length > 1) {
-      this.props.selectFromWallet(this.props.intialWalletOne)
-      this.props.selectToWallet(this.props.intialWalletTwo)
-    } else if (this.props.wallets.length > 0) {
-      this.props.selectFromWallet(this.props.intialWalletOne)
-    }
-    global.pnow('EX componentWillMount setState whichWallet')
     this.setState({
       whichWallet: Constants.FROM
     })
     global.pnow('EX componentWillMount end')
   }
-  componentWillReceiveProps (nextProps: Props) {
-    global.pnow('EX componentWillReceiveProps start')
-    if (!nextProps.fromWallet && nextProps.intialWalletOne) {
-      this.props.selectFromWallet(nextProps.intialWalletOne)
-      if (nextProps.wallets.length === 1) {
-        this.props.selectToWallet(nextProps.intialWalletOne)
-      }
-    }
-    if (!nextProps.toWallet && nextProps.intialWalletTwo) {
-      this.props.selectToWallet(nextProps.intialWalletTwo)
-    }
-    global.pnow('EX componentWillReceiveProps end')
+  componentWillReceiveProps () {
+    global.pnow('EX componentWillReceiveProps')
   }
   componentDidMount () {
     global.pnow('EX componentDidMount start/end')
   }
+
   renderButton = () => {
     if (this.props.showNextButton) {
       return <PrimaryButton text={strings.enUS['string_next']} onPressFunction={this.props.openConfirmation} />

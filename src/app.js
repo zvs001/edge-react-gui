@@ -8,6 +8,7 @@ import Main from './modules/MainConnector'
 import {logToServer, log} from './util/logger'
 import ENV from '../env.json'
 import RNFS from 'react-native-fs'
+import {Platform} from 'react-native'
 
 import './util/polyfills'
 
@@ -21,6 +22,9 @@ console.log('App directory: ' + RNFS.DocumentDirectoryPath)
 console.log('***********************')
 
 const forceConsole = true
+
+// $FlowFixMe
+global.OS = Platform.OS
 
 if (!__DEV__ && !forceConsole) {
   // TODO: Fix logger to append data vs read/modify/write
