@@ -17,7 +17,7 @@ import {
 
 import {TransactionDetails} from './TransactionDetails.ui'
 
-const mapStateToProps = (state: State, ownProps: any): Props => {
+const mapStateToProps = (state: State, ownProps: any) => {
   global.pnow('TD mapStateToProps')
   const wallets: Array<GuiWallet> = UI_SELECTORS.getWallets(state)
   const contacts: Array<GuiContact> = state.ui.contacts.contactList
