@@ -30,21 +30,47 @@ export const selectWalletId = (walletId: string, currencyCode: string) => ({
   data: {walletId, currencyCode}
 })
 
+function dispatchUpsertWallet (dispatch, wallet, walletId) {
+  // console.log('updating wallet balance', walletId)
+  global.pnow('START dispatch upsertWallet')
+  global.pstart('dispatch-upsertWallet')
+  dispatch(upsertWallet(wallet))
+  refreshDetails[walletId].delayUpsert = false
+  refreshDetails[walletId].lastUpsert = Date.now()
+  global.pend('dispatch-upsertWallet')
+  global.pnow('END dispatch upsertWallet lastUpsert:' + refreshDetails[walletId].lastUpsert)
+}
+
+const refreshDetails = {}
 
 export const refreshWallet = (walletId: string) =>
   // console.log('refreshWallet')
   (dispatch: any, getState: any) => {
     const state = getState()
     const wallet = CORE_SELECTORS.getWallet(state, walletId)
-
     if (wallet) {
-      // console.log('updating wallet balance', walletId)
-      global.pnow('START dispatch upsertWallet')
-      global.pstart('dispatch-upsertWallet')
-      const out = dispatch(upsertWallet(wallet))
-      global.pnow('END dispatch upsertWallet')
-      global.pend('dispatch-upsertWallet')
-      return out
+      if (!refreshDetails[walletId]) {
+        refreshDetails[walletId] = {
+          delayUpsert: false,
+          lastUpsert: 0
+        }
+      }
+      if (!refreshDetails[walletId].delayUpsert) {
+        const now = Date.now()
+        if (now - refreshDetails[walletId].lastUpsert > 3000) {
+          dispatchUpsertWallet(dispatch, wallet, walletId)
+        } else {
+          console.log('refreshWallets setTimeout delay upsert id:' + walletId)
+          refreshDetails[walletId].delayUpsert = true
+          setTimeout(() => {
+            dispatchUpsertWallet(dispatch, wallet, walletId)
+          }, 3000)
+        }
+      } else {
+        console.log('refreshWallets delayUpsert id:' + walletId)
+      }
+    } else {
+      console.log('refreshWallets no wallet. id:' + walletId)
     }
     // console.log('wallet doesn\'t exist yet', walletId)
   }

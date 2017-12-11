@@ -35,16 +35,36 @@ import type {
 } from 'airbitz-core-types'
 
 export const getTransactionsRequest = (walletId: string, currencyCode) => (dispatch: Dispatch, getState: GetState) => {
+  global.pnow('START getTransactionsRequest')
   const state = getState()
   const wallet = CORE_SELECTORS.getWallet(state, walletId)
 
   if (wallet) {
+    global.pnow('START WALLET_API.getTransactions')
     WALLET_API.getTransactions(wallet, currencyCode)
     .then((transactions) => {
+      global.pnow('END WALLET_API.getTransactions')
+      global.pnow('START dispatch updateTransactions')
       dispatch(updateTransactions(transactions))
+      global.pnow('END dispatch updateTransactions')
+      global.pnow('END getTransactionsRequest')
     })
   }
 }
+
+const refreshDetails = {}
+
+function dispatchGetTransactionsRequest (dispatch, walletId, currencyCode) {
+  // console.log('updating wallet balance', walletId)
+  global.pnow('START dispatchGetTransactionsRequest')
+  global.pstart('dispatchGetTransactionsRequest')
+  dispatch(getTransactionsRequest(walletId, currencyCode))
+  refreshDetails[walletId].delayRefresh = false
+  refreshDetails[walletId].lastRefresh = Date.now()
+  global.pend('dispatchGetTransactionsRequest')
+  global.pnow('END dispatchGetTransactionsRequest lastRefresh:' + refreshDetails[walletId].lastRefresh)
+}
+
 
 export const refreshTransactionsRequest = (walletId: string) => (dispatch: Dispatch, getState: GetState) => {
   const state = getState()
@@ -52,7 +72,26 @@ export const refreshTransactionsRequest = (walletId: string) => (dispatch: Dispa
   const currencyCode = UI_SELECTORS.getSelectedCurrencyCode(state)
 
   if (walletId === selectedWalletId) {
-    return dispatch(getTransactionsRequest(walletId, currencyCode))
+    if (!refreshDetails[walletId]) {
+      refreshDetails[walletId] = {
+        delayRefresh: false,
+        lastRefresh: 0
+      }
+    }
+    if (!refreshDetails[walletId].delayRefresh) {
+      const now = Date.now()
+      if (now - refreshDetails[walletId].lastRefresh > 3000) {
+        dispatchGetTransactionsRequest(dispatch, walletId, currencyCode)
+      } else {
+        console.log('dispatchGetTransactionsRequest setTimeout delay getTransactions id:' + walletId)
+        refreshDetails[walletId].delayRefresh = true
+        setTimeout(() => {
+          dispatchGetTransactionsRequest(dispatch, walletId, currencyCode)
+        }, 3000)
+      }
+    } else {
+      console.log('dispatchGetTransactionsRequest delay getTransactions id:' + walletId)
+    }
   }
 }
 
