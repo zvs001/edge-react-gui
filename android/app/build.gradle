@@ -100,10 +100,6 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file("airbitz.keystore")
-            storePassword "password"
-            keyAlias "airbitz"
-            keyPassword "password"
         }
     }
     splits {
@@ -136,7 +132,23 @@ android {
     }
 }
 
+// specify signing properties on the command line
+if (hasProperty('storeFile')) {
+    println 'Generating a signed package'
+    android.signingConfigs.release.storeFile     = file(storeFile)
+    android.signingConfigs.release.storePassword = storePassword
+    android.signingConfigs.release.keyAlias      = keyAlias
+    android.signingConfigs.release.keyPassword   = keyPassword
+} else {
+    println 'Generating a debug package'
+    android.signingConfigs.release.storeFile     = file("airbitz.keystore")
+    android.signingConfigs.release.storePassword = "password"
+    android.signingConfigs.release.keyAlias      = "airbitz"
+    android.signingConfigs.release.keyPassword   = "password"
+}
+
 dependencies {
+    compile project(':react-native-picker')
     compile project(':react-native-smart-splashscreen')
     compile project(':airbitz-core-js-ui')
     compile project(':react-native-sound')

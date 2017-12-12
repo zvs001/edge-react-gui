@@ -21,6 +21,7 @@ export const USE_MAX_CRYPTO_AMOUNT = PREFIX + 'USE_MAX_CRYPTO_AMOUNT'
 export const UPDATE_TRANSACTION = PREFIX + 'UPDATE_TRANSACTION'
 
 export const UPDATE_NATIVE_AMOUNT = PREFIX + 'UPDATE_NATIVE_AMOUNT'
+export const CHANGE_MINING_FEE = PREFIX + 'CHANGE_MINING_FEE'
 
 import {Actions} from 'react-native-router-flux'
 import {openABAlert} from '../../components/ABAlert/action'
@@ -183,4 +184,10 @@ export const processSpendInfo = (abcSpendInfo: AbcSpendInfo) => (dispatch: any, 
 export const updateSpendInfo = (abcSpendInfo: AbcSpendInfo, lockInputs?: boolean, broadcast?: boolean) => ({
   type: UPDATE_SPEND_INFO,
   data: {abcSpendInfo, lockInputs, broadcast}
+})
+
+export const changeFee = (feeSetting: string) => ({
+  type: CHANGE_MINING_FEE,
+  feeSetting,
+  // fee,
 })

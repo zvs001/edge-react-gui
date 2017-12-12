@@ -35,7 +35,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   addContext: (context) => dispatch(addContext(context)),
   addUsernames: (usernames) => dispatch(addUsernames(usernames)),
   setLocaleInfo: (localeInfo) => dispatch(setLocaleInfo(localeInfo)),
-  autoLogout: () => dispatch(logoutRequest(null)),
+  autoLogout: () => dispatch(logoutRequest()),
   contextCallbacks: makeContextCallbacks(dispatch)
 })
 

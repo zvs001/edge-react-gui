@@ -87,6 +87,10 @@ export default class SettingsOverview extends Component {
         routeFunction: Actions.btcSettings
       },
       {
+        text: 'BitcoinCash',
+        routeFunction: Actions.bchSettings
+      },
+      {
         text: 'Ethereum',
         routeFunction: Actions.ethSettings
       },
@@ -94,10 +98,6 @@ export default class SettingsOverview extends Component {
         text: 'Litecoin',
         routeFunction: Actions.ltcSettings
       },
-      {
-        text: 'BitcoinCash',
-        routeFunction: Actions.bchSettings
-      }
     ]
   }
 

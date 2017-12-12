@@ -1,5 +1,9 @@
+// @flow
+
+import type {State} from '../modules/ReduxTypes'
 import * as Constants from '../constants/indexConstants'
 import strings from '../locales/default'
+
 const initialState = {
   exchangeRate: 1,
   reverseExchange: 1,
@@ -21,61 +25,17 @@ const initialState = {
   toCurrencyIconDark: null,
 
   insufficientError: false,
-  fee: '',
+  // fee: '',
   feeSetting: Constants.STANDARD_FEE,
   walletListModalVisible: false,
   confirmTransactionModalVisible: false,
+  shiftTransactionError: null,
+  genericShapeShiftError: null,
   changeWallet: Constants.NONE,
   transaction: null
 }
 
-function getLogo (wallet, currencyCode) {
-  if (currencyCode === wallet.currencyCode) return wallet.symbolImage
-  for (let i =0; i< wallet.metaTokens.length; i++) {
-    const obj = wallet.metaTokens[i]
-    if (obj.symbolImage && obj.currencyCode === currencyCode) {
-      return obj.symbolImage
-    }
-  }
-  return null
-
-}
-
-function getLogoDark (wallet, currencyCode) {
-  if (currencyCode === wallet.currencyCode) return wallet.symbolImageDarkMono
-  for (let i =0; i< wallet.metaTokens.length; i++) {
-    const obj = wallet.metaTokens[i]
-    if (obj.symbolImage && obj.currencyCode === currencyCode) {
-      return obj.symbolImage
-    }
-  }
-  return null
-}
-
-function deepCopyState (state) {
-  const deepCopy = JSON.parse(JSON.stringify(state))
-  deepCopy.toWallet = state.fromWallet
-  deepCopy.toCurrencyCode = state.fromCurrencyCode
-  deepCopy.toNativeAmount = state.fromNativeAmount
-  deepCopy.toDisplayAmount = state.fromDisplayAmount
-  deepCopy.toWalletPrimaryInfo = state.fromWalletPrimaryInfo
-  deepCopy.toCurrencyIcon = state.fromCurrencyIcon
-  deepCopy.toCurrencyIconDark = state.fromCurrencyIconDark
-  deepCopy.fromWallet = state.toWallet
-  deepCopy.fromCurrencyCode = state.toCurrencyCode
-  deepCopy.fromNativeAmount = state.toNativeAmount
-  deepCopy.fromDisplayAmount = state.toDisplayAmount
-  deepCopy.fromWalletPrimaryInfo = state.toWalletPrimaryInfo
-  deepCopy.fromCurrencyIcon = state.toCurrencyIcon
-  deepCopy.fromCurrencyIconDark = state.toCurrencyIconDark
-  deepCopy.exchangeRate = state.reverseExchange
-  deepCopy.reverseExchange = state.exchangeRate
-  deepCopy.insufficientError = false
-  return deepCopy
-}
-
 function cryptoExchangerReducer (state = initialState, action) {
-
   switch (action.type) {
   case Constants.SWAP_FROM_TO_CRYPTO_WALLETS:
     return deepCopyState(state)
@@ -115,12 +75,15 @@ function cryptoExchangerReducer (state = initialState, action) {
     return {...state, reverseExchange: action.data}
   case Constants.UPDATE_SHIFT_TRANSACTION:
     return {...state, transaction: action.data.abcTransaction,
-      fee: action.data.networkFee ? strings.enUS['string_fee'] + ' ' + action.data.networkFee + ' ' + state.fromCurrencyCode : ' ',
-      insufficientError: false}
+      fee: action.data.networkFee && state.fromCurrencyCode ? strings.enUS['string_fee'] + ' ' + action.data.networkFee + ' ' + state.fromCurrencyCode : ' ',
+      insufficientError: false,
+      genericShapeShiftError: null}
   case Constants.INVALIDATE_SHIFT_TRANSACTION:
-    return {...state, transaction: null, insufficientError: false}
+    return {...state, transaction: null, insufficientError: false, genericShapeShiftError: null}
   case Constants.SHIFT_COMPLETE:
-    return {...state, transaction: null, confirmTransactionModalVisible: false}
+    return initialState
+  case Constants.SHIFT_ERROR:
+    return {...state, confirmTransactionModalVisible: false, shiftTransactionError: action.data}
   case Constants.CLOSE_CRYPTO_EXC_CONF_MODAL:
     return {...state, confirmTransactionModalVisible: false}
   case Constants.OPEN_CRYPTO_EXC_CONF_MODAL:
@@ -131,9 +94,57 @@ function cryptoExchangerReducer (state = initialState, action) {
     return {...state, fromNativeAmount: action.data.native, fromDisplayAmount:action.data.display}
   case Constants.RECEIVED_INSUFFICIENT_FUNDS_ERROR :
     return {...state, transaction: null, insufficientError: true}
+  case Constants.GENERIC_SHAPE_SHIFT_ERROR :
+    return {...state, transaction: null, genericShapeShiftError: action.data}
+  case Constants.CHANGE_EXCHANGE_FEE :
+    return {...state,  feeSetting: action.feeSetting}
   default:
     return state
   }
+}
+
+function getLogo (wallet, currencyCode) {
+  if (currencyCode === wallet.currencyCode) return wallet.symbolImage
+  for (let i=0; i<wallet.metaTokens.length; i++) {
+    const obj = wallet.metaTokens[i]
+    if (obj.symbolImage && obj.currencyCode === currencyCode) {
+      return obj.symbolImage
+    }
+  }
+  return null
+}
+
+function getLogoDark (wallet, currencyCode) {
+  if (currencyCode === wallet.currencyCode) return wallet.symbolImageDarkMono
+  for (let i=0; i<wallet.metaTokens.length; i++) {
+    const obj = wallet.metaTokens[i]
+    if (obj.symbolImage && obj.currencyCode === currencyCode) {
+      return obj.symbolImage
+    }
+  }
+  return null
+}
+
+function deepCopyState (state) {
+  const deepCopy = JSON.parse(JSON.stringify(state))
+  deepCopy.toWallet = state.fromWallet
+  deepCopy.toCurrencyCode = state.fromCurrencyCode
+  deepCopy.toNativeAmount = state.fromNativeAmount
+  deepCopy.toDisplayAmount = state.fromDisplayAmount
+  deepCopy.toWalletPrimaryInfo = state.fromWalletPrimaryInfo
+  deepCopy.toCurrencyIcon = state.fromCurrencyIcon
+  deepCopy.toCurrencyIconDark = state.fromCurrencyIconDark
+  deepCopy.fromWallet = state.toWallet
+  deepCopy.fromCurrencyCode = state.toCurrencyCode
+  deepCopy.fromNativeAmount = state.toNativeAmount
+  deepCopy.fromDisplayAmount = state.toDisplayAmount
+  deepCopy.fromWalletPrimaryInfo = state.toWalletPrimaryInfo
+  deepCopy.fromCurrencyIcon = state.toCurrencyIcon
+  deepCopy.fromCurrencyIconDark = state.toCurrencyIconDark
+  deepCopy.exchangeRate = state.reverseExchange
+  deepCopy.reverseExchange = state.exchangeRate
+  deepCopy.insufficientError = false
+  return deepCopy
 }
 
 // Nuke the state on logout:

@@ -1,3 +1,5 @@
+// @flow
+
 import * as Styles from '../indexStyles'
 import THEME from '../../theme/variables/airbitz'
 import {Image} from 'react-native'
@@ -94,9 +96,12 @@ const CryptoExchangeSceneStyle = {
     bottom: {
       width:'100%',
     },
-    icon:{
+    icon: {
+      color: THEME.COLORS.SECONDARY,
       position:'relative',
       alignItems:'center',
+      textAlign: 'center',
+      justifyContent: 'center',
       backgroundColor: THEME.COLORS.TRANSPARENT
     },
     iconSize: 48
@@ -117,7 +122,9 @@ const CryptoExchangeSceneStyle = {
       flexDirection: 'column',
       justifyContent: 'space-around'
     },
-    walletSelector: Styles.TextAndIconButtonStyle,
+    walletSelector: {...Styles.TextAndIconButtonStyle,
+      content:  {...Styles.TextAndIconButtonStyle.content, position: 'relative', width:'80%'},
+      centeredContent: {...Styles.TextAndIconButtonStyle.centeredContent, position: 'relative', width:'80%'}},
     iconContainer:{
       position:'absolute',
       top:0,

@@ -21,10 +21,12 @@ export const SYNCED_ACCOUNT_DEFAULTS = {
   merchantMode: false,
   'BTC': {denomination: '100000000'},
   'BCH': {denomination: '100000000'},
+  'DASH': {denomination: '100000000'},
   'LTC': {denomination: '100000000'},
   'ETH': {denomination: '1000000000000000000'},
   'REP': {denomination: '1000000000000000000'},
-  'WINGS': {denomination: '1000000000000000000'}
+  'WINGS': {denomination: '1000000000000000000'},
+  customTokens: []
 }
 
 export const LOCAL_ACCOUNT_DEFAULTS = {bluetoothMode: false}

@@ -5,6 +5,7 @@ import {WebView, FlatList, Text, View, Image} from 'react-native'
 import {connect} from 'react-redux'
 import type {AbcCurrencyWallet, AbcTransaction} from 'airbitz-core-types'
 import type {GuiWallet} from '../../../../types'
+import type {Dispatch, State} from '../../../ReduxTypes'
 
 import {openABAlert} from '../../components/ABAlert/action'
 import {toggleScanToWalletListModal} from '../../components/WalletListModal/action'
@@ -165,14 +166,14 @@ class PluginView extends React.Component<PluginViewProps, PluginViewState> {
     )
   }
 }
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state: State) => ({
   account: CORE_SELECTORS.getAccount(state),
   abcWallets: state.core.wallets.byId,
   wallets: state.ui.wallets.byId,
   walletName: state.ui.scenes.walletList.walletName,
   walletId: state.ui.scenes.walletList.walletId,
 })
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   dispatch,
   toggleScanToWalletListModal: () => dispatch(toggleScanToWalletListModal()),
   openABAlert: (alertSyntax) => dispatch(openABAlert(alertSyntax))

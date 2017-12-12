@@ -1,301 +1,114 @@
+// @flow
+
 import React, {Component} from 'react'
-import {Platform, View, ScrollView, TouchableNativeFeedback, TouchableHighlight, Image} from 'react-native'
-import {connect} from 'react-redux'
+import {View, TouchableHighlight, Image} from 'react-native'
+import {Text} from 'native-base'
 import {Actions} from 'react-native-router-flux'
-import strings from '../../../../../locales/default'
 import {sprintf} from 'sprintf-js'
+import strings from '../../../../../locales/default'
 
-import {closeSidebar} from '../../SideMenu/action'
-import UserList from './UserList'
-
-import {logout} from '../action.js'
+import UserList from './UserListConnector'
 
 import styles from '../style'
-const platform = Platform.OS
-import T from '../../../components/FormattedText'
 
-import buyAndSell from '../../../../../assets/images/sidenav/buysell.png'
-import directory from '../../../../../assets/images/sidenav/directory.png'
+import buyAndSellImage from '../../../../../assets/images/sidenav/buysell.png'
 import logoutImage from '../../../../../assets/images/sidenav/logout.png'
-import refer from '../../../../../assets/images/sidenav/refer.png'
-import security from '../../../../../assets/images/sidenav/security.png'
 import settings from '../../../../../assets/images/sidenav/settings.png'
-import spend from '../../../../../assets/images/sidenav/spend.png'
+import spendImage from '../../../../../assets/images/sidenav/spend.png'
 
-class MainComponent extends Component {
+const LOGOUT_TEXT = sprintf(strings.enUS['settings_button_logout'])
+const SETTINGS_TEXT = sprintf(strings.enUS['settings_title'])
+
+type Props ={
+  logout: (username?: string) => void,
+  onPressOption: () => void
+}
+type State = {}
+
+export default class Main extends Component<Props, State> {
+  onLogout = () => {
+    this.props.logout()
+  }
+
   render () {
-    if (this.props.usersView) {
-      return <UserList />
-    }
-
-    if (!this.props.usersView) {
-      if (platform === 'android') {
-        return (
-          <View style={{flex: 1}}>
-            <ScrollView contentContainerStyle={styles.main.container}>
-              {this._render2FAenabling()}
-              <TouchableNativeFeedback background={TouchableNativeFeedback.SelectableBackground()} onpress={() => console.log('')}>
-                <View style={[ styles.main.link, styles.main.borderVertical ]}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={buyAndSell} />
-                  </View>
-                  <View style={styles.main.textContainer}>
-                    <T style={styles.main.text}>
-                      {sprintf(strings.enUS['drawer_buy_sell_digital_currency'])}
-                    </T>
-                    <T style={styles.main.textItalic}>
-                      {sprintf(strings.enUS['drawer_ie_bitcoin_ether'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableNativeFeedback>
-              <TouchableNativeFeedback background={TouchableNativeFeedback.SelectableBackground()} onpress={() => console.log('')}>
-                <View style={[ styles.main.link, styles.main.borderBottom ]}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={spend} />
-                  </View>
-                  <View style={styles.main.textContainer}>
-                    <T style={styles.main.text}>
-                      {sprintf(strings.enUS['drawer_spend_bitcoin'])}
-                    </T>
-                    <T style={styles.main.textItalic}>
-                      {sprintf(strings.enUS['drawer_plugins'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableNativeFeedback>
-              <TouchableNativeFeedback background={TouchableNativeFeedback.SelectableBackground()} onpress={() => console.log('')}>
-                <View style={[ styles.main.link, styles.main.borderBottom ]}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={refer} />
-                  </View>
-                  <View style={styles.main.textContainer}>
-                    <T style={styles.main.text}>
-                      {sprintf(strings.enUS['drawer_refer_friends'])}
-                    </T>
-                    <T style={styles.main.textItalic}>
-                      {sprintf(strings.enUS['drawer_earn_money'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableNativeFeedback>
-              <TouchableNativeFeedback onPress={() => this._handleOnPressRouting('walletList')}>
-                <View style={[ styles.main.link, styles.main.borderBottom ]}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={directory} />
-                  </View>
-                  <View style={styles.main.textContainer}>
-                    <T style={styles.main.text}>
-                      {sprintf(strings.enUS['drawer_directory'])}
-                    </T>
-                    <T style={styles.main.textItalic}>
-                      {sprintf(strings.enUS['drawer_find_local_business'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableNativeFeedback>
-            </ScrollView>
-            <View style={styles.others.container}>
-              <TouchableNativeFeedback onpress={() => console.log('')}>
-                <View style={[styles.others.link, styles.others.borderVertical]}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={logoutImage} />
-                  </View>
-                  <View style={styles.others.textContainer}>
-                    <T style={styles.others.text}>
-                      {sprintf(strings.enUS['drawer_logout'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableNativeFeedback>
-              <TouchableNativeFeedback onPress={() => this._handleOnPressRouting('settingsOverview')} background={TouchableNativeFeedback.SelectableBackground()}>
-                <View style={styles.others.link}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={settings} />
-                  </View>
-                  <View style={styles.others.textContainer}>
-                    <T style={styles.others.text}>
-                      {sprintf(strings.enUS['drawer_settings'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableNativeFeedback>
+    return this.props.usersView ? <UserList /> : (
+      <View style={{flex: 1, justifyContent: 'flex-end'}}>
+        <View style={styles.others.container}>
+          <TouchableHighlight style={styles.others.iosTouchableHighlight}
+            underlayColor={styles.main.iosTouchableHighlightUnderlayColor}
+            onPress={this.onLogout}>
+            <View style={[ styles.others.link, styles.others.borderVertical, {flex: 1} ]}>
+              <View style={styles.iconImageContainer}>
+                <Image style={styles.iconImage} source={logoutImage} />
+              </View>
+              <View style={styles.others.textContainer}>
+                <Text style={styles.others.text}>
+                  {LOGOUT_TEXT}
+                </Text>
+              </View>
             </View>
-          </View>
-        )
-      }
-
-      if (platform !== 'android') {
-        return (
-          <View style={{flex: 1}}>
-            <ScrollView contentContainerStyle={styles.main.container}>
-              {this._render2FAenabling()}
-              <TouchableHighlight style={styles.main.iosTouchableHighlight} underlayColor={styles.main.iosTouchableHighlightUnderlayColor} onPress={() => this._handleOnPressRouting('buysell')}>
-                <View style={[ styles.main.link, styles.main.borderVertical, {flex: 1} ]}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={buyAndSell} />
-                  </View>
-                  <View style={styles.main.textContainer}>
-                    <T style={styles.main.text}>
-                      {sprintf(strings.enUS['drawer_buy_sell_digital_currency'])}
-                    </T>
-                    <T style={styles.main.textItalic}>
-                      {sprintf(strings.enUS['drawer_ie_bitcoin_ether'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableHighlight>
-              <TouchableHighlight style={styles.main.iosTouchableHighlight} underlayColor={styles.main.iosTouchableHighlightUnderlayColor} onPress={() => this._handleOnPressRouting('spend')}>
-                <View style={[ styles.main.link, styles.main.borderBottom, {flex: 1} ]}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={spend} />
-                  </View>
-                  <View style={styles.main.textContainer}>
-                    <T style={styles.main.text}>
-                      {sprintf(strings.enUS['drawer_spend_bitcoin'])}
-                    </T>
-                    <T style={styles.main.textItalic}>
-                      {sprintf(strings.enUS['drawer_plugins'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableHighlight>
-              <TouchableHighlight style={styles.main.iosTouchableHighlight} underlayColor={styles.main.iosTouchableHighlightUnderlayColor} onPress={() => console.log('')}>
-                <View style={[styles.main.link, styles.main.borderBottom, {flex: 1}]}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={refer} />
-                  </View>
-                  <View style={styles.main.textContainer}>
-                    <T style={styles.main.text}>
-                      {sprintf(strings.enUS['drawer_refer_friends'])}
-                    </T>
-                    <T style={styles.main.textItalic}>
-                      {sprintf(strings.enUS['drawer_earn_money'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableHighlight>
-              <TouchableHighlight style={styles.main.iosTouchableHighlight} underlayColor={styles.main.iosTouchableHighlightUnderlayColor} onPress={() => console.log('')}>
-                <View style={[ styles.main.link, styles.main.borderBottom, {flex: 1} ]}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={directory} />
-                  </View>
-                  <View style={styles.main.textContainer}>
-                    <T style={styles.main.text}>
-                      {sprintf(strings.enUS['drawer_directory'])}
-                    </T>
-                    <T style={styles.main.textItalic}>
-                      {sprintf(strings.enUS['drawer_find_local_business'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableHighlight>
-            </ScrollView>
-            <View style={styles.others.container}>
-              <TouchableHighlight style={styles.others.iosTouchableHighlight} underlayColor={styles.main.iosTouchableHighlightUnderlayColor} onPress={() => console.log('')}>
-                <View style={[ styles.others.link, styles.others.borderVertical, {flex: 1} ]}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={logoutImage} />
-                  </View>
-                  <View style={styles.others.textContainer}>
-                    <T style={styles.others.text}>
-                      {sprintf(strings.enUS['drawer_logout'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableHighlight>
-              <TouchableHighlight style={styles.others.iosTouchableHighlight} underlayColor={styles.main.iosTouchableHighlightUnderlayColor} onPress={() => this._handleOnPressRouting('settingsOverview')}>
-                <View style={[ styles.others.link, styles.others.borderBottom, {flex: 1} ]}>
-                  <View style={styles.iconImageContainer}>
-                    <Image style={styles.iconImage} source={settings} />
-                  </View>
-                  <View style={styles.others.textContainer}>
-                    <T style={styles.others.text}>
-                      {sprintf(strings.enUS['drawer_settings'])}
-                    </T>
-                  </View>
-                </View>
-              </TouchableHighlight>
+          </TouchableHighlight>
+          <TouchableHighlight style={styles.others.iosTouchableHighlight}
+            underlayColor={styles.main.iosTouchableHighlightUnderlayColor}
+            onPress={Actions.settingsOverviewTab}>
+            <View style={[ styles.others.link, styles.others.borderBottom, {flex: 1} ]}>
+              <View style={styles.iconImageContainer}>
+                <Image style={styles.iconImage} source={settings} />
+              </View>
+              <View style={styles.others.textContainer}>
+                <Text style={styles.others.text}>
+                  {SETTINGS_TEXT}
+                </Text>
+              </View>
             </View>
-          </View>
-        )
-      }
-    }
+          </TouchableHighlight>
+          <TouchableHighlight style={styles.others.iosTouchableHighlight}
+            underlayColor={styles.main.iosTouchableHighlightUnderlayColor}
+            onPress={this._handleOnPressRouting('buysell')}>
+            <View style={[ styles.others.link, styles.others.borderVertical, {flex: 1} ]}>
+              <View style={styles.iconImageContainer}>
+                <Image style={styles.iconImage} source={buyAndSellImage} />
+              </View>
+              <View style={styles.others.textContainer}>
+                <Text style={styles.others.text}>
+                  Buy/Sell
+                </Text>
+              </View>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight style={styles.others.iosTouchableHighlight}
+            underlayColor={styles.main.iosTouchableHighlightUnderlayColor}
+            onPress={this._handleOnPressRouting('spend')}>
+            <View style={[ styles.others.link, styles.others.borderVertical, {flex: 1} ]}>
+              <View style={styles.iconImageContainer}>
+                <Image style={styles.iconImage} source={spendImage} />
+              </View>
+              <View style={styles.others.textContainer}>
+                <Text style={styles.others.text}>
+                  Spend
+                </Text>
+              </View>
+            </View>
+          </TouchableHighlight>
+        </View>
+      </View>
+    )
   }
 
-  _handleOnPressRouting = (route) => {
+  _handleOnPressRouting = (route) => () => {
     switch (route) {
-    case 'buysell':
-      Actions.buysell({type: 'reset'})
-      break
-    case 'spend':
-      Actions.spend({type: 'reset'})
-      break
     case 'settingsOverview':
-      Actions.settingsOverview({type: 'reset'})
-      break
+      return Actions.settingsOverviewTab()
     case 'walletList':
-      Actions.walletList({type: 'reset'})
-      break
-    case 'transactions':
-      Actions.transactionList({type: 'reset'})
-      break
+      return Actions.walletListTab()
+    case 'scan':
+      return Actions.scanTab()
+    case 'buysell':
+      return Actions.buySellTab()
+    case 'spend':
+      return Actions.spendTab()
     default:
-      null
-      break
-    }
-    return this.props.dispatch(closeSidebar())
-  }
-
-  _render2FAenabling = () => {
-    if (platform === 'android') {
-      return (
-        <TouchableNativeFeedback onPress={() => console.log('')} background={TouchableNativeFeedback.SelectableBackground()}>
-          <View style={[ styles.main.link, styles.main.borderVertical ]}>
-            <View style={styles.iconImageContainer}>
-              <Image style={styles.iconImage} source={security} />
-            </View>
-            <View style={styles.main.textContainer}>
-              <T style={styles.main.text}>
-                {sprintf(strings.enUS['two_fa_secure_your_account'])}
-              </T>
-              <T style={styles.main.textItalic}>
-                {sprintf(strings.enUS['two_fa_enable_2fa'])}
-              </T>
-            </View>
-          </View>
-        </TouchableNativeFeedback>
-      )
-    }
-
-    if (platform !== 'android') {
-      return (
-        <TouchableHighlight style={styles.main.iosTouchableHighlight} underlayColor={styles.main.iosTouchableHighlightUnderlayColor} onPress={() => console.log('')}>
-          <View style={[ styles.main.link, styles.main.borderVertical, {flex: 1} ]}>
-            <View style={styles.iconImageContainer}>
-              <Image style={styles.iconImage} source={security} />
-            </View>
-            <View style={styles.main.textContainer}>
-              <T style={styles.main.text}>
-                {sprintf(strings.enUS['two_fa_secure_your_account'])}
-              </T>
-              <T style={styles.main.textItalic}>
-                {sprintf(strings.enUS['two_fa_enable_2fa'])}
-              </T>
-            </View>
-          </View>
-        </TouchableHighlight>
-      )
+      return
     }
   }
 }
-
-const mapStateToProps = (state) => ({
-  usersView: state.ui.scenes.controlPanel.usersView
-})
-const mapDispatchToProps = (dispatch) => ({
-  logout: () => dispatch(logout()),
-  dispatch: (props) => dispatch(props)
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(MainComponent)

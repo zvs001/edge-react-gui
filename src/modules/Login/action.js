@@ -17,6 +17,7 @@ import * as SETTINGS_API from '../Core/Account/settings.js'
 import * as WALLET_ACTIONS from '../UI/Wallets/action'
 import * as actions from '../../actions/indexActions'
 import * as Constants from '../../constants/indexConstants'
+import * as ADD_TOKEN_ACTIONS from '../UI/scenes/AddToken/action.js'
 import strings from '../../locales/default'
 // import * as TX_DETAILS_ACTIONS from '../UI/scenes/TransactionDetails/action.js'
 export const LOGOUT = 'LOGOUT'
@@ -28,7 +29,7 @@ export const initializeAccount = (account: AbcAccount) => (dispatch: Dispatch, g
   const context = CORE_SELECTORS.getContext(state)
   const currencyCodes = {}
   CONTEXT_API.getCurrencyPlugins(context)
-    .then(async (currencyPlugins) => {
+    .then((currencyPlugins) => {
       currencyPlugins.forEach((plugin) => {
         plugin.currencyInfo.walletTypes.forEach((type) => {
           currencyCodes[type] = plugin.currencyInfo.currencyCode
@@ -39,17 +40,18 @@ export const initializeAccount = (account: AbcAccount) => (dispatch: Dispatch, g
       dispatch(ACCOUNT_ACTIONS.addAccount(account))
       dispatch(SETTINGS_ACTIONS.setLoginStatus(true))
       if (ACCOUNT_API.checkForExistingWallets(account)) {
-        const {
-          walletId,
-          currencyCode
-        } = ACCOUNT_API.getFirstActiveWalletInfo(account, currencyCodes)
+        const {walletId, currencyCode} = ACCOUNT_API.getFirstActiveWalletInfo(account, currencyCodes)
         dispatch(WALLET_ACTIONS.selectWallet(walletId, currencyCode))
         dispatch(loadSettings())
         return
       }
       // TODO: Allen - Turn on when Bitcoin is turned back on
       // await dispatch(actions.createCurrencyWallet(strings.enUS['strings_first_bitcoin_44_wallet_name'], Constants.BITCOIN_44_WALLET, Constants.USD_FIAT, false)) //name.. walletType, fiat currency. TODO: get fiat to react to device.
-      await dispatch(actions.createCurrencyWallet(strings.enUS['string_first_ethereum_wallet_name'], Constants.ETHEREUM_WALLET, Constants.USD_FIAT, false))
+      dispatch(actions.createCurrencyWallet(
+        strings.enUS['string_first_ethereum_wallet_name'],
+        Constants.ETHEREUM_WALLET, Constants.USD_FIAT,
+        false, true
+      ))
       dispatch(loadSettings())
     })
 }
@@ -60,18 +62,25 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
     .then((settings) => {
       const syncDefaults = SETTINGS_API.SYNCED_ACCOUNT_DEFAULTS
       const syncFinal = {...syncDefaults, ...settings}
-
+      const customTokens = settings ? settings.customTokens : []
       // Add all the settings to UI/Settings
       dispatch(SETTINGS_ACTIONS.setAutoLogoutTimeInSeconds(syncFinal.autoLogoutTimeInSeconds))
       dispatch(SETTINGS_ACTIONS.setDefaultFiat(syncFinal.defaultFiat))
       dispatch(SETTINGS_ACTIONS.setMerchantMode(syncFinal.merchantMode))
-
+      dispatch(SETTINGS_ACTIONS.setCustomTokens(syncFinal.customTokens))
       dispatch(SETTINGS_ACTIONS.setDenominationKey('BTC', syncFinal.BTC.denomination))
       dispatch(SETTINGS_ACTIONS.setDenominationKey('BCH', syncFinal.BCH.denomination))
       dispatch(SETTINGS_ACTIONS.setDenominationKey('ETH', syncFinal.ETH.denomination))
+      if (customTokens) {
+        customTokens.forEach((token) => {
+          dispatch(ADD_TOKEN_ACTIONS.setTokenSettings(token))
+          // this second dispatch will be redundant if we set 'denomination' property upon customToken creation
+          dispatch(SETTINGS_ACTIONS.setDenominationKey(token.currencyCode, token.multiplier))
+        })
+      }
 
-      dispatch(SETTINGS_ACTIONS.setDenominationKey('REP', syncFinal.REP.denomination))
-      dispatch(SETTINGS_ACTIONS.setDenominationKey('WINGS', syncFinal.WINGS.denomination))
+      // dispatch(SETTINGS_ACTIONS.setDenominationKey('REP', syncFinal.REP.denomination))
+      // dispatch(SETTINGS_ACTIONS.setDenominationKey('WINGS', syncFinal.WINGS.denomination))
     })
     /* SETTINGS_API.getSyncedSubcategories(account)
     .then(subcategories => {
@@ -101,7 +110,7 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
     })
 }
 
-export const logoutRequest = (username: string | null) => (dispatch: Dispatch, getState: GetState) => {
+export const logoutRequest = (username?: string) => (dispatch: Dispatch, getState: GetState) => {
   Actions.popTo(Constants.LOGIN, {username})
 
   const state = getState()
@@ -114,8 +123,7 @@ export const logoutRequest = (username: string | null) => (dispatch: Dispatch, g
    })
 }
 
-export type LogoutAction = { type: 'LOGOUT', data: { username: string | null } }
-export const logout = (username: string | null): LogoutAction => ({
+export const logout = (username?: string) => ({
   type: LOGOUT,
   data: {username}
 })
