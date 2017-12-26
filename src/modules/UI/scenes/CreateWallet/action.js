@@ -3,6 +3,8 @@
 export const UPDATE_WALLET_NAME = 'UPDATE_WALLET_NAME'
 export const SELECT_WALLET_TYPE = 'SELECT_WALLET_TYPE'
 export const SELECT_FIAT = 'SELECT_FIAT'
+export const CREATE_WALLET_START = 'CREATE_WALLET_START'
+export const CREATE_WALLET_SUCCESS = 'CREATE_WALLET_SUCCESS'
 
 import * as ACCOUNT_API from '../../../Core/Account/api.js'
 import * as CORE_SELECTORS from '../../../Core/selectors.js'
@@ -35,15 +37,23 @@ export const createCurrencyWallet = (
 ) => (dispatch: any, getState: any) => {
   const state = getState()
   const account = CORE_SELECTORS.getAccount(state)
-
+  dispatch(createWalletStart())
   return ACCOUNT_API.createCurrencyWalletRequest(account, walletType, {
     name: walletName,
     fiatCurrencyCode
   }).then((abcWallet) => {
-    if (popScene) {
-      Actions.pop()
-    } else if (selectWallet) {
+    Actions.walletList()
+    dispatch(createWalletSuccess())
+    if (selectWallet) {
       dispatch(WalletActions.selectWallet(abcWallet.id, abcWallet.currencyInfo.currencyCode))
     }
   })
 }
+
+export const createWalletStart = () => ({
+  type: CREATE_WALLET_START
+})
+
+export const createWalletSuccess = () => ({
+  type: CREATE_WALLET_SUCCESS
+})

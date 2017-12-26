@@ -22,11 +22,6 @@ export default class SearchResults extends Component {
 
   render () {
     let searchResultsHeight
-    let completedDataList = this.props.regularArray.map((x, i) => {
-      let newValue = x
-      newValue.key = i
-      return newValue
-    })
     if (this.props.dimensions.keyboardHeight) {
       searchResultsHeight = this.props.height + platform.toolbarHeight - this.props.dimensions.keyboardHeight
     } else {
@@ -40,10 +35,11 @@ export default class SearchResults extends Component {
           width: platform.deviceWidth,
           top: platform.toolbarHeight + this.props.extraTopSpace,
           zIndex: 999
-        }]}>
+        },
+        this.props.containerStyle]}>
         <FlatList
           style={[{width: '100%'}]}
-          data={completedDataList}
+          data={this.props.regularArray}
           renderItem={(rowData) => this.props.renderRegularResultFxn(rowData, this.props.onRegularSelectFxn)}
           initialNumToRender={this.props.initialNumToRender || 12}
           scrollRenderAheadDistance={this.props.scrollRenderAheadDistance || 800}
