@@ -1,5 +1,7 @@
 import React, {Component} from 'react'
 import {Image, View} from 'react-native'
+import {Actions} from 'react-native-router-flux'
+
 import s from '../../../../locales/strings.js'
 import T from '../../components/FormattedText'
 import Gradient from '../../components/Gradient/Gradient.ui'
@@ -11,7 +13,7 @@ import RowRoute from './components/RowRoute.ui'
 
 const SETTINGS_DENOMIANTION_TEXT = s.strings.settings_denominations_title
 const SETTINGS_OPTIONS_TEXT      = s.strings.settings_options_title
-const SPENDING_LIMITS_TEXT       = s.strings.settings_spending_limits
+const SPENDING_LIMITS_TEXT       = s.strings.spending_limits
 
 export default class CurrencySettings extends Component {
   header (headerText) {
@@ -33,6 +35,11 @@ export default class CurrencySettings extends Component {
   selectDenomination = (key) => () => {
     console.log('src/modules/UI/scences/Settings/CurrencySettings.ui.js/selectDenomination', key)
     return this.props.selectDenomination(key)
+  }
+
+  onPressSpendingLimits = () => {
+    const pluginName = this.props.pluginName
+    Actions[`${pluginName}SpendingLimits`]()
   }
 
   render () {
@@ -60,7 +67,7 @@ export default class CurrencySettings extends Component {
           </RadioRows>
 
           {this.header(SETTINGS_OPTIONS_TEXT)}
-          <RowRoute leftText={SPENDING_LIMITS_TEXT} routeFunction={() => console.log('spending limits')} />
+          <RowRoute leftText={SPENDING_LIMITS_TEXT} routeFunction={this.onPressSpendingLimits} />
         </View>
       </View>
     )
