@@ -213,7 +213,7 @@ export default class Main extends Component<Props, State> {
     return (
       <StyleProvider style={getTheme(platform)}>
         <MenuContext style={{flex: 1}}>
-          <RouterWithRedux backAndroidHandler={this.handleBack}>
+          <RouterWithRedux backAndroidHandler={this.handleBack} sceneStyle={styles.main}>
             <Overlay>
               <Modal hideNavBar transitionConfig={() => ({screenInterpolator: CardStackStyleInterpolator.forFadeFromBottomAndroid})}>
                 {/*<Lightbox>*/}
