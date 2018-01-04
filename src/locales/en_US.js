@@ -101,7 +101,7 @@ const strings = {
   settings_button_change_password: 'Change password',
   settings_button_debug: 'Debug',
   settings_button_lock_settings: 'Tap to lock Account Settings',
-  
+
   settings_button_logout: 'Logout',
   settings_button_pin: 'Change PIN',
   settings_button_send_logs: 'Send logs',
@@ -110,6 +110,10 @@ const strings = {
   settings_button_use_touchID: 'Use TouchID',
   settings_days: 'Day(s)',
   settings_denominations_title: 'Denominations',
+  settings_options_title: 'Options',
+  settings_spending_limits: 'Spending Limits',
+  settings_password_spending_limit_title: 'Password Spending Limit',
+  settings_pin_spending_limit_title: 'Pin Spending Limit',
   settings_hours: 'Hour(s)',
   settings_minutes: 'Minute(s)',
   settings_modal_send_logs_title: 'Send logs?',
