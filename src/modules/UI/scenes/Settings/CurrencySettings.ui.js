@@ -7,11 +7,14 @@ import styles from './style'
 import {border as b} from '../../../utils'
 import Row from './components/Row.ui.js'
 import RadioRows from './components/RadioRows.ui.js'
+import RowRoute from './components/RowRoute.ui'
 
 const SETTINGS_DENOMIANTION_TEXT = s.strings.settings_denominations_title
+const SETTINGS_OPTIONS_TEXT      = s.strings.settings_options_title
+const SPENDING_LIMITS_TEXT       = s.strings.settings_spending_limits
 
 export default class CurrencySettings extends Component {
-  header () {
+  header (headerText) {
     return <Gradient style={[styles.headerRow, b()]}>
 
       <View style={[styles.headerTextWrap, b()]}>
@@ -19,7 +22,7 @@ export default class CurrencySettings extends Component {
           <Image style={{height: 25, width: 25, resizeMode: Image.resizeMode.contain}}
             source={{uri: this.props.logo}}/>
           <T style={styles.headerText}>
-            {SETTINGS_DENOMIANTION_TEXT}
+            {headerText}
           </T>
         </View>
       </View>
@@ -37,7 +40,7 @@ export default class CurrencySettings extends Component {
       <View style={[styles.ethereumSettings, b()]}>
         <Gradient style={styles.gradient} />
         <View style={styles.container}>
-          {this.header()}
+          {this.header(SETTINGS_DENOMIANTION_TEXT)}
 
           <RadioRows style={b()}>
             {
@@ -55,7 +58,10 @@ export default class CurrencySettings extends Component {
               })
             }
           </RadioRows>
-          </View>
+
+          {this.header(SETTINGS_OPTIONS_TEXT)}
+          <RowRoute leftText={SPENDING_LIMITS_TEXT} routeFunction={() => console.log('spending limits')} />
+        </View>
       </View>
     )
   }
