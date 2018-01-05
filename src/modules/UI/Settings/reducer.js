@@ -321,6 +321,30 @@ export const settings = (state = initialState, action) => {
     }
   }
 
+  case ACTION.UPDATE_TRANSACTION_SPENDING_LIMIT_SUCCESS: {
+    const {currencyCode, transactionSpendingLimit} = action.data
+    const current = state[currencyCode]
+    return {
+      ...state,
+      [currencyCode]: {
+        ...current,
+        transactionSpendingLimit
+      }
+    }
+  }
+
+  case ACTION.UPDATE_DAILY_SPENDING_LIMIT_SUCCESS: {
+    const {currencyCode, dailySpendingLimit} = action.data
+    const current = state[currencyCode]
+    return {
+      ...state,
+      [currencyCode]: {
+        ...current,
+        dailySpendingLimit
+      }
+    }
+  }
+
   default:
     return state
   }

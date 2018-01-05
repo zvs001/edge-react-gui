@@ -19,13 +19,58 @@ export const SYNCED_ACCOUNT_DEFAULTS = {
   autoLogoutTimeInSeconds: 3600,
   defaultFiat: 'USD',
   merchantMode: false,
-  'BTC': {denomination: '100000000'},
-  'BCH': {denomination: '100000000'},
-  'DASH': {denomination: '100000000'},
-  'LTC': {denomination: '100000000'},
-  'ETH': {denomination: '1000000000000000000'},
-  'REP': {denomination: '1000000000000000000'},
-  'WINGS': {denomination: '1000000000000000000'},
+  'BTC': {
+    denomination: '100000000',
+    spendingLimits: {
+      dailySpendingLimit: {
+        isEnabled: true,
+        nativeAmount: '10000000'
+      },
+      transactionSpendingLimit: {
+        isEnabled: true,
+        nativeAmount: '1000000000'
+      }
+    }
+  },
+  'BCH': {
+    denomination: '100000000',
+    spendingLimits: {
+      dailySpendingLimit: {
+        isEnabled: true,
+        nativeAmount: '10000000'
+      },
+      transactionSpendingLimit: {
+        isEnabled: true,
+        nativeAmount: '1000000000'
+      }
+    }
+  },
+  'LTC': {
+    denomination: '100000000',
+    spendingLimits: {
+      dailySpendingLimit: {
+        isEnabled: true,
+        nativeAmount: '1000000000'
+      },
+      transactionSpendingLimit: {
+        isEnabled: true,
+        nativeAmount: '100000000000'
+      }
+    }
+  },
+  'ETH': {
+    denomination: '1000000000000000000',
+    spendingLimits: {
+      dailySpendingLimit: {
+        isEnabled: true,
+        nativeAmount: '1000000000000'
+      },
+      transactionSpendingLimit: {
+        isEnabled: true,
+        nativeAmount: '10000000000000000'
+      }
+    }
+  },
   customTokens: []
 }
 
@@ -43,8 +88,8 @@ export const setOTPModeRequest = (account: AbcAccount, otpMode: boolean) =>
   : account.disableOtp()
 
 export const setOTPRequest = (account: AbcAccount, key: string) =>
-// $FlowFixMe setupOTPKey not found on AbcAccount type
-account.setupOTPKey(key)
+// $FlowFixMe
+  account.setupOTPKey(key)
 
 export const setPINModeRequest = (account: AbcAccount, pinMode: boolean) =>
   pinMode // $FlowFixMe enablePIN not found on AbcAccount type
@@ -91,6 +136,22 @@ export const setDenominationKeyRequest = (account: AbcAccount, currencyCode: str
     const updatedSettings = updateCurrencySettings(settings, currencyCode, {denomination})
     return setSyncedSettings(account, updatedSettings)
   })
+
+export const setDailySpendingLimitRequest = (account: AbcAccount, currencyCode: string, isEnabled: boolean, dailySpendingLimit: string) => {
+  return getSyncedSettings(account)
+  .then((settings) => {
+    const updatedSettings = updateCurrencySettings(settings, currencyCode, {isEnabled, dailySpendingLimit})
+    return setSyncedSettings(account, updatedSettings)
+  })
+}
+
+export const setTransactionSpendingLimitRequest = (account: AbcAccount, currencyCode: string, isEnabled: boolean, transactionSpendingLimit: string) => {
+  return getLocalSettings(account)
+  .then((settings) => {
+    const updatedSettings = updateCurrencySettings(settings, currencyCode, {isEnabled, transactionSpendingLimit})
+    return setSyncedSettings(account, updatedSettings)
+  })
+}
 
 // Helper Functions
 export const getSyncedSettings = (account: AbcAccount) =>

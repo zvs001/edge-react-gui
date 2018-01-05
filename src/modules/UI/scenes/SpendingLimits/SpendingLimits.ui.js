@@ -22,7 +22,13 @@ const ENTER_YOUR_PASSWORD_TEXT                 = s.strings.enter_your_password
 import THEME from '../../../../theme/variables/airbitz'
 
 type Props = {
-  pluginName: string
+  pluginName: string,
+  dailySpendingLimit: string,
+  isDailySpendingLimitEnabled: boolean,
+  transactionSpendingLimit: string,
+  isTransactionSpendingLimitEnabled: boolean,
+  updateDailySpendingLimit: (currencyCode: string, isEnabled: boolean, dailySpendingLimit: string) => void,
+  updateTransactionSpendingLimit: (currencyCode: string, isEnabled: boolean, dailySpendingLimit: string) => void
 }
 type State = {}
 export default class SpendingLimits extends Component<Props, State> {
@@ -49,6 +55,7 @@ export default class SpendingLimits extends Component<Props, State> {
         <View style={styles.formSection}>
           {this.renderDailySpendingLimitRow()}
           <FormField
+            value={this.props.dailySpendingLimit || ''}
             returnKeyType={'done'}
             autoCorrect={false}
             label={PER_DAY_SPENDING_LIMITS_TEXT} />
@@ -57,6 +64,7 @@ export default class SpendingLimits extends Component<Props, State> {
         <View style={styles.formSection}>
           {this.renderTxSpendingLimitRow()}
           <FormField
+            value={this.props.transactionSpendingLimit || ''}
             autoCorrect={false}
             label={PER_TRANSACTION_SPENDING_LIMITS_TEXT} />
         </View>
@@ -73,7 +81,7 @@ export default class SpendingLimits extends Component<Props, State> {
       <T key={2} style={{fontSize: 14, color: THEME.COLORS.GRAY_1, marginLeft: -18}}>{PER_DAY_SPENDING_LIMITS_DESCRIPTION_TEXT}</T>
     </View>
 
-    return <RowSwitch style={stylesRaw.rowSwitch} leftText={left} onToggle={() => {}} />
+    return <RowSwitch style={stylesRaw.rowSwitch} value={this.props.isDailySpendingLimitEnabled} leftText={left} onToggle={() => {}} />
   }
 
   renderTxSpendingLimitRow () {
@@ -82,6 +90,6 @@ export default class SpendingLimits extends Component<Props, State> {
       <T key={2} style={{fontSize: 14, color: THEME.COLORS.GRAY_1, marginLeft: -18}}>{PER_TRANSACTION_SPENDING_LIMITS_DESCRIPTION_TEXT}</T>
     </View>
 
-    return <RowSwitch style={stylesRaw.rowSwitch} leftText={left} onToggle={() => {}} />
+    return <RowSwitch style={stylesRaw.rowSwitch} value={this.props.isTransactionSpendingLimitEnabled} leftText={left} onToggle={() => {}} />
   }
 }
