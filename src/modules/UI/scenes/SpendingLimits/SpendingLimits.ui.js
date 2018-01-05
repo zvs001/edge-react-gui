@@ -23,15 +23,30 @@ import THEME from '../../../../theme/variables/airbitz'
 
 type Props = {
   pluginName: string,
-  dailySpendingLimit: string,
+  currencyCode: string,
+  dailySpendingLimitNativeAmount: string,
   isDailySpendingLimitEnabled: boolean,
-  transactionSpendingLimit: string,
+  transactionSpendingLimitNativeAmount: string,
   isTransactionSpendingLimitEnabled: boolean,
   updateDailySpendingLimit: (currencyCode: string, isEnabled: boolean, dailySpendingLimit: string) => void,
   updateTransactionSpendingLimit: (currencyCode: string, isEnabled: boolean, dailySpendingLimit: string) => void
 }
-type State = {}
+type State = {
+  isTransactionSpendingLimitEnabled: boolean,
+  transactionSpendingLimitNativeAmount: string,
+  dailySpendingLimitNativeAmount: string,
+  isDailySpendingLimitEnabled: boolean
+}
 export default class SpendingLimits extends Component<Props, State> {
+  constructor (props: Props) {
+    super(props)
+    this.state = {
+      isTransactionSpendingLimitEnabled: props.isTransactionSpendingLimitEnabled,
+      transactionSpendingLimitNativeAmount: props.transactionSpendingLimitNativeAmount,
+      dailySpendingLimitNativeAmount: props.dailySpendingLimitNativeAmount,
+      isDailySpendingLimitEnabled: props.isDailySpendingLimitEnabled
+    }
+  }
 
   render () {
     return <View>
@@ -55,8 +70,10 @@ export default class SpendingLimits extends Component<Props, State> {
         <View style={styles.formSection}>
           {this.renderDailySpendingLimitRow()}
           <FormField
-            value={this.props.dailySpendingLimit || ''}
+            onChangeText={this.updateDailySpendingLimitNativeAmount}
+            value={this.state.dailySpendingLimitNativeAmount || ''}
             returnKeyType={'done'}
+            keyboardType={'numeric'}
             autoCorrect={false}
             label={PER_DAY_SPENDING_LIMITS_TEXT} />
         </View>
@@ -64,8 +81,11 @@ export default class SpendingLimits extends Component<Props, State> {
         <View style={styles.formSection}>
           {this.renderTxSpendingLimitRow()}
           <FormField
-            value={this.props.transactionSpendingLimit || ''}
+            onChangeText={this.updateTransactionSpendingLimitNativeAmount}
+            value={this.state.transactionSpendingLimitNativeAmount || ''}
+            returnKeyType={'done'}
             autoCorrect={false}
+            keyboardType={'numeric'}
             label={PER_TRANSACTION_SPENDING_LIMITS_TEXT} />
         </View>
       </View>
@@ -81,7 +101,8 @@ export default class SpendingLimits extends Component<Props, State> {
       <T key={2} style={{fontSize: 14, color: THEME.COLORS.GRAY_1, marginLeft: -18}}>{PER_DAY_SPENDING_LIMITS_DESCRIPTION_TEXT}</T>
     </View>
 
-    return <RowSwitch style={stylesRaw.rowSwitch} value={this.props.isDailySpendingLimitEnabled} leftText={left} onToggle={() => {}} />
+    return <RowSwitch style={stylesRaw.rowSwitch}
+      onToggle={this.updateIsDailySpendingLimitEnabled} value={this.state.isDailySpendingLimitEnabled} leftText={left} />
   }
 
   renderTxSpendingLimitRow () {
@@ -90,6 +111,32 @@ export default class SpendingLimits extends Component<Props, State> {
       <T key={2} style={{fontSize: 14, color: THEME.COLORS.GRAY_1, marginLeft: -18}}>{PER_TRANSACTION_SPENDING_LIMITS_DESCRIPTION_TEXT}</T>
     </View>
 
-    return <RowSwitch style={stylesRaw.rowSwitch} value={this.props.isTransactionSpendingLimitEnabled} leftText={left} onToggle={() => {}} />
+    return <RowSwitch style={stylesRaw.rowSwitch}
+      onToggle={this.updateIsTransactionSpendingLimitEnabled}
+      value={this.state.isTransactionSpendingLimitEnabled} leftText={left} />
+  }
+
+  updateIsTransactionSpendingLimitEnabled = (isEnabled: boolean) => {
+    return this.setState({isTransactionSpendingLimitEnabled: isEnabled})
+  }
+
+  updateTransactionSpendingLimitNativeAmount = (transactionSpendingLimitNativeAmount: string) => {
+    return this.setState({transactionSpendingLimitNativeAmount})
+  }
+
+  updateIsDailySpendingLimitEnabled = (isEnabled: boolean) => {
+    return this.setState({isDailySpendingLimitEnabled: isEnabled})
+  }
+
+  updateDailySpendingLimitNativeAmount = (dailySpendingLimitNativeAmount: string) => {
+    return this.setState({dailySpendingLimitNativeAmount})
+  }
+
+  onSubmit = () => {
+    console.log('onSubmit')
+    console.log('dailySpendingLimitNativeAmount', this.state.dailySpendingLimitNativeAmount)
+    console.log('isDdailySpendingLimitEnabled', this.state.isDailySpendingLimitEnabled)
+    console.log('transactionSpendingLimitNativeAmount', this.state.transactionSpendingLimitNativeAmount)
+    console.log('isTransactionSpendingLimitEnabled', this.state.isTransactionSpendingLimitEnabled)
   }
 }
