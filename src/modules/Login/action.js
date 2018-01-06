@@ -59,11 +59,13 @@ export const initializeAccount = (account: AbcAccount, touchIdInfo: Object) => (
 
 const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
   const {account} = getState().core
+
   SETTINGS_API.getSyncedSettings(account)
     .then((settings) => {
       const syncDefaults = SETTINGS_API.SYNCED_ACCOUNT_DEFAULTS
       const syncFinal = {...syncDefaults, ...settings}
       const customTokens = settings ? settings.customTokens : []
+
       // Add all the settings to UI/Settings
       dispatch(SETTINGS_ACTIONS.setAutoLogoutTimeInSeconds(syncFinal.autoLogoutTimeInSeconds))
       dispatch(SETTINGS_ACTIONS.setDefaultFiat(syncFinal.defaultFiat))
@@ -72,6 +74,24 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
       dispatch(SETTINGS_ACTIONS.setDenominationKey('BTC', syncFinal.BTC.denomination))
       dispatch(SETTINGS_ACTIONS.setDenominationKey('BCH', syncFinal.BCH.denomination))
       dispatch(SETTINGS_ACTIONS.setDenominationKey('ETH', syncFinal.ETH.denomination))
+
+      const currencySettings = {
+        BTC: settings.BTC,
+        BCH: settings.BCH,
+        ETH: settings.ETH,
+        DASH: settings.DASH,
+        REP: settings.REP,
+        WINGS: settings.WINGS,
+      }
+
+      const {
+        transactionSpendingLimit: {txNativeAmount, txIsEnabled},
+        dailySpendingLimit: {dailyNativeAmount, dailyIsEnabled}
+      } = currencySettings.BTC
+
+      dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('BTC', dailyIsEnabled, dailyNativeAmount))
+      dispatch(SETTINGS_ACTIONS.updateTransactionSpendingLimitSuccess('BTC', txIsEnabled, txNativeAmount))
+
       if (customTokens) {
         customTokens.forEach((token) => {
           dispatch(ADD_TOKEN_ACTIONS.setTokenSettings(token))

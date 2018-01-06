@@ -10,6 +10,7 @@ import * as SETTINGS_SELECTORS from '../../Settings/selectors.js'
 
 export const mapStateToProps = (state: State, ownProps: Object) => ({
   pluginName: ownProps.pluginName,
+  currencyCode: ownProps.currencyCode,
   isTransactionSpendingLimitEnabled: SETTINGS_SELECTORS.getIsTransactionSpendingLimitEnabled(state, ownProps.currencyCode),
   transactionSpendingLimit:          SETTINGS_SELECTORS.getTransactionSpendingLimit(state, ownProps.currencyCode),
   isDailySpendingLimitEnabled:       SETTINGS_SELECTORS.getIsDailySpendingLimitEnabled(state, ownProps.currencyCode),
@@ -21,7 +22,7 @@ export const mapDispatchToProps = (dispatch: Dispatch) => ({
   },
   updateTransactionSpendingLimit: (currencyCode: string, isEnabled: boolean, dailySpendingLimit: string) => {
     dispatch(updateTransactionSpendingLimit(currencyCode, isEnabled,  dailySpendingLimit))
-  },
+  }
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SpendingLimits)

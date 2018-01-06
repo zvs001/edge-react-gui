@@ -182,7 +182,7 @@ export async function getSyncedSettingsAsync (account: AbcAccount) {
 export const setSyncedSettings = (account: AbcAccount, settings: Object) => {
   const text = JSON.stringify(settings)
   const SettingsFile = getSyncedSettingsFile(account)
-  SettingsFile.setText(text)
+  return SettingsFile.setText(text)
 }
 
 export async function setSyncedSettingsAsync (account: AbcAccount, settings: Object) {
