@@ -139,18 +139,18 @@ export const setDenominationKeyRequest = (account: AbcAccount, currencyCode: str
     return setSyncedSettings(account, updatedSettings)
   })
 
-export const setDailySpendingLimitRequest = (account: AbcAccount, currencyCode: string, isEnabled: boolean, dailySpendingLimit: string) => {
+export const setDailySpendingLimitRequest = (account: AbcAccount, currencyCode: string, isEnabled: boolean, nativeAmount: string) => {
   return getLocalSettings(account)
   .then((settings) => {
-    const updatedSettings = updateCurrencySettings(settings, currencyCode, {isEnabled, dailySpendingLimit})
+    const updatedSettings = updateCurrencySettings(settings, currencyCode, {dailySpendingLimit: {isEnabled, nativeAmount}})
     return setLocalSettings(account, updatedSettings)
   })
 }
 
-export const setTransactionSpendingLimitRequest = (account: AbcAccount, currencyCode: string, isEnabled: boolean, transactionSpendingLimit: string) => {
+export const setTransactionSpendingLimitRequest = (account: AbcAccount, currencyCode: string, isEnabled: boolean, nativeAmount: string) => {
   return getLocalSettings(account)
   .then((settings) => {
-    const updatedSettings = updateCurrencySettings(settings, currencyCode, {isEnabled, transactionSpendingLimit})
+    const updatedSettings = updateCurrencySettings(settings, currencyCode, {transactionSpendingLimit: {isEnabled, nativeAmount}})
     return setSyncedSettings(account, updatedSettings)
   })
 }
@@ -159,11 +159,11 @@ export const setTransactionSpendingLimitRequest = (account: AbcAccount, currency
 export const getSyncedSettings = (account: AbcAccount) =>
   getSyncedSettingsFile(account).getText()
   .then((text) => {
-    const settingsFromFile = JSON.parse(text)
-    return settingsFromFile
+    const syncedSettings = JSON.parse(text)
+    return syncedSettings
   })
   .catch((e) => {
-    console.log(e)
+    console.error(e)
     // If Settings.json doesn't exist yet, create it, and return it
     return SYNCED_ACCOUNT_DEFAULTS
   })
@@ -175,7 +175,7 @@ export async function getSyncedSettingsAsync (account: AbcAccount) {
     const settingsFromFile = JSON.parse(text)
     return settingsFromFile
   } catch (e) {
-    console.log(e)
+    console.error(e)
     // If Settings.json doesn't exist yet, create it, and return it
     return SYNCED_ACCOUNT_DEFAULTS
   }
@@ -184,9 +184,10 @@ export async function getSyncedSettingsAsync (account: AbcAccount) {
 export const setSyncedSettings = (account: AbcAccount, settings: Object) => {
   const text = JSON.stringify(settings)
   const SettingsFile = getSyncedSettingsFile(account)
-  return SettingsFile.setText(text)
+  const updatedSyncedSettings = SettingsFile.setText(text)
     .then(() => SettingsFile.getText())
     .then(JSON.parse)
+  return updatedSyncedSettings
 }
 
 export async function setSyncedSettingsAsync (account: AbcAccount, settings: Object) {
@@ -212,7 +213,7 @@ export async function setSyncedSubcategories (account: AbcAccount, subcategories
   try {
     await SubcategoriesFile.setText(stringifiedSubcategories)
   } catch (e) {
-    console.log('error: ', e)
+    console.error('error: ', e)
   }
 }
 
@@ -223,7 +224,7 @@ export const getSyncedSubcategories = (account: AbcAccount) =>
     return categoriesText.categories
   })
   .catch(() =>
-    // console.log('error: ', e)
+    // console.error('error: ', e)
     // If Categories.json doesn't exist yet, create it, and return it
      setSyncedSubcategories(account, SYNCED_SUBCATEGORIES_DEFAULTS)
     .then(() => SYNCED_SUBCATEGORIES_DEFAULTS))
@@ -257,8 +258,9 @@ export const getCoreSettings = (account: AbcAccount): Promise<{otpMode: boolean,
 export const getSyncedSettingsFile = (account: AbcAccount) => {
   // $FlowFixMe folder not found on AbcAccount type
   const folder = account.folder
-//   console.log(folder)
-  return folder.file(SYNCED_SETTINGS_FILENAME)
+//   console.error(folder)
+  const settingsFile = folder.file(SYNCED_SETTINGS_FILENAME)
+  return settingsFile
 }
 
 export const getLocalSettingsFile = (account: AbcAccount) =>

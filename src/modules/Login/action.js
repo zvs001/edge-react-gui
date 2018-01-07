@@ -64,7 +64,7 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
   SETTINGS_API.getSyncedSettings(account)
     .then((settings) => {
       const syncDefaults = SETTINGS_API.SYNCED_ACCOUNT_DEFAULTS
-      const syncFinal = R.mergeDeepLeft(syncDefaults, settings)
+      const syncFinal = R.mergeDeepLeft(settings, syncDefaults)
       // const syncFinal = {...syncDefaults, ...settings}
       const customTokens = settings ? settings.customTokens : []
 
@@ -76,9 +76,11 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
       dispatch(SETTINGS_ACTIONS.setDenominationKey('BTC', syncFinal.BTC.denomination))
       dispatch(SETTINGS_ACTIONS.setDenominationKey('BCH', syncFinal.BCH.denomination))
       dispatch(SETTINGS_ACTIONS.setDenominationKey('ETH', syncFinal.ETH.denomination))
+      dispatch(SETTINGS_ACTIONS.setDenominationKey('LTC', syncFinal.LTC.denomination))
 
       const currencySettings = {
         BTC: syncFinal.BTC,
+        LTC: syncFinal.LTC,
         BCH: syncFinal.BCH,
         ETH: syncFinal.ETH,
         DASH: syncFinal.DASH,
@@ -92,17 +94,6 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
 
       dispatch(SETTINGS_ACTIONS.updateTransactionSpendingLimitSuccess('BTC', isEnabled, nativeAmount))
 
-      const localSettings = {
-        BTC: {
-          dailySpendingLimit: {
-            nativeAmount: '123123',
-            isEnabled: false,
-          },
-        }
-      }
-
-      dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('BTC', localSettings.BTC.dailySpendingLimit.isEnabled, localSettings.BTC.dailySpendingLimit.nativeAmount))
-
       if (customTokens) {
         customTokens.forEach((token) => {
           dispatch(ADD_TOKEN_ACTIONS.setTokenSettings(token))
@@ -111,12 +102,17 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
         })
       }
     })
+    .catch((error) => {
+      console.error(error)
+    })
 
   SETTINGS_API.getLocalSettings(account)
     .then((settings) => {
       const localDefaults = SETTINGS_API.LOCAL_ACCOUNT_DEFAULTS
 
       const localFinal = {...localDefaults, ...settings}
+
+      dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('BTC', localFinal.BTC.dailySpendingLimit.isEnabled, localFinal.BTC.dailySpendingLimit.nativeAmount))
       // Add all the local settings to UI/Settings
       dispatch(SETTINGS_ACTIONS.setBluetoothMode(localFinal.bluetoothMode))
     })

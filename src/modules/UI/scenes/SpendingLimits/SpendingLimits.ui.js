@@ -82,7 +82,7 @@ export default class SpendingLimits extends Component<Props, State> {
         <View style={styles.formSection}>
           {this.renderDailySpendingLimitRow()}
           <FormField
-            disabled={!this.props.isAuthorized}
+            disabled={!this.props.isAuthorized || !this.state.isDailySpendingLimitEnabled}
             onChangeText={this.updateDailySpendingLimitNativeAmount}
             value={this.state.dailySpendingLimitNativeAmount || ''}
             returnKeyType={'done'}
@@ -94,7 +94,7 @@ export default class SpendingLimits extends Component<Props, State> {
         <View style={styles.formSection}>
           {this.renderTxSpendingLimitRow()}
           <FormField
-            disabled={!this.props.isAuthorized}
+            disabled={!this.props.isAuthorized || !this.state.isTransactionSpendingLimitEnabled}
             onChangeText={this.updateTransactionSpendingLimitNativeAmount}
             value={this.state.transactionSpendingLimitNativeAmount || ''}
             returnKeyType={'done'}
