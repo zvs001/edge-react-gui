@@ -21,62 +21,64 @@ export const SYNCED_ACCOUNT_DEFAULTS = {
   merchantMode: false,
   'BTC': {
     denomination: '100000000',
-    spendingLimits: {
-      dailySpendingLimit: {
-        isEnabled: true,
-        nativeAmount: '10000000'
-      },
-      transactionSpendingLimit: {
-        isEnabled: true,
-        nativeAmount: '1000000000'
-      }
+    transactionSpendingLimit: {
+      isEnabled: true,
+      nativeAmount: '1000000000'
     }
   },
   'BCH': {
     denomination: '100000000',
-    spendingLimits: {
-      dailySpendingLimit: {
-        isEnabled: true,
-        nativeAmount: '10000000'
-      },
-      transactionSpendingLimit: {
-        isEnabled: true,
-        nativeAmount: '1000000000'
-      }
+    transactionSpendingLimit: {
+      isEnabled: true,
+      nativeAmount: '1000000000'
     }
   },
   'LTC': {
     denomination: '100000000',
-    spendingLimits: {
-      dailySpendingLimit: {
-        isEnabled: true,
-        nativeAmount: '1000000000'
-      },
-      transactionSpendingLimit: {
-        isEnabled: true,
-        nativeAmount: '100000000000'
-      }
+    transactionSpendingLimit: {
+      isEnabled: true,
+      nativeAmount: '100000000000'
     }
   },
   'ETH': {
     denomination: '1000000000000000000',
-    spendingLimits: {
-      dailySpendingLimit: {
-        isEnabled: true,
-        nativeAmount: '1000000000000'
-      },
-      transactionSpendingLimit: {
-        isEnabled: true,
-        nativeAmount: '10000000000000000'
-      }
+    transactionSpendingLimit: {
+      isEnabled: true,
+      nativeAmount: '10000000000000000'
     }
   },
   customTokens: []
 }
 
-export const LOCAL_ACCOUNT_DEFAULTS = {bluetoothMode: false}
+export const LOCAL_ACCOUNT_DEFAULTS = {
+  bluetoothMode: false,
+  'BTC': {
+    dailySpendingLimit: {
+      isEnabled: true,
+      nativeAmount: '1000000000'
+    }
+  },
+  'BCH': {
+    dailySpendingLimit: {
+      isEnabled: true,
+      nativeAmount: '10000000'
+    },
+  },
+  'LTC': {
+    dailySpendingLimit: {
+      isEnabled: true,
+      nativeAmount: '1000000000'
+    },
+  },
+  'ETH': {
+    dailySpendingLimit: {
+      isEnabled: true,
+      nativeAmount: '1000000000000'
+    },
+  }
+}
 
-const SYNCHED_SETTINGS_FILENAME = 'Settings.json'
+const SYNCED_SETTINGS_FILENAME = 'Settings.json'
 const LOCAL_SETTINGS_FILENAME = 'Settings.json'
 const CATEGORIES_FILENAME = 'Categories.json'
 
@@ -138,10 +140,10 @@ export const setDenominationKeyRequest = (account: AbcAccount, currencyCode: str
   })
 
 export const setDailySpendingLimitRequest = (account: AbcAccount, currencyCode: string, isEnabled: boolean, dailySpendingLimit: string) => {
-  return getSyncedSettings(account)
+  return getLocalSettings(account)
   .then((settings) => {
     const updatedSettings = updateCurrencySettings(settings, currencyCode, {isEnabled, dailySpendingLimit})
-    return setSyncedSettings(account, updatedSettings)
+    return setLocalSettings(account, updatedSettings)
   })
 }
 
@@ -163,7 +165,7 @@ export const getSyncedSettings = (account: AbcAccount) =>
   .catch((e) => {
     console.log(e)
     // If Settings.json doesn't exist yet, create it, and return it
-    return setSyncedSettings(account, SYNCED_ACCOUNT_DEFAULTS)
+    return SYNCED_ACCOUNT_DEFAULTS
   })
 
 export async function getSyncedSettingsAsync (account: AbcAccount) {
@@ -175,7 +177,7 @@ export async function getSyncedSettingsAsync (account: AbcAccount) {
   } catch (e) {
     console.log(e)
     // If Settings.json doesn't exist yet, create it, and return it
-    return setSyncedSettings(account, SYNCED_ACCOUNT_DEFAULTS)
+    return SYNCED_ACCOUNT_DEFAULTS
   }
 }
 
@@ -183,6 +185,8 @@ export const setSyncedSettings = (account: AbcAccount, settings: Object) => {
   const text = JSON.stringify(settings)
   const SettingsFile = getSyncedSettingsFile(account)
   return SettingsFile.setText(text)
+    .then(() => SettingsFile.getText())
+    .then(JSON.parse)
 }
 
 export async function setSyncedSettingsAsync (account: AbcAccount, settings: Object) {
@@ -242,7 +246,6 @@ export const setLocalSettings = (account: AbcAccount, settings: Object) => {
   return localSettingsFile.setText(text)
 }
 
-
 export const getCoreSettings = (account: AbcAccount): Promise<{otpMode: boolean, pinMode: boolean}> => { // eslint-disable-line no-unused-vars
   const coreSettings: {otpMode: boolean, pinMode: boolean} = CORE_DEFAULTS
   // TODO: Get each setting separately,
@@ -255,7 +258,7 @@ export const getSyncedSettingsFile = (account: AbcAccount) => {
   // $FlowFixMe folder not found on AbcAccount type
   const folder = account.folder
 //   console.log(folder)
-  return folder.file(SYNCHED_SETTINGS_FILENAME)
+  return folder.file(SYNCED_SETTINGS_FILENAME)
 }
 
 export const getLocalSettingsFile = (account: AbcAccount) =>

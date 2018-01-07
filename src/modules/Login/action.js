@@ -2,6 +2,7 @@
 
 import {AbcAccount} from 'airbitz-core-types'
 import {Actions} from 'react-native-router-flux'
+import R from 'ramda'
 
 import type {GetState, Dispatch} from '../ReduxTypes'
 
@@ -63,7 +64,8 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
   SETTINGS_API.getSyncedSettings(account)
     .then((settings) => {
       const syncDefaults = SETTINGS_API.SYNCED_ACCOUNT_DEFAULTS
-      const syncFinal = {...syncDefaults, ...settings}
+      const syncFinal = R.mergeDeepLeft(syncDefaults, settings)
+      // const syncFinal = {...syncDefaults, ...settings}
       const customTokens = settings ? settings.customTokens : []
 
       // Add all the settings to UI/Settings
@@ -76,21 +78,30 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
       dispatch(SETTINGS_ACTIONS.setDenominationKey('ETH', syncFinal.ETH.denomination))
 
       const currencySettings = {
-        BTC: settings.BTC,
-        BCH: settings.BCH,
-        ETH: settings.ETH,
-        DASH: settings.DASH,
-        REP: settings.REP,
-        WINGS: settings.WINGS,
+        BTC: syncFinal.BTC,
+        BCH: syncFinal.BCH,
+        ETH: syncFinal.ETH,
+        DASH: syncFinal.DASH,
+        REP: syncFinal.REP,
+        WINGS: syncFinal.WINGS,
       }
 
       const {
-        transactionSpendingLimit: {txNativeAmount, txIsEnabled},
-        dailySpendingLimit: {dailyNativeAmount, dailyIsEnabled}
+        transactionSpendingLimit: {nativeAmount, isEnabled}
       } = currencySettings.BTC
 
-      dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('BTC', dailyIsEnabled, dailyNativeAmount))
-      dispatch(SETTINGS_ACTIONS.updateTransactionSpendingLimitSuccess('BTC', txIsEnabled, txNativeAmount))
+      dispatch(SETTINGS_ACTIONS.updateTransactionSpendingLimitSuccess('BTC', isEnabled, nativeAmount))
+
+      const localSettings = {
+        BTC: {
+          dailySpendingLimit: {
+            nativeAmount: '123123',
+            isEnabled: false,
+          },
+        }
+      }
+
+      dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('BTC', localSettings.BTC.dailySpendingLimit.isEnabled, localSettings.BTC.dailySpendingLimit.nativeAmount))
 
       if (customTokens) {
         customTokens.forEach((token) => {

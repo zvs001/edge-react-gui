@@ -184,3 +184,9 @@ export const getDefaultFiat = (state: State) => {
   const defaultFiat: string = settings.defaultFiat
   return defaultFiat
 }
+
+export const getIsAuthorized = (state: State) => {
+  const settings = getSettings(state)
+  const isAuthorized = !settings.changesLocked
+  return isAuthorized
+}

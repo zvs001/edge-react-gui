@@ -236,7 +236,10 @@ export const settings = (state = initialState, action) => {
 
   case ACTION.SET_SETTINGS_LOCK: {
     // const {denomination} = data
-    return {...state, changesLocked: data}
+    return {
+      ...state,
+      changesLocked: data
+    }
   }
 
   case ACTION.TOUCH_ID_SETTINGS: {
