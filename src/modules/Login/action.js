@@ -69,14 +69,14 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
       const customTokens = settings ? settings.customTokens : []
 
       // Add all the settings to UI/Settings
-      dispatch(SETTINGS_ACTIONS.setAutoLogoutTimeInSeconds(syncFinal.autoLogoutTimeInSeconds))
-      dispatch(SETTINGS_ACTIONS.setDefaultFiat(syncFinal.defaultFiat))
-      dispatch(SETTINGS_ACTIONS.setMerchantMode(syncFinal.merchantMode))
+      dispatch(SETTINGS_ACTIONS.setDenominationKey('ETH', syncFinal.ETH.denomination))
       dispatch(SETTINGS_ACTIONS.setCustomTokens(syncFinal.customTokens))
       dispatch(SETTINGS_ACTIONS.setDenominationKey('BTC', syncFinal.BTC.denomination))
       dispatch(SETTINGS_ACTIONS.setDenominationKey('BCH', syncFinal.BCH.denomination))
-      dispatch(SETTINGS_ACTIONS.setDenominationKey('ETH', syncFinal.ETH.denomination))
       dispatch(SETTINGS_ACTIONS.setDenominationKey('LTC', syncFinal.LTC.denomination))
+      dispatch(SETTINGS_ACTIONS.setAutoLogoutTimeInSeconds(syncFinal.autoLogoutTimeInSeconds))
+      dispatch(SETTINGS_ACTIONS.setDefaultFiat(syncFinal.defaultFiat))
+      dispatch(SETTINGS_ACTIONS.setMerchantMode(syncFinal.merchantMode))
 
       const currencySettings = {
         BTC: syncFinal.BTC,
@@ -105,25 +105,27 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
     .catch((error) => {
       console.error(error)
     })
+    .then(() => {
+      SETTINGS_API.getLocalSettings(account)
+        .then((settings) => {
+          const localDefaults = SETTINGS_API.LOCAL_ACCOUNT_DEFAULTS
 
-  SETTINGS_API.getLocalSettings(account)
-    .then((settings) => {
-      const localDefaults = SETTINGS_API.LOCAL_ACCOUNT_DEFAULTS
+          const localFinal = {...localDefaults, ...settings}
 
-      const localFinal = {...localDefaults, ...settings}
-
-      dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('BTC', localFinal.BTC.dailySpendingLimit.isEnabled, localFinal.BTC.dailySpendingLimit.nativeAmount))
-      // Add all the local settings to UI/Settings
-      dispatch(SETTINGS_ACTIONS.setBluetoothMode(localFinal.bluetoothMode))
+          dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('BTC', localFinal.BTC.dailySpendingLimit.isEnabled, localFinal.BTC.dailySpendingLimit.nativeAmount))
+          // Add all the local settings to UI/Settings
+          dispatch(SETTINGS_ACTIONS.setBluetoothMode(localFinal.bluetoothMode))
+        })
     })
+    .then(() => {
+      SETTINGS_API.getCoreSettings(account)
+        .then((settings) => {
+          const coreDefaults = SETTINGS_API.CORE_DEFAULTS
 
-  SETTINGS_API.getCoreSettings(account)
-    .then((settings) => {
-      const coreDefaults = SETTINGS_API.CORE_DEFAULTS
-
-      const coreFinal = {...coreDefaults, ...settings}
-      dispatch(SETTINGS_ACTIONS.setPINMode(coreFinal.pinMode))
-      dispatch(SETTINGS_ACTIONS.setOTPMode(coreFinal.otpMode))
+          const coreFinal = {...coreDefaults, ...settings}
+          dispatch(SETTINGS_ACTIONS.setPINMode(coreFinal.pinMode))
+          dispatch(SETTINGS_ACTIONS.setOTPMode(coreFinal.otpMode))
+        })
     })
 }
 
