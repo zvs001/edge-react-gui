@@ -79,20 +79,18 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
       dispatch(SETTINGS_ACTIONS.setMerchantMode(syncFinal.merchantMode))
 
       const currencySettings = {
-        BTC: syncFinal.BTC,
-        LTC: syncFinal.LTC,
-        BCH: syncFinal.BCH,
-        ETH: syncFinal.ETH,
-        DASH: syncFinal.DASH,
-        REP: syncFinal.REP,
-        WINGS: syncFinal.WINGS,
+        BTC: settings.BTC.transactionSpendingLimits,
+        LTC: settings.LTC.transactionSpendingLimits,
+        BCH: settings.BCH.transactionSpendingLimits,
+        ETH: settings.ETH.transactionSpendingLimits,
+        DASH: settings.DASH.transactionSpendingLimits,
       }
 
-      const {
-        transactionSpendingLimit: {nativeAmount, isEnabled}
-      } = currencySettings.BTC
-
-      dispatch(SETTINGS_ACTIONS.updateTransactionSpendingLimitSuccess('BTC', isEnabled, nativeAmount))
+      dispatch(SETTINGS_ACTIONS.updateTransactionSpendingLimitSuccess('BTC', currencySettings.BTC.isEnabled, currencySettings.BTC.nativeAmount))
+      dispatch(SETTINGS_ACTIONS.updateTransactionSpendingLimitSuccess('LTC', currencySettings.LTC.isEnabled, currencySettings.LTC.nativeAmount))
+      dispatch(SETTINGS_ACTIONS.updateTransactionSpendingLimitSuccess('BCH', currencySettings.BCH.isEnabled, currencySettings.BCH.nativeAmount))
+      dispatch(SETTINGS_ACTIONS.updateTransactionSpendingLimitSuccess('ETH', currencySettings.ETH.isEnabled, currencySettings.ETH.nativeAmount))
+      dispatch(SETTINGS_ACTIONS.updateTransactionSpendingLimitSuccess('DASH', currencySettings.DASH.isEnabled, currencySettings.DASH.nativeAmount))
 
       if (customTokens) {
         customTokens.forEach((token) => {
@@ -112,7 +110,20 @@ const loadSettings = () => (dispatch: Dispatch, getState: GetState) => {
 
           const localFinal = {...localDefaults, ...settings}
 
-          dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('BTC', localFinal.BTC.dailySpendingLimit.isEnabled, localFinal.BTC.dailySpendingLimit.nativeAmount))
+          const currencySettings = {
+            BTC: settings.BTC.dailySpendingLimit,
+            LTC: settings.LTC.dailySpendingLimit,
+            BCH: settings.BCH.dailySpendingLimit,
+            ETH: settings.ETH.dailySpendingLimit,
+            DASH: settings.DASH.dailySpendingLimit,
+          }
+
+          dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('BTC', currencySettings.BTC.isEnabled, currencySettings.BTC.nativeAmount))
+          dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('LTC', currencySettings.LTC.isEnabled, currencySettings.LTC.nativeAmount))
+          dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('BCH', currencySettings.BCH.isEnabled, currencySettings.BCH.nativeAmount))
+          dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('ETH', currencySettings.ETH.isEnabled, currencySettings.ETH.nativeAmount))
+          dispatch(SETTINGS_ACTIONS.updateDailySpendingLimitSuccess('DASH', currencySettings.DASH.isEnabled, currencySettings.DASH.nativeAmount))
+
           // Add all the local settings to UI/Settings
           dispatch(SETTINGS_ACTIONS.setBluetoothMode(localFinal.bluetoothMode))
         })

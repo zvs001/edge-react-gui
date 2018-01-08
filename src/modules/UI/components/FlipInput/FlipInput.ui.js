@@ -182,8 +182,6 @@ export default class FlipInput extends Component<Props, State> {
 
   render () {
     const {primaryInfo, secondaryInfo} = this.props
-    if (primaryInfo || secondaryInfo) return null
-
     const {isToggled} = this.state
     const frontAnimatedStyle = {
       transform: [

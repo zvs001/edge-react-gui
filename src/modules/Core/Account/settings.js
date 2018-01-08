@@ -47,6 +47,13 @@ export const SYNCED_ACCOUNT_DEFAULTS = {
       nativeAmount: '10000000000000000'
     }
   },
+  'DASH': {
+    denomination: '1000000000000000000',
+    transactionSpendingLimit: {
+      isEnabled: true,
+      nativeAmount: '10000000000000000'
+    }
+  },
   customTokens: []
 }
 
@@ -71,6 +78,12 @@ export const LOCAL_ACCOUNT_DEFAULTS = {
     },
   },
   'ETH': {
+    dailySpendingLimit: {
+      isEnabled: true,
+      nativeAmount: '1000000000000'
+    },
+  },
+  'DASH': {
     dailySpendingLimit: {
       isEnabled: true,
       nativeAmount: '1000000000000'

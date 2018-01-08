@@ -13,8 +13,8 @@ export const mapStateToProps = (state: State, ownProps: Object) => ({
   pluginName:               ownProps.pluginName,
   currencyCode:             ownProps.currencyCode,
   isAuthorized:             SETTINGS_SELECTORS.getIsAuthorized(state),
-  transactionSpendingLimit: SETTINGS_SELECTORS.getTransactionSpendingLimit(state, ownProps.currencyCode),
-  dailySpendingLimit:       SETTINGS_SELECTORS.getDailySpendingLimit(state, ownProps.currencyCode),
+  transactionSpendingLimit: SETTINGS_SELECTORS.getTransactionSpendingLimit(state, ownProps.currencyCode) || {isEnabled: true, nativeAmount: '0'},
+  dailySpendingLimit:       SETTINGS_SELECTORS.getDailySpendingLimit(state, ownProps.currencyCode) || {isEnabled: true, nativeAmount: '0'},
 })
 export const mapDispatchToProps = (dispatch: Dispatch) => ({
   updateDailySpendingLimit: (currencyCode: string, isEnabled: boolean, dailySpendingLimit: string) => {
