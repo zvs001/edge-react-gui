@@ -148,7 +148,6 @@ const CHANGE_PASSWORD   = s.strings.title_change_password
 const CHANGE_PIN        = s.strings.title_change_pin
 const PASSWORD_RECOVERY = s.strings.title_password_recovery
 const DEFAULT_FIAT      = s.strings.title_default_fiat
-const CANCEL_TEXT       = s.strings.cancel
 
 type Props = {
   username?: string,
@@ -383,7 +382,7 @@ export default class Main extends Component<Props, State> {
         <Scene key={`${pluginName}SpendingLimits`} pluginName={pluginName} currencyCode={currencyCode} navTransparent={true}
           component={SpendingLimits}
           renderTitle={this.renderTitle(spendingLimitsTitle)}
-          renderLeftButton={this.renderBackButton(CANCEL_TEXT)}
+          renderLeftButton={this.renderBackButton()}
           renderRightButton={this.renderHelpButton} />
       )
     }
