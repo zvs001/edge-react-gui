@@ -236,7 +236,10 @@ export const settings = (state = initialState, action) => {
 
   case ACTION.SET_SETTINGS_LOCK: {
     // const {denomination} = data
-    return {...state, changesLocked: data}
+    return {
+      ...state,
+      changesLocked: data
+    }
   }
 
   case ACTION.TOUCH_ID_SETTINGS: {
@@ -317,6 +320,44 @@ export const settings = (state = initialState, action) => {
           ...supportedWalletTypes,
           ...walletTypes
         ]
+      }
+    }
+  }
+
+  case ACTION.UPDATE_TRANSACTION_SPENDING_LIMIT_SUCCESS: {
+    const {currencyCode, nativeAmount, isEnabled} = action.data
+    const currentCurrencySettings = state[currencyCode]
+    const {spendingLimits} = currentCurrencySettings
+    return {
+      ...state,
+      [currencyCode]: {
+        ...currentCurrencySettings,
+        spendingLimits: {
+          ...spendingLimits,
+          transactionSpendingLimit: {
+            isEnabled,
+            nativeAmount
+          }
+        }
+      }
+    }
+  }
+
+  case ACTION.UPDATE_DAILY_SPENDING_LIMIT_SUCCESS: {
+    const {currencyCode, nativeAmount, isEnabled} = action.data
+    const currentCurrencySettings = state[currencyCode]
+    const {spendingLimits} = currentCurrencySettings
+    return {
+      ...state,
+      [currencyCode]: {
+        ...currentCurrencySettings,
+        spendingLimits: {
+          ...spendingLimits,
+          dailySpendingLimit: {
+            isEnabled,
+            nativeAmount
+          }
+        }
       }
     }
   }
