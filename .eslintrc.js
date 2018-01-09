@@ -12,7 +12,7 @@ module.exports =
     "camelcase": "error",
     "flowtype/generic-spacing": "off",
     "no-throw-literal": "error",
-    "no-unused-vars": "off",
+    "no-unused-vars": 2,
     "no-var": "error",
     "prefer-const": "error",
     "react/prop-types": 0,
