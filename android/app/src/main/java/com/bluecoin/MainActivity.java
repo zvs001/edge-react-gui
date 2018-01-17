@@ -1,4 +1,4 @@
-package co.edgesecure.wallet;
+package com.bluecoin;
 
 import android.os.Bundle;
 

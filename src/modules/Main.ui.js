@@ -89,10 +89,11 @@ import * as CONTEXT_API from './Core/Context/api'
 
 import {coinbasePlugin, shapeshiftPlugin} from 'edge-exchange-plugins'
 import {
-  BitcoinCurrencyPluginFactory,
-  BitcoincashCurrencyPluginFactory,
-  LitecoinCurrencyPluginFactory,
-  DashCurrencyPluginFactory
+  // BitcoinCurrencyPluginFactory,
+  // BitcoincashCurrencyPluginFactory,
+  // LitecoinCurrencyPluginFactory,
+  // DashCurrencyPluginFactory,
+  bluecoinCurrencyPluginFactory
 } from 'edge-currency-bitcoin'
 import {EthereumCurrencyPluginFactory} from 'edge-currency-ethereum'
 
@@ -103,11 +104,12 @@ const pluginFactories: Array<AbcCorePlugin> = [
   coinbasePlugin,
   shapeshiftPlugin
 ]
-pluginFactories.push(EthereumCurrencyPluginFactory)
-pluginFactories.push(BitcoinCurrencyPluginFactory)
-pluginFactories.push(BitcoincashCurrencyPluginFactory)
-pluginFactories.push(LitecoinCurrencyPluginFactory)
-pluginFactories.push(DashCurrencyPluginFactory)
+// pluginFactories.push(EthereumCurrencyPluginFactory)
+// pluginFactories.push(BitcoinCurrencyPluginFactory)
+// pluginFactories.push(BitcoincashCurrencyPluginFactory)
+// pluginFactories.push(LitecoinCurrencyPluginFactory)
+// pluginFactories.push(DashCurrencyPluginFactory)
+pluginFactories.push(bluecoinCurrencyPluginFactory)
 
 const localeInfo = Locale.constants() // should likely be moved to login system and inserted into Redux
 

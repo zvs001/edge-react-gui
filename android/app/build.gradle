@@ -87,7 +87,7 @@ android {
     buildToolsVersion "25.0.3"
 
     defaultConfig {
-        applicationId "co.edgesecure.wallet"
+        applicationId "com.bluecoin"
         minSdkVersion 23
         targetSdkVersion 25
         versionCode 21000000

@@ -20,6 +20,7 @@ export const SYNCED_ACCOUNT_DEFAULTS = {
   defaultFiat: 'USD',
   merchantMode: false,
   'BTC': {denomination: '100000000'},
+  'BLU': {denomination: '100000000'},
   'BCH': {denomination: '100000000'},
   'DASH': {denomination: '100000000'},
   'LTC': {denomination: '100000000'},
