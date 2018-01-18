@@ -32,6 +32,9 @@ const fakeExchangeRate = {
   },
   'LUN': {
     value: (1 / 2000000000000000000) * randomSeed
+  },
+  'BLU': {
+    value: 0.1 * randomSeed
   }
 }
 
