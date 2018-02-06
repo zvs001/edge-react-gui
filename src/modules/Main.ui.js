@@ -75,6 +75,7 @@ import * as CONTEXT_API from './Core/Context/api'
 import { coinbasePlugin, shapeshiftPlugin } from 'edge-exchange-plugins'
 import { BluecoinCurrencyPluginFactory } from 'edge-currency-bitcoin'
 // import { EthereumCurrencyPluginFactory } from 'edge-currency-ethereum'
+import bluecoinExchangePlugin from '../../tmpLib/edge-exchange-bluecoin'
 
 import ENV from '../../env.json'
 import {makeCoreContext} from '../util/makeContext.js'
@@ -82,7 +83,7 @@ import * as URI from 'uri-js'
 
 import {CAMERA, type Permission} from './UI/permissions.js'
 
-const pluginFactories: Array<AbcCorePlugin> = [coinbasePlugin, shapeshiftPlugin]
+const pluginFactories: Array<AbcCorePlugin> = [coinbasePlugin, shapeshiftPlugin, bluecoinExchangePlugin]
 // pluginFactories.push(EthereumCurrencyPluginFactory)
 // pluginFactories.push(BitcoinCurrencyPluginFactory)
 // pluginFactories.push(BitcoincashCurrencyPluginFactory)
@@ -511,6 +512,7 @@ export default class Main extends Component<Props, State> {
   }
 
   renderHelpButton = () => {
+    return null
     return <HelpButton />
   }
 

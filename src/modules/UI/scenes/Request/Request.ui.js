@@ -197,7 +197,7 @@ export class Request extends Component<Props, State> {
   }
 
   shareMessage = () => {
-    const APP_NAME = 'Edge Wallet'
+    const APP_NAME = 'Bluecoin Wallet'
     Share.share({
       message: this.state.encodedURI,
       title: sprintf(s.strings.request_qr_email_title, APP_NAME)

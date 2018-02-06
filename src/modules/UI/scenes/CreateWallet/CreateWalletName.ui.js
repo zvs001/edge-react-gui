@@ -43,7 +43,7 @@ export class CreateWalletNameComponent extends Component<CreateWalletNameProps, 
 
   onNext = (): void => {
     if (this.isValidWalletName()) {
-      Actions[Constants.CREATE_WALLET_SELECT_CRYPTO]({walletName: this.state.walletName})
+      Actions[Constants.CREATE_WALLET_REVIEW]({walletName: this.state.walletName}) // CREATE_WALLET_SELECT_CRYPTO => CREATE_WALLET_REVIEW
     } else {
       Alert.alert(s.strings.create_wallet_invalid_name, s.strings.create_wallet_enter_valid_name)
     }
