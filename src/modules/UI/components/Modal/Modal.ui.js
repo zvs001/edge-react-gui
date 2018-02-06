@@ -20,6 +20,7 @@ type Props = {
   headerSubtext?: string,
   visibilityBoolean: boolean,
   featuredIcon: Node,
+  modalHeaderIcon?: {},
   modalVisibleStyle?: {},
   modalBoxStyle?: {},
   modalContentStyle?: {},
@@ -45,14 +46,14 @@ export default class StylizedModal extends Component<Props, State> {
         </TouchableOpacity>
       </View>
     }
-    return <View style={[styles.exitRow]} />
+    return <View style={[styles.exitRowEmpty]} />
   }
   render () {
     const {headerText, headerSubtext} = this.props
 
     return (
       <Modal style={[styles.topLevelModal, this.props.style]} isVisible={this.props.visibilityBoolean}>
-        <View style={[styles.modalHeaderIconWrapBottom]}>
+        <View style={[styles.modalHeaderIconWrapBottom, this.props.modalHeaderIcon]}>
           {this.props.featuredIcon}
         </View>
 

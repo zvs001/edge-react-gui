@@ -1,10 +1,16 @@
 // @flow
 
-import type {AbcCurrencyPlugin} from 'airbitz-core-types'
+import type { AbcCurrencyPlugin, AbcDenomination } from 'edge-login'
 
 import type {State} from '../../ReduxTypes'
 
 import isoFiatDenominations from './IsoFiatDenominations.js'
+
+const emptyAbcDenom: AbcDenomination = {
+  name: '',
+  multiplier: '',
+  symbol: ''
+}
 
 export const getSettings = (state: State) => {
   const settings = state.ui.settings
@@ -24,12 +30,6 @@ export const getLoginStatus = (state: State): boolean => {
   const settings = getSettings(state)
   const loginStatus: boolean = settings.loginStatus
   return loginStatus
-}
-
-export const getExchangeTimer = (state: State): number => {
-  const settings = getSettings(state)
-  const exchangeTimer: number = settings.exchangeTimer
-  return exchangeTimer
 }
 
 export const getCurrencySettings = (state: State, currencyCode: string) => {
@@ -68,10 +68,15 @@ export const getDisplayDenominationFull = (state: State, currencyCode: string) =
   return selectedDenomination
 }
 
-export const getDisplayDenomination = (state: State, currencyCode: string) => {
+export const getDisplayDenomination = (state: State, currencyCode: string): AbcDenomination => {
   const selectedDenominationKey = getDisplayDenominationKey(state, currencyCode)
   const denominations = getDenominations(state, currencyCode)
-  const selectedDenomination = denominations.find((denomination) => denomination.multiplier === selectedDenominationKey)
+  let selectedDenomination: AbcDenomination = emptyAbcDenom
+  for (const d of denominations) {
+    if (d.multiplier === selectedDenominationKey) {
+      selectedDenomination = d
+    }
+  }
   return selectedDenomination
 }
 
@@ -173,4 +178,10 @@ export const getOtpKey = (state: State) => {
   const settings = getSettings(state)
   const otpKey: string = settings.otpKey
   return otpKey
+}
+
+export const getOtpResetDate = (state: State) => {
+  const settings = getSettings(state)
+  const otpResetDate = settings.otpResetDate
+  return otpResetDate
 }

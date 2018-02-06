@@ -230,10 +230,10 @@ export default class ExchangedFlipInput extends Component<Props, State> {
   }
   convertSecondaryExchangeToPrimaryExchange = (secondaryExchangeAmount: string): string => {
     const secondaryToPrimaryRatio:number = this.props.secondaryToPrimaryRatio
-    const primaryToSecondaryRatio:number = 1 / secondaryToPrimaryRatio
-    const primaryToSecondaryRatioString:string = isFinite(primaryToSecondaryRatio) ? primaryToSecondaryRatio.toString() : '0'
-    return bns.mul(primaryToSecondaryRatioString, secondaryExchangeAmount)
+    const primaryToSecondaryRatio:string = secondaryToPrimaryRatio ? `${1 / secondaryToPrimaryRatio}` : '0'
+    return bns.mul(primaryToSecondaryRatio, secondaryExchangeAmount)
   }
+
   convertPrimaryExchangeToPrimaryDisplay = (primaryExchangeAmount: string): string => {
     const primaryDisplayToExchangeRatio:string = this.getPrimaryDisplayToExchangeRatio()
     return bns.mul(primaryDisplayToExchangeRatio, primaryExchangeAmount)
