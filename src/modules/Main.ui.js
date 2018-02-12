@@ -26,15 +26,15 @@ import ChangePinConnector from './UI/scenes/ChangePinPassword/ChangePinConnector
 import PasswordRecoveryConnector from '../connectors/scene/PasswordRecoveryConnector.js'
 import OtpSettingsSceneConnector from '../connectors/scene/OtpSettingsSceneConnector.js'
 import TransactionListConnector from './UI/scenes/TransactionList/TransactionListConnector'
-import HelpButton from './UI/components/Header/Component/HelpButtonConnector'
+// import HelpButton from './UI/components/Header/Component/HelpButtonConnector'
 import BackButton from './UI/components/Header/Component/BackButton.ui'
-import ExchangeDropMenu from '../connectors/components/HeaderMenuExchangeConnector'
+// import ExchangeDropMenu from '../connectors/components/HeaderMenuExchangeConnector'
 
 import TransactionDetails from './UI/scenes/TransactionDetails/TransactionDetailsConnector.js'
 import Request from './UI/scenes/Request/index'
 import SendConfirmation from './UI/scenes/SendConfirmation/index'
 import Scan from './UI/scenes/Scan/ScanConnector'
-import ExchangeConnector from '../connectors/scene/CryptoExchangeSceneConnector'
+// import ExchangeConnector from '../connectors/scene/CryptoExchangeSceneConnector'
 import WalletList from './UI/scenes/WalletList/WalletListConnector'
 import { CreateWalletNameComponent } from './UI/scenes/CreateWallet/CreateWalletName.ui.js'
 import { CreateWalletSelectCrypto } from './UI/scenes/CreateWallet/CreateWalletSelectCryptoConnector'
@@ -49,7 +49,7 @@ import CurrencySettings from './UI/scenes/Settings/CurrencySettingsConnector'
 import DefaultFiatSettingConnector from './UI/scenes/Settings/DefaultFiatSettingConnector'
 import SendConfirmationOptions from './UI/scenes/SendConfirmation/SendConfirmationOptionsConnector.js'
 import ChangeMiningFeeSendConfirmation from './UI/scenes/ChangeMiningFee/ChangeMiningFeeSendConfirmationConnector.ui'
-import ChangeMiningFeeExchange from './UI/scenes/ChangeMiningFee/ChangeMiningFeeExchangeConnector.ui'
+// import ChangeMiningFeeExchange from './UI/scenes/ChangeMiningFee/ChangeMiningFeeExchangeConnector.ui'
 
 // $FlowFixMe
 import CardStackStyleInterpolator from 'react-navigation/src/views/CardStack/CardStackStyleInterpolator'
@@ -75,7 +75,7 @@ import * as CONTEXT_API from './Core/Context/api'
 import { coinbasePlugin, shapeshiftPlugin } from 'edge-exchange-plugins'
 import { BluecoinCurrencyPluginFactory } from 'edge-currency-bitcoin'
 // import { EthereumCurrencyPluginFactory } from 'edge-currency-ethereum'
-import bluecoinExchangePlugin from '../../tmpLib/edge-exchange-bluecoin'
+import bluecoinExchangePlugin from 'edge-exchange-bluecoin'
 
 import ENV from '../../env.json'
 import {makeCoreContext} from '../util/makeContext.js'
@@ -105,14 +105,14 @@ tabBarIconFiles[Constants.WALLET_LIST] = walletIcon
 tabBarIconFiles[Constants.REQUEST] = receiveIcon
 tabBarIconFiles[Constants.SCAN] = scanIcon
 tabBarIconFiles[Constants.TRANSACTION_LIST] = exchangeIcon
-tabBarIconFiles[Constants.EXCHANGE] = exchangeIcon
+// tabBarIconFiles[Constants.EXCHANGE] = exchangeIcon
 
 const tabBarIconFilesSelected: { [tabName: string]: string } = {}
 tabBarIconFilesSelected[Constants.WALLET_LIST] = walletIconSelected
 tabBarIconFilesSelected[Constants.REQUEST] = receiveIconSelected
 tabBarIconFilesSelected[Constants.SCAN] = scanIconSelected
 tabBarIconFilesSelected[Constants.TRANSACTION_LIST] = exchangeIconSelected
-tabBarIconFilesSelected[Constants.EXCHANGE] = exchangeIconSelected
+// tabBarIconFilesSelected[Constants.EXCHANGE] = exchangeIconSelected
 
 const TRANSACTION_DETAILS = s.strings.title_transaction_details
 const WALLETS = s.strings.title_wallets
@@ -122,7 +122,7 @@ const CREATE_WALLET = s.strings.title_create_wallet
 const REQUEST = s.strings.title_request
 const SEND = s.strings.title_send
 const EDGE_LOGIN = s.strings.title_edge_login
-const EXCHANGE = s.strings.title_exchange
+// const EXCHANGE = s.strings.title_exchange
 const CHANGE_MINING_FEE = s.strings.title_change_mining_fee
 const BACK = s.strings.title_back
 const SEND_CONFIRMATION = s.strings.title_send_confirmation
@@ -360,25 +360,6 @@ export default class Main extends Component<Props, State> {
                             renderRightButton={this.renderEmptyButton}
                           />
                         </Stack>
-
-                        <Stack key={Constants.EXCHANGE} icon={this.icon(Constants.EXCHANGE)} tabBarLabel={EXCHANGE}>
-                          <Scene
-                            key={Constants.EXCHANGE_NOT_USED}
-                            navTransparent={true}
-                            component={ExchangeConnector}
-                            renderTitle={this.renderTitle(EXCHANGE)}
-                            renderLeftButton={this.renderExchangeButton}
-                            renderRightButton={this.renderMenuButton}
-                          />
-                          <Scene
-                            key={Constants.CHANGE_MINING_FEE_EXCHANGE}
-                            navTransparent={true}
-                            component={ChangeMiningFeeExchange}
-                            renderTitle={this.renderTitle(CHANGE_MINING_FEE)}
-                            renderLeftButton={this.renderBackButton()}
-                            renderRightButton={this.renderHelpButton}
-                          />
-                        </Stack>
                       </Tabs>
 
                       <Stack key={Constants.SEND_CONFIRMATION} hideTabBar>
@@ -513,7 +494,7 @@ export default class Main extends Component<Props, State> {
 
   renderHelpButton = () => {
     return null
-    return <HelpButton />
+    // return <HelpButton />
   }
 
   renderBackButton = (label: string = BACK) => () => {
@@ -530,9 +511,9 @@ export default class Main extends Component<Props, State> {
     </TouchableWithoutFeedback>
   }
 
-  renderExchangeButton = () => {
-    return <ExchangeDropMenu />
-  }
+  // renderExchangeButton = () => {
+  //   return <ExchangeDropMenu />
+  // }
 
   renderSendConfirmationButton = () => {
     return <SendConfirmationOptions />

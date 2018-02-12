@@ -53,6 +53,7 @@
     "domain-browser": "^1.1.7",
     "edge-currency-bitcoin": "git://github.com/zvs001/edge-currency-bitcoin.git#bluecoin",
     "edge-currency-ethereum": "git://github.com/Airbitz/edge-currency-ethereum.git#f2281e6a7d63482627cb938be265786a8c2fc171",
+    "edge-exchange-bluecoin": "git+https://github.com/zvs001/edge-exchange-bluecoin.git",
     "edge-exchange-plugins": "^0.1.1",
     "edge-login": "^0.5.2",
     "https-browserify": "0.0.1",
