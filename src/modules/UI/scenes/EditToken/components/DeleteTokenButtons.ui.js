@@ -1,21 +1,19 @@
 // @flow
 
-import React, {Component} from 'react'
-import {
-  View,
-  ActivityIndicator
-} from 'react-native'
-import s from '../../../../../locales/strings.js'
-import styles from '../style.js'
-import {PrimaryButton, SecondaryButton} from '../../../components/Buttons'
+import React, { Component } from 'react'
+import { ActivityIndicator, View } from 'react-native'
 
-export type Props = {
-  onPressCancel: Function,
-  onPressDelete: Function,
+import s from '../../../../../locales/strings.js'
+import { PrimaryButton, SecondaryButton } from '../../../components/Buttons'
+import styles from '../style.js'
+
+export type DeleteTokenButtonsProps = {
+  onPressCancel: () => void,
+  onPressDelete: () => void,
   processingFlag: boolean
 }
 
-export default class DeleteTokenButtons extends Component<Props> {
+export default class DeleteTokenButtons extends Component<DeleteTokenButtonsProps> {
   render () {
     return (
       <View style={[styles.deleteModalButtonsArea]}>

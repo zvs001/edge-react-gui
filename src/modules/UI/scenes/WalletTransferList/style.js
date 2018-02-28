@@ -1,11 +1,14 @@
-import {StyleSheet} from 'react-native'
-import platform from '../../../../theme/variables/platform.js'
+// @flow
+
+import { StyleSheet } from 'react-native'
+
 import THEME from '../../../../theme/variables/airbitz'
+import { PLATFORM } from '../../../../theme/variables/platform.js'
 
 const styles = StyleSheet.create({
   container: {
-    bottom: platform.deviceHeight / 10,
-    maxHeight: platform.deviceHeight * 0.8,
+    bottom: PLATFORM.deviceHeight / 10,
+    maxHeight: PLATFORM.deviceHeight * 0.8,
     alignItems: 'stretch',
     backgroundColor: THEME.COLORS.WHITE
   },

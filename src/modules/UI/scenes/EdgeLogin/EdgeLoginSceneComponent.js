@@ -1,21 +1,24 @@
+import type { AbcLobby } from 'edge-login'
 // @flow
 import React, { Component } from 'react'
-import { View, Text, ActivityIndicator, Image } from 'react-native'
+import { ActivityIndicator, Image, Text, View } from 'react-native'
+
+import s from '../../../../locales/strings.js'
 import { PrimaryButton, SecondaryButton } from '../../components/Buttons/index'
 import Gradient from '../../components/Gradient/Gradient.ui'
-import s from '../../../../locales/strings.js'
-import type { AbcLobby } from 'edge-login'
 import SafeAreaView from '../../components/SafeAreaView'
-type Props = {
-  style: any,
+
+type EdgeLoginSceneProps = {
+  style: Object,
   lobby?: AbcLobby,
   error?: string,
   isProcessing: boolean,
   accept(): void,
   decline(): void
 }
-export default class EdgeLoginSceneComponent extends Component<Props> {
-  renderBody (style: any) {
+
+export default class EdgeLoginScene extends Component<EdgeLoginSceneProps> {
+  renderBody (style: Object) {
     let message = this.props.error
     if (!this.props.error) {
       message = s.strings.edge_description
@@ -26,7 +29,7 @@ export default class EdgeLoginSceneComponent extends Component<Props> {
       </View>
     )
   }
-  renderButtons (style: any) {
+  renderButtons (style: Object) {
     if (this.props.isProcessing) {
       return (
         <View style={style.buttonsProcessing}>
@@ -36,44 +39,29 @@ export default class EdgeLoginSceneComponent extends Component<Props> {
     }
     if (this.props.error) {
       return (
-        <View style={style.buttonContainer} >
+        <View style={style.buttonContainer}>
           <View style={style.buttons}>
-            <SecondaryButton
-              style={style.cancelSolo}
-              onPressFunction={this.props.decline}
-              text={s.strings.string_cancel_cap}
-            />
+            <SecondaryButton style={style.cancelSolo} onPressFunction={this.props.decline} text={s.strings.string_cancel_cap} />
           </View>
         </View>
       )
     }
     return (
-      <View style={style.buttonContainer} >
+      <View style={style.buttonContainer}>
         <View style={style.buttons}>
-          <SecondaryButton
-            style={style.cancel}
-            onPressFunction={this.props.decline}
-            text={s.strings.string_cancel_cap}
-          />
-          <PrimaryButton
-            style={style.submit}
-            onPressFunction={this.props.accept}
-            text={s.strings.accept_button_text}
-          />
+          <SecondaryButton style={style.cancel} onPressFunction={this.props.decline} text={s.strings.string_cancel_cap} />
+          <PrimaryButton style={style.submit} onPressFunction={this.props.accept} text={s.strings.accept_button_text} />
         </View>
       </View>
     )
   }
-  renderImage (style: any) {
+  renderImage (style: Object) {
     if (this.props.lobby && this.props.lobby.loginRequest && this.props.lobby.loginRequest.displayImageUrl) {
-      return <Image
-        style={style.image}
-        resizeMode={'contain'}
-        source={{ uri: this.props.lobby.loginRequest.displayImageUrl }} />
+      return <Image style={style.image} resizeMode={'contain'} source={{ uri: this.props.lobby.loginRequest.displayImageUrl }} />
     }
     return null
   }
-  renderHeader (style: any) {
+  renderHeader (style: Object) {
     let title = ''
     if (this.props.lobby && this.props.lobby.loginRequest) {
       title = this.props.lobby.loginRequest.displayName ? this.props.lobby.loginRequest.displayName : ''
@@ -82,14 +70,10 @@ export default class EdgeLoginSceneComponent extends Component<Props> {
       return (
         <View style={style.header}>
           <View style={style.headerTopShim} />
-          <View style={style.headerImageContainer} >
-            {this.renderImage(style)}
-          </View>
+          <View style={style.headerImageContainer}>{this.renderImage(style)}</View>
           <View style={style.headerTopShim} />
-          <View style={style.headerTextRow} >
-            <Text style={style.bodyText}>
-              {title}
-            </Text>
+          <View style={style.headerTextRow}>
+            <Text style={style.bodyText}>{title}</Text>
           </View>
           <View style={style.headerBottomShim} />
         </View>

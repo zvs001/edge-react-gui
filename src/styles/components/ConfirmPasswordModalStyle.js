@@ -21,6 +21,9 @@ const ConfirmPasswordModalStyle = {
       height: 10,
       backgroundColor: THEME.COLORS.WHITE
     },
+    clearShim: {
+      height: 20
+    },
     bottom: {
       flex: 4,
       flexDirection: 'row'
@@ -40,6 +43,11 @@ const ConfirmPasswordModalStyle = {
   bottom: {
     width: '100%'
   },
+  bottomActivity: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-around'
+  },
   icon: {
     color: THEME.COLORS.SECONDARY,
     position: 'relative',
@@ -51,4 +59,4 @@ const ConfirmPasswordModalStyle = {
   iconSize: 48
 }
 
-export {ConfirmPasswordModalStyle}
+export { ConfirmPasswordModalStyle }

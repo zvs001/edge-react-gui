@@ -1,16 +1,19 @@
 // @flow
 
-import {connect} from 'react-redux'
-import type { State, Dispatch } from '../../../ReduxTypes'
-import ChangeMiningFee from './ChangeMiningFee.ui'
-import { getNetworkFeeOption } from '../SendConfirmation/selectors'
-import { updateMiningFees } from '../SendConfirmation/action'
+import { connect } from 'react-redux'
 
-export const mapStateToProps = (state: State) => ({
+import type { Dispatch, State } from '../../../ReduxTypes'
+import { updateMiningFees } from '../SendConfirmation/action'
+import { getNetworkFeeOption } from '../SendConfirmation/selectors'
+import ChangeMiningFee from './ChangeMiningFee.ui.js'
+import type { ChangeMiningFeeDispatchProps, ChangeMiningFeeStateProps } from './ChangeMiningFee.ui.js'
+
+export const mapStateToProps = (state: State): ChangeMiningFeeStateProps => ({
+  // fee: state.ui.scenes.sendConfirmation.fee,
   feeSetting: getNetworkFeeOption(state)
 })
 
-export const mapDispatchToProps = (dispatch: Dispatch) => ({
+export const mapDispatchToProps = (dispatch: Dispatch): ChangeMiningFeeDispatchProps => ({
   onSubmit: (networkFeeOption: string) => dispatch(updateMiningFees({ networkFeeOption }))
 })
 

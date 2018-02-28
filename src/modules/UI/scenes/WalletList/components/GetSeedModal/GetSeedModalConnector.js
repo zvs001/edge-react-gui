@@ -1,23 +1,13 @@
 // @flow
 
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 
-import GetSeedModal from './GetSeedModal.ui'
-import type {Dispatch, GetState} from '../../../../../ReduxTypes'
 import * as Constants from '../../../../../../constants/indexConstants.js'
-import {CLOSE_MODAL_VALUE, VISIBLE_MODAL_NAME} from '../WalletOptions/action'
 import * as CORE_SELECTORS from '../../../../../Core/selectors.js'
-
-export type StateProps = {
-  walletId: string,
-  getSeed: any
-}
-
-export type DispatchProps = {
-  onPositive: (password: string) => any,
-  onNegative: () => any,
-  onDone: () => any
-}
+import type { Dispatch, GetState, State } from '../../../../../ReduxTypes'
+import { CLOSE_MODAL_VALUE, VISIBLE_MODAL_NAME } from '../WalletOptions/action'
+import GetSeedModal from './GetSeedModal.ui'
+import type { GetSeedModalDispatchProps, GetSeedModalStateProps } from './GetSeedModal.ui'
 
 export const UNLOCK = 'UNLOCK_WALLET_SEED'
 export const LOCK = 'LOCK_WALLET_SEED'
@@ -29,7 +19,7 @@ const checkCurrentPassword = (password: string) => async (dispatch: Dispatch, ge
   dispatch({ type: isPassword ? UNLOCK : LOCK })
 }
 
-const mapStateToProps = (state: any): StateProps => {
+const mapStateToProps = (state: State): GetSeedModalStateProps => {
   const wallet = CORE_SELECTORS.getWallet(state, state.ui.scenes.walletList.walletId)
   const walletId = state.ui.scenes.walletList.walletId
 
@@ -41,18 +31,18 @@ const mapStateToProps = (state: any): StateProps => {
   }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => {
+const mapDispatchToProps = (dispatch: Dispatch): GetSeedModalDispatchProps => {
   const close = () => {
     dispatch({ type: CLOSE_MODAL_VALUE(Constants.GET_SEED_VALUE) })
-    dispatch(({ type: LOCK }))
+    dispatch({ type: LOCK })
   }
 
-  return ({
+  return {
     onExitButtonFxn: close,
     onNegative: () => dispatch({ type: LOCK }),
     onPositive: (password: string) => dispatch(checkCurrentPassword(password)),
     onDone: close
-  })
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(GetSeedModal)

@@ -1,6 +1,5 @@
 // @flow
 
-import type { Store as ReduxStore, Dispatch as ReduxDispatch } from 'redux'
 import type {
   AbcAccount,
   AbcContext,
@@ -10,28 +9,21 @@ import type {
   AbcLobby,
   AbcParsedUri,
   AbcReceiveAddress,
-  AbcTransaction
- } from 'edge-login'
+  AbcTransaction,
+  EdgeReceiveAddress
+} from 'edge-login'
+import type { Dispatch as ReduxDispatch, Store as ReduxStore } from 'redux'
 
-import type {
-  DeviceDimensions,
-  GuiContact,
-  GuiWallet
-} from '../types'
-
-import type {PermissionsState} from '../reducers/permissions/permissionsReducer.js'
-import type {PermissionStatus, Permission} from './UI/permissions.js'
+import type { PermissionsState } from '../reducers/permissions/permissionsReducer.js'
+import type { DeviceDimensions, GuiContact, GuiCurrencyInfo, GuiWallet } from '../types'
+import type { Permission, PermissionStatus } from './UI/permissions.js'
 
 export type Action = { type: string, data?: any }
 
 export type CurrencyCode = string
 export type Id = string
 export type Username = string
-export type {
-  PermissionsState,
-  PermissionStatus,
-  Permission
-}
+export type { PermissionsState, PermissionStatus, Permission }
 
 export type State = {
   core: {
@@ -84,6 +76,9 @@ export type State = {
         forceUpdateGuiCounter: number,
         pending: boolean
       },
+      changeMiningFee: {
+        isCustomFeeVisible: boolean
+      },
       transactionList: {
         transactions: Array<AbcTransaction>,
         contactsList: Array<GuiContact>,
@@ -129,7 +124,7 @@ export type State = {
       },
       request: {
         inputCurrencySelected: string,
-        receiveAddress: AbcReceiveAddress
+        receiveAddress: EdgeReceiveAddress
       },
       dimensions: DeviceDimensions,
       helpModal: boolean,
@@ -146,12 +141,12 @@ export type State = {
         syntax: {
           title: string,
           message: string,
-          buttons: Array<{title: string, message: string}>
+          buttons: Array<{ title: string, message: string }>
         }
-      },
+      }
     },
     wallets: {
-      byId: {[walletId: Id]: GuiWallet},
+      byId: { [walletId: Id]: GuiWallet },
       activeWalletIds: Array<Id>,
       archivedWalletIds: Array<Id>,
       selectedWalletId: string,
@@ -170,11 +165,13 @@ export type State = {
       bluetoothMode: boolean,
       otpMode: boolean,
       pinMode: boolean,
+      pinLoginEnabled: boolean,
       changesLocked: true,
       loginStatus: true,
       isTouchSupported: boolean,
       isTouchEnabled: boolean,
       isOtpEnabled: true,
+      otpResetPending: false,
       otpKey: string,
       [CurrencyCode]: {
         denomination: string,
@@ -203,29 +200,31 @@ export type State = {
     reverseNativeMax: string,
     reverseNativeMin: string,
     reverseMinerFee: string,
-    fromWallet: any, // GuiWallet | null,
-    fromCurrencyCode: any, // CurrencyCode | null,
+    fromWallet: GuiWallet | null,
+    fromCurrencyCode: string | null,
     fromNativeAmount: string,
     fromDisplayAmount: string,
-    fromWalletPrimaryInfo: any, // AbcCurrencyInfo | null,
+    fromWalletPrimaryInfo: GuiCurrencyInfo, // AbcCurrencyInfo | null,
     fromCurrencyIcon: string | null,
     fromCurrencyIconDark: string | null,
-    toWallet: any, // GuiWallet | null,
-    toCurrencyCode: any, // CurrencyCode | null,
+    toWallet: GuiWallet | null,
+    toCurrencyCode: string | null,
     toNativeAmount: string,
     toDisplayAmount: string,
-    toWalletPrimaryInfo: any, // AbcCurrencyInfo | null,
+    toWalletPrimaryInfo: GuiCurrencyInfo, // AbcCurrencyInfo | null,
     toCurrencyIcon: string | null,
     toCurrencyIconDark: string | null,
     insufficientError: boolean,
     feeSetting: 'low' | 'standard' | 'high' | 'custom',
     walletListModalVisible: boolean,
     confirmTransactionModalVisible: boolean,
+    forceUpdateGuiCounter: number,
     shiftTransactionError: Error | null,
     genericShapeShiftError: Error | null,
     changeWallet: 'none',
     transaction: AbcTransaction | null,
-    fee: any
+    fee: any,
+    gettingTransaction: boolean
   },
   exchangeRates: number,
   permissions: PermissionsState

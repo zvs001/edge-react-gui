@@ -1,13 +1,14 @@
 // @flow
 
-import {StyleSheet} from 'react-native'
-import platform from '../../../../theme/variables/platform.js'
+import { StyleSheet } from 'react-native'
+
 import THEME from '../../../../theme/variables/airbitz'
+import { PLATFORM } from '../../../../theme/variables/platform.js'
 
 export const styles = {
   topLevel: {
     zIndex: 10,
-    width: platform.deviceWidth,
+    width: PLATFORM.deviceWidth,
     backgroundColor: THEME.COLORS.WHITE,
     alignSelf: 'stretch'
   },
@@ -18,7 +19,7 @@ export const styles = {
     backgroundColor: THEME.COLORS.GRAY_1
   },
   modalBody: {
-    width: platform.deviceWidth,
+    width: PLATFORM.deviceWidth,
     zIndex: 4
   },
   rowContainer: {
@@ -82,8 +83,11 @@ export const styles = {
   },
   underlay: {
     color: THEME.COLORS.ROW_PRESSED
+  },
+  symbol: {
+    fontFamily: THEME.FONTS.SYMBOLS
   }
-    // end of token rows //
+  // end of token rows //
 }
 
 export default StyleSheet.create(styles)

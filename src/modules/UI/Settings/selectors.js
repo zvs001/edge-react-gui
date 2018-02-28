@@ -2,8 +2,7 @@
 
 import type { AbcCurrencyPlugin, AbcDenomination } from 'edge-login'
 
-import type {State} from '../../ReduxTypes'
-
+import type { State } from '../../ReduxTypes'
 import isoFiatDenominations from './IsoFiatDenominations.js'
 
 const emptyAbcDenom: AbcDenomination = {
@@ -55,7 +54,7 @@ export const getDisplayDenominationFromSettings = (settings: any, currencyCode: 
   const currencySettings = settings[currencyCode] || isoFiatDenominations[currencyCode]
   const selectedDenominationKey = currencySettings.denomination
   const denominations = currencySettings.denominations
-  const selectedDenomination = denominations.find((denomination) => denomination.multiplier === selectedDenominationKey)
+  const selectedDenomination = denominations.find(denomination => denomination.multiplier === selectedDenominationKey)
   return selectedDenomination
 }
 
@@ -64,7 +63,7 @@ export const getDisplayDenominationFull = (state: State, currencyCode: string) =
   const currencySettings = settings[currencyCode]
   const selectedDenominationKey = currencySettings.denomination
   const denominations = currencySettings.denominations
-  const selectedDenomination = denominations.find((denomination) => denomination.multiplier === selectedDenominationKey)
+  const selectedDenomination = denominations.find(denomination => denomination.multiplier === selectedDenominationKey)
   return selectedDenomination
 }
 
@@ -82,7 +81,7 @@ export const getDisplayDenomination = (state: State, currencyCode: string): AbcD
 
 export const getExchangeDenomination = (state: State, currencyCode: string) => {
   const denominations = getDenominations(state, currencyCode)
-  const exchangeDenomination = denominations.find((denomination) => denomination.name === currencyCode)
+  const exchangeDenomination = denominations.find(denomination => denomination.name === currencyCode)
   return exchangeDenomination
 }
 
@@ -127,7 +126,7 @@ export const getSupportedWalletTypes = (state: State) => {
         currencyCode: plugin.currencyInfo.currencyCode
       })
       supportedWalletTypes.push({
-        label: 'Bitcoin',
+        label: 'Bitcoin (no Segwit)',
         value: 'wallet:bitcoin-bip44',
         symbolImage: plugin.currencyInfo.symbolImage,
         symbolImageDarkMono: plugin.currencyInfo.symbolImageDarkMono,
@@ -184,4 +183,27 @@ export const getOtpResetDate = (state: State) => {
   const settings = getSettings(state)
   const otpResetDate = settings.otpResetDate
   return otpResetDate
+}
+
+export const getConfirmPasswordErrorMessage = (state: State) => {
+  const settings = getSettings(state)
+  return settings.confirmPasswordError
+}
+
+export const getSendLogsStatus = (state: State) => {
+  const settings = getSettings(state)
+  const sendLogsStatus = settings.sendLogsStatus
+  return sendLogsStatus
+}
+
+export const getPinLoginEnabled = (state: State) => {
+  const settings = getSettings(state)
+  const pinLoginEnabled = settings.pinLoginEnabled
+  return pinLoginEnabled
+}
+
+export const getOtpResetPending = (state: State) => {
+  const settings = getSettings(state)
+  const otpResetPending = settings.otpResetPending
+  return otpResetPending
 }

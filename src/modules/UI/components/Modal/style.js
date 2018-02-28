@@ -1,10 +1,10 @@
 // @flow
 
-import {
-  StyleSheet
-} from 'react-native'
+import { StyleSheet } from 'react-native'
+
 import THEME from '../../../../theme/variables/airbitz'
-import PLATFORM from '../../../../theme/variables/platform'
+import { PLATFORM } from '../../../../theme/variables/platform'
+
 export const styles = {
   // modal styles
   modalContainer: {
@@ -46,7 +46,7 @@ export const styles = {
   },
   exitButton: {
     backgroundColor: 'transparent',
-    width: 40,
+    width: 30,
     height: 30,
     alignItems: 'center',
     justifyContent: 'center'
@@ -56,9 +56,7 @@ export const styles = {
     backgroundColor: 'transparent',
     color: THEME.COLORS.GRAY_1
   },
-  iconWrapper: {
-
-  },
+  iconWrapper: {},
   modalHeaderIconWrapBottom: {
     position: 'relative',
     top: 27,

@@ -1,4 +1,5 @@
-import {StyleSheet} from 'react-native'
+import { StyleSheet } from 'react-native'
+
 import THEME from '../../../../theme/variables/airbitz'
 
 export default StyleSheet.create({
@@ -6,7 +7,7 @@ export default StyleSheet.create({
     backgroundColor: THEME.COLORS.TRANSPARENT,
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 35,
+    marginVertical: 15,
     marginHorizontal: 35
   },
   text: {

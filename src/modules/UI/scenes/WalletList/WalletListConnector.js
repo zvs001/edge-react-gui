@@ -1,17 +1,15 @@
 // @flow
-import {connect} from 'react-redux'
-import WalletList from './WalletList.ui'
-import {
-  updateActiveWalletsOrder,
-  updateArchivedWalletsOrder
-} from './action'
+import { connect } from 'react-redux'
 
-import { walletRowOption } from './components/WalletOptions/action.js'
-import type { Dispatch, State } from '../../../ReduxTypes'
-import {setContactList} from '../../contacts/action'
 import * as CORE_SELECTORS from '../../../Core/selectors.js'
+import type { Dispatch, State } from '../../../ReduxTypes'
+import { setContactList } from '../../contacts/action'
 import * as UI_SELECTORS from '../../selectors.js'
 import * as SETTINGS_SELECTORS from '../../Settings/selectors'
+import { updateActiveWalletsOrder, updateArchivedWalletsOrder } from './action'
+import { walletRowOption } from './components/WalletOptions/action.js'
+import WalletList from './WalletList.ui'
+import {disableOtp, keepOtp} from '../../../../actions/OtpActions'
 
 const mapStateToProps = (state: State) => {
   const currencyConverter = CORE_SELECTORS.getCurrencyConverter(state)
@@ -27,6 +25,7 @@ const mapStateToProps = (state: State) => {
   const walletOrder = state.ui.wallets.walletListOrder
   const dimensions = state.ui.scenes.dimensions
   const customTokens = state.ui.settings.customTokens
+  const otpResetPending = SETTINGS_SELECTORS.getOtpResetPending(state)
   return {
     settings,
     coreWallets,
@@ -39,16 +38,19 @@ const mapStateToProps = (state: State) => {
     walletOrder,
     currencyConverter,
     dimensions,
-    customTokens
+    customTokens,
+    otpResetPending
   }
 }
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  updateActiveWalletsOrder: (activeWalletIds) => dispatch(updateActiveWalletsOrder(activeWalletIds)),
-  updateArchivedWalletsOrder: (archivedWalletIds) => dispatch(updateArchivedWalletsOrder(archivedWalletIds)),
-  setContactList: (contacts) => dispatch(setContactList(contacts)),
+  updateActiveWalletsOrder: activeWalletIds => dispatch(updateActiveWalletsOrder(activeWalletIds)),
+  updateArchivedWalletsOrder: archivedWalletIds => dispatch(updateArchivedWalletsOrder(archivedWalletIds)),
+  setContactList: contacts => dispatch(setContactList(contacts)),
   // $FlowFixMe
-  walletRowOption: (walletId, option, archived) => dispatch(walletRowOption(walletId, option, archived))
+  walletRowOption: (walletId, option, archived) => dispatch(walletRowOption(walletId, option, archived)),
+  disableOtp: () => dispatch(disableOtp()),
+  keepOtp: () => dispatch(keepOtp())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(WalletList)

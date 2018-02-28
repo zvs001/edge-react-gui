@@ -1,8 +1,8 @@
 // @flow
 
-import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {View, Text, TouchableHighlight} from 'react-native'
+import React, { Component } from 'react'
+import { Text, TouchableHighlight, View } from 'react-native'
 import FAIcon from 'react-native-vector-icons/MaterialIcons'
 
 import styles from './style'
@@ -11,7 +11,7 @@ type Props = {
   icon: string,
   style: any,
   onPress: Function,
-  title: string,
+  title: string | Function,
   iconType: string
 }
 type State = {
@@ -23,7 +23,7 @@ class TextAndIconButton extends Component<Props, State> {
     icon: PropTypes.string.isRequired,
     style: PropTypes.object.isRequired,
     onPress: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired
+    title: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.func.isRequired])
   }
   componentWillMount () {
     this.setState({
@@ -45,32 +45,14 @@ class TextAndIconButton extends Component<Props, State> {
   }
   renderIcon (iconStyle: any, iconPressedStyle: any, iconSize: number) {
     try {
-      return (
-        <FAIcon
-          style={[iconStyle, this.state.pressed && iconPressedStyle]}
-          name={this.props.icon}
-          size={iconSize}
-        />
-      )
+      return <FAIcon style={[iconStyle, this.state.pressed && iconPressedStyle]} name={this.props.icon} size={iconSize} />
     } catch (e) {
-      console.log('Error')
+      console.log(e)
     }
   }
 
   render () {
-    const {
-      container,
-      centeredContent,
-      inner,
-      textContainer,
-      iconContainer,
-      text,
-      textPressed,
-      icon,
-      iconPressed,
-      iconSize,
-      underlayColor
-    } = this.props.style
+    const { container, centeredContent, inner, textContainer, iconContainer, text, textPressed, icon, iconPressed, iconSize, underlayColor } = this.props.style
     return (
       <TouchableHighlight
         style={container}
@@ -81,18 +63,15 @@ class TextAndIconButton extends Component<Props, State> {
       >
         <View style={centeredContent}>
           <View style={inner}>
-            <View style={textContainer} >
-              <Text
-                style={[styles.text, text, this.state.pressed && textPressed]}
-                ellipsizeMode={'middle'}
-                numberOfLines={1}
-              >
-                {this.props.title + ' '}
-              </Text>
+            <View style={textContainer}>
+              {typeof this.props.title === 'string' && (
+                <Text style={[styles.text, text, this.state.pressed && textPressed]} ellipsizeMode={'middle'} numberOfLines={1}>
+                  {this.props.title + ' '}
+                </Text>
+              )}
+              {typeof this.props.title === 'function' && this.props.title({ textStyles: [styles.text, text, this.state.pressed && textPressed] })}
             </View>
-            <View style={iconContainer}>
-              {this.renderIcon(icon, iconPressed, iconSize)}
-            </View>
+            <View style={iconContainer}>{this.renderIcon(icon, iconPressed, iconSize)}</View>
           </View>
         </View>
       </TouchableHighlight>
@@ -100,4 +79,4 @@ class TextAndIconButton extends Component<Props, State> {
   }
 }
 
-export {TextAndIconButton}
+export { TextAndIconButton }

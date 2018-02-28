@@ -1,6 +1,9 @@
-import {StyleSheet, Platform} from 'react-native'
+// @flow
+
+import { Platform, StyleSheet } from 'react-native'
+
 import THEME from '../../../../theme/variables/airbitz'
-import PLATFORM from '../../../../theme/variables/platform.js'
+import { PLATFORM } from '../../../../theme/variables/platform.js'
 
 export const styles = {
   container: {
@@ -352,13 +355,16 @@ export const styles = {
     color: THEME.COLORS.ACCENT_RED
   },
   typeTransfer: {
-    color: THEME.COLORS.ACCENT_PRIMARY
+    color: THEME.COLORS.PRIMARY
   },
   typeIncome: {
     color: THEME.COLORS.ACCENT_GREEN
   },
   underlayColor: {
     color: THEME.COLORS.GRAY_4
+  },
+  symbol: {
+    fontFamily: THEME.FONTS.SYMBOLS
   }
 }
 

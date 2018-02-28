@@ -1,31 +1,28 @@
 // @flow
 
+import type { AbcCurrencyWallet, AbcParsedUri } from 'edge-login'
 import React, { Component } from 'react'
-import { ActivityIndicator, Alert, Text, View, TouchableHighlight } from 'react-native'
-import FAIcon from 'react-native-vector-icons/FontAwesome'
-import Ionicon from 'react-native-vector-icons/Ionicons'
+import { ActivityIndicator, Alert, Text, TouchableHighlight, View } from 'react-native'
+import Camera from 'react-native-camera'
 // $FlowFixMe
 import ImagePicker from 'react-native-image-picker'
 import { Actions } from 'react-native-router-flux'
-import Camera from 'react-native-camera'
-import type { AbcCurrencyWallet, AbcParsedUri } from 'edge-login'
+import FAIcon from 'react-native-vector-icons/FontAwesome'
+import Ionicon from 'react-native-vector-icons/Ionicons'
 
+import * as Constants from '../../../../constants/indexConstants'
 import s from '../../../../locales/strings.js'
+import * as WALLET_API from '../../../Core/Wallets/api.js'
+import type { PermissionStatus } from '../../../ReduxTypes'
+import WalletListModal from '../../../UI/components/WalletListModal/WalletListModalConnector'
+import * as UTILS from '../../../utils.js'
+import ABAlert from '../../components/ABAlert/indexABAlert'
 import T from '../../components/FormattedText'
 import Gradient from '../../components/Gradient/Gradient.ui'
 import SafeAreaView from '../../components/SafeAreaView'
-import AddressModal from './components/AddressModalConnector'
 import { AUTHORIZED, DENIED } from '../../permissions'
-import * as WALLET_API from '../../../Core/Wallets/api.js'
-import * as UTILS from '../../../utils.js'
-
+import AddressModal from './components/AddressModalConnector'
 import styles, { styles as styleRaw } from './style'
-import ABAlert from '../../components/ABAlert/indexABAlert'
-
-import WalletListModal from '../../../UI/components/WalletListModal/WalletListModalConnector'
-import * as Constants from '../../../../constants/indexConstants'
-
-import type {PermissionStatus} from '../../../ReduxTypes'
 
 type Props = {
   cameraPermission: PermissionStatus,
@@ -33,12 +30,15 @@ type Props = {
   torchEnabled: boolean,
   scanEnabled: boolean,
   walletListModalVisible: boolean,
-  scanToWalletListModalVisibility: any,
+  scanToWalletListModalVisibility: boolean,
+  scanFromWalletListModalVisibility: boolean,
+  scanToWalletListModalVisibility: boolean,
   dispatchEnableScan(): void,
   dispatchDisableScan(): void,
   toggleEnableTorch(): void,
   toggleAddressModal(): void,
   toggleWalletListModal(): void,
+  toggleScanToWalletListModal(): void,
   updateParsedURI(AbcParsedUri): void,
   loginWithEdge(string): void,
   toggleScanToWalletListModal: () => void
@@ -64,7 +64,6 @@ export default class Scan extends Component<Props> {
             {this.renderCamera()}
 
             <View style={[styles.overlay, UTILS.border()]}>
-
               <AddressModal onExitButtonFxn={this._onToggleAddressModal} />
 
               <View style={[styles.overlayTop]}>
@@ -74,7 +73,6 @@ export default class Scan extends Component<Props> {
               <View style={[styles.overlayBlank]} />
 
               <Gradient style={[styles.overlayButtonAreaWrap]}>
-
                 <TouchableHighlight style={styles.bottomButton} onPress={this._onToggleAddressModal} underlayColor={styleRaw.underlay.color}>
                   <View style={styles.bottomButtonTextWrap}>
                     <FAIcon style={[styles.addressBookIcon]} name="address-book-o" size={18} />
@@ -88,7 +86,6 @@ export default class Scan extends Component<Props> {
                     <T style={[styles.flashButtonText, styles.bottomButtonText]}>{FLASH_TEXT}</T>
                   </View>
                 </TouchableHighlight>
-
               </Gradient>
             </View>
             <ABAlert />
@@ -118,7 +115,7 @@ export default class Scan extends Component<Props> {
     this.props.toggleScanToWalletListModal()
   }
 
-  onBarCodeRead = (scan: { data: any }) => {
+  onBarCodeRead = (scan: { data: string }) => {
     if (!this.props.scanEnabled) return
     const uri = scan.data
     this.parseURI(uri)
@@ -132,10 +129,12 @@ export default class Scan extends Component<Props> {
       }
       const parsedURI = WALLET_API.parseURI(this.props.abcWallet, uri)
       this.props.updateParsedURI(parsedURI)
-      Actions.sendConfirmation()
+      Actions.sendConfirmation('fromScan')
     } catch (error) {
       this.props.dispatchDisableScan()
-      Alert.alert(s.strings.fragment_send_send_bitcoin_unscannable, error.toString(), [{ text: s.strings.string_ok, onPress: () => this.props.dispatchEnableScan() }])
+      Alert.alert(s.strings.fragment_send_send_bitcoin_unscannable, error.toString(), [
+        { text: s.strings.string_ok, onPress: () => this.props.dispatchEnableScan() }
+      ])
     }
   }
 
@@ -149,7 +148,6 @@ export default class Scan extends Component<Props> {
         // let source = { uri: 'data:image/jpeg;base64,' + response.data };
         // TODO: make edgelogin work with image picker -paulvp
         /* if (/^airbitz:\/\/edge\//.test(uri)) {
-          console.log('EDGE LOGIN THIS IS A EDGE LOGIN , do the login stuff. ')
           return
         } */
         Actions.sendConfirmation()
@@ -161,10 +159,7 @@ export default class Scan extends Component<Props> {
     if (this.props.cameraPermission === AUTHORIZED) {
       const torchMode = this.props.torchEnabled ? Camera.constants.TorchMode.on : Camera.constants.TorchMode.off
 
-      return <Camera style={styles.preview}
-        ref="cameraCapture"
-        torchMode={torchMode}
-        onBarCodeRead={this.onBarCodeRead} />
+      return <Camera style={styles.preview} ref="cameraCapture" torchMode={torchMode} onBarCodeRead={this.onBarCodeRead} />
     } else if (this.props.cameraPermission === DENIED) {
       return (
         <View style={[styles.preview, { justifyContent: 'center', alignItems: 'center' }, UTILS.border()]}>

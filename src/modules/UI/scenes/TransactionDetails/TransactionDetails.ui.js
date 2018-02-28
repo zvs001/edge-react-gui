@@ -1,58 +1,51 @@
 // @flow
 
-import React, {Component} from 'react'
-import s from '../../../../locales/strings.js'
-import {
-  Animated,
-  Easing,
-  TextInput,
-  ScrollView,
-  View,
-  TouchableOpacity,
-  Keyboard
-} from 'react-native'
-import Permissions from 'react-native-permissions'
-import {bns} from 'biggystring'
-import {sprintf} from 'sprintf-js'
+import { bns } from 'biggystring'
+import type { AbcCurrencyInfo, AbcDenomination, AbcMetadata, AbcTransaction } from 'edge-login'
+import React, { Component } from 'react'
+import { Animated, Easing, Keyboard, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
 import Contacts from 'react-native-contacts'
-import ContactSearchResults from './ContactSearchResults.ui.js'
-import FormattedText from '../../components/FormattedText/index'
-import SafeAreaView from '../../components/SafeAreaView'
-import Gradient from '../../components/Gradient/Gradient.ui'
-import styles, {styles as styleRaw} from './style'
+import Permissions from 'react-native-permissions'
+import { sprintf } from 'sprintf-js'
+
+import s from '../../../../locales/strings.js'
 import THEME from '../../../../theme/variables/airbitz'
+import { PLATFORM } from '../../../../theme/variables/platform.js'
+import type { GuiContact, GuiWallet } from '../../../../types.js'
 import * as UTILS from '../../../utils'
-import AmountArea from './AmountArea.ui.js'
-import SubCategorySelect from './SubCategorySelect.ui.js'
+import FormattedText from '../../components/FormattedText/index'
+import Gradient from '../../components/Gradient/Gradient.ui'
 import PayeeIcon from '../../components/PayeeIcon/PayeeIcon.ui.js'
-import type {GuiContact, GuiWallet} from '../../../../types.js'
-import platform from '../../../../theme/variables/platform.js'
-import type {AbcDenomination, AbcTransaction, AbcMetadata, AbcCurrencyInfo} from 'edge-login'
+import SafeAreaView from '../../components/SafeAreaView'
+import AmountArea from './AmountArea.ui.js'
+import ContactSearchResults from './ContactSearchResults.ui.js'
+import styles, { styles as styleRaw } from './style'
+import SubCategorySelect from './SubCategorySelect.ui.js'
 
 const categories = ['income', 'expense', 'exchange', 'transfer']
 
-export type Props = {
+export type TransactionDetailsOwnProps = {
   abcTransaction: AbcTransaction,
   contacts: Array<GuiContact>,
   subcategoriesList: Array<string>,
-  settings: any, // TODO: This badly needs to get typed but it is a huge dynamically generated object with embedded maps -paulvp,
+  settings: Object, // TODO: This badly needs to get typed but it is a huge dynamically generated object with embedded maps -paulvp,
   direction: string,
   thumbnailPath: string,
   currencyInfo: AbcCurrencyInfo | null,
   currencyCode: string,
-  wallets: Array<GuiWallet>
+  wallets: { [walletId: string]: GuiWallet }
 }
 
-export type DispatchProps = {
+export type TransactionDetailsDispatchProps = {
   setNewSubcategory: (string, Array<string>) => void,
   openHelpModal: () => void,
-  setTransactionDetails: (string, string, AbcMetadata) => void,
+  setTransactionDetails: (txid: string, currencyCode: string, abcMetadata: AbcMetadata) => void,
   setContactList: (Array<GuiContact>) => void,
   getSubcategories: () => void,
-  displayDropdownAlert: (string, string) => void
+  displayDropdownAlert: (message: string, title: string) => void
 }
 
-export type State = {
+type State = {
   name: string, // remove commenting once metaData in Redux
   thumbnailPath: string,
   // hasThumbnail: boolean,
@@ -61,13 +54,12 @@ export type State = {
   amountFiat: string,
   direction: string,
   bizId: number,
-  miscJson: any,
+  miscJson: any, // core receives this as a string
   dateTimeSyntax: string,
   subCategorySelectVisibility: boolean,
   categorySelectVisibility: boolean,
   subCategory: string,
   contactSearchVisibility: boolean,
-  animation: any, // AnimatedValue
   payeeOpacity: any, // AnimatedValue
   subcategoryOpacity: any, // AnimatedValue
   payeeZIndex: number,
@@ -76,20 +68,22 @@ export type State = {
   walletDefaultDenomProps: AbcDenomination
 }
 
+type TransactionDetailsProps = TransactionDetailsOwnProps & TransactionDetailsDispatchProps
+
 const EXCHANGE_TEXT = s.strings.fragment_transaction_exchange
 const EXPENSE_TEXT = s.strings.fragment_transaction_expense
 const TRANSFER_TEXT = s.strings.fragment_transaction_transfer
 const INCOME_TEXT = s.strings.fragment_transaction_income
 
-export class TransactionDetails extends Component<Props & DispatchProps, State> {
+export class TransactionDetails extends Component<TransactionDetailsProps, State> {
   guiWallet: GuiWallet
   fiatSymbol: string
 
-  constructor (props: Props & DispatchProps) {
+  constructor (props: TransactionDetailsProps) {
     super(props)
     const dateTime = new Date(props.abcTransaction.date * 1000)
-    const dateString = dateTime.toLocaleDateString('en-US', {month: 'short', day: '2-digit', year: 'numeric'})
-    const timeString = dateTime.toLocaleTimeString('en-US', {hour: 'numeric', minute: 'numeric', second: 'numeric'})
+    const dateString = dateTime.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
+    const timeString = dateTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric' })
     let type = ''
     let subCategory = ''
     let cat = ''
@@ -130,14 +124,13 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
       category: cat,
       amountFiat,
       bizId: 0,
-      direction: (parseInt(props.abcTransaction.nativeAmount) >= 0) ? 'receive' : 'send',
-      miscJson: props.abcTransaction.metadata ? props.abcTransaction.metadata.miscJson : null,
+      direction: parseInt(props.abcTransaction.nativeAmount) >= 0 ? 'receive' : 'send',
+      miscJson: props.abcTransaction.metadata ? props.abcTransaction.metadata.miscJson : '',
       dateTimeSyntax: dateString + ' ' + timeString,
       subCategorySelectVisibility: false,
       categorySelectVisibility: false,
       subCategory: subCategory || '',
       contactSearchVisibility: false,
-      animation: new Animated.Value(0),
       payeeOpacity: new Animated.Value(0),
       subcategoryOpacity: new Animated.Value(0),
       payeeZIndex: 0,
@@ -153,28 +146,25 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
 
   onFocusPayee = () => {
     this.enablePayeeVisibility()
-    this.refs._scrollView.scrollTo({x: 0, y: 62, animated: true})
+    this.refs._scrollView.scrollTo({ x: 0, y: 62, animated: true })
   }
 
   onBlurPayee = () => {
     this.disablePayeeVisibility()
     Keyboard.dismiss()
-    this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true})
+    this.refs._scrollView.scrollTo({ x: 0, y: 0, animated: true })
   }
 
   enablePayeeVisibility = () => {
     const toOpacity = 1
-    this.setState({contactSearchVisibility: true, payeeZIndex: 99999}, () => {
-      Animated.timing(
-        this.state.payeeOpacity,
-        {
-          toValue: toOpacity,
-          easing: Easing.ease,
-          duration: 200,
-          delay: 0,
-          useNativeDriver: true
-        }
-        ).start()
+    this.setState({ contactSearchVisibility: true, payeeZIndex: 99999 }, () => {
+      Animated.timing(this.state.payeeOpacity, {
+        toValue: toOpacity,
+        easing: Easing.ease,
+        duration: 200,
+        delay: 0,
+        useNativeDriver: true
+      }).start()
     })
   }
 
@@ -196,19 +186,22 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
   onSelectPayee = (name: string, thumbnail: string) => {
     this.onChangePayee(name, thumbnail)
     this.onBlurPayee()
-    this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true})
+    this.refs._scrollView.scrollTo({ x: 0, y: 0, animated: true })
   }
 
   onChangeFiat = (input: string) => {
     // This next chained statement / expression is to ensure only one decimal place. Remember decimals are commas in some locales
     // double-check that this implementation change works!
-    const newInputStripped = input.replace(/[^\d.,]/, '').replace(/\./, 'x')
-    .replace(/\./g, '')
-    .replace(/x/, '.')
-    .replace(/,/, 'x')
-    .replace(/,/g, '')
-    .replace(/x/, ',')
-    const newInputFiltered = ((isNaN(newInputStripped.replace(',', '.')) && (newInputStripped !== ',' && newInputStripped !== '.')) || (newInputStripped === '')) ? '' : newInputStripped
+    const newInputStripped = input
+      .replace(/[^\d.,]/, '')
+      .replace(/\./, 'x')
+      .replace(/\./g, '')
+      .replace(/x/, '.')
+      .replace(/,/, 'x')
+      .replace(/,/g, '')
+      .replace(/x/, ',')
+    const newInputFiltered =
+      (isNaN(newInputStripped.replace(',', '.')) && (newInputStripped !== ',' && newInputStripped !== '.')) || newInputStripped === '' ? '' : newInputStripped
     this.setState({
       amountFiat: newInputFiltered
     })
@@ -249,12 +242,12 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
   }
 
   onFocusNotes = () => {
-    this.refs._scrollView.scrollTo({x: 0, y: 300, animated: true})
+    this.refs._scrollView.scrollTo({ x: 0, y: 300, animated: true })
   }
 
   onBlurNotes = () => {
     Keyboard.dismiss()
-    this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true})
+    this.refs._scrollView.scrollTo({ x: 0, y: 0, animated: true })
   }
 
   onNotesKeyboardReturn = () => {
@@ -262,7 +255,7 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
   }
 
   onEnterSubcategories = () => {
-    this.refs._scrollView.scrollTo({x: 0, y: 260, animated: true})
+    this.refs._scrollView.scrollTo({ x: 0, y: 260, animated: true })
     this.enableSubcategoryVisibility()
   }
 
@@ -272,7 +265,7 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
 
   onSubcategoriesKeyboardReturn = () => {
     this.disableSubcategoryVisibility()
-    this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true})
+    this.refs._scrollView.scrollTo({ x: 0, y: 0, animated: true })
   }
 
   onSelectSubCategory = (input: string) => {
@@ -282,17 +275,21 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
       this.setState({
         subCategory: ''
       })
-    } else { // if input *does* exist
+    } else {
+      // if input *does* exist
       const colonOccurrence = input.indexOf(':')
-      if (colonOccurrence) { // if it *does* have a colon in it
+      if (colonOccurrence) {
+        // if it *does* have a colon in it
         stringArray = [input.substring(0, colonOccurrence), input.substring(colonOccurrence + 1, input.length)]
         // console.log('stringArray is: ', stringArray)
-        if (categories.indexOf(stringArray[0].toLowerCase()) >= 0) { // if the type is of the 4 options
+        if (categories.indexOf(stringArray[0].toLowerCase()) >= 0) {
+          // if the type is of the 4 options
           this.setState({
             type: stringArray[0].toLowerCase(),
             subCategory: stringArray[1]
           })
-          if ((this.props.subcategoriesList.indexOf(input) === -1) && (categories.indexOf(stringArray[0]) >= 0)) { // if this is a new subcategory and the parent category is an accepted type
+          if (this.props.subcategoriesList.indexOf(input) === -1 && categories.indexOf(stringArray[0]) >= 0) {
+            // if this is a new subcategory and the parent category is an accepted type
             this.addNewSubcategory(input)
           }
         } else {
@@ -308,7 +305,7 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
     }
     this.disableSubcategoryVisibility()
     Keyboard.dismiss()
-    this.refs._scrollView.scrollTo({x: 0, y: 0, animated: true})
+    this.refs._scrollView.scrollTo({ x: 0, y: 0, animated: true })
   }
 
   addNewSubcategory = (newSubcategory: string) => {
@@ -316,28 +313,24 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
   }
 
   onEnterCategories = () => {
-    this.setState({categorySelectVisibility: true})
+    this.setState({ categorySelectVisibility: true })
   }
 
   onExitCategories = () => {
-    this.setState({categorySelectVisibility: false})
+    this.setState({ categorySelectVisibility: false })
   }
 
   enableSubcategoryVisibility = () => {
     const toOpacity = 1
-    this.setState({subCategorySelectVisibility: true, subcatZIndex: 99999}, () => {
-      Animated.timing(
-        this.state.subcategoryOpacity,
-        {
-          toValue: toOpacity,
-          easing: Easing.ease,
-          duration: 200,
-          delay: 100,
-          useNativeDriver: true
-        }
-      ).start()
-    }
-    )
+    this.setState({ subCategorySelectVisibility: true, subcatZIndex: 99999 }, () => {
+      Animated.timing(this.state.subcategoryOpacity, {
+        toValue: toOpacity,
+        easing: Easing.ease,
+        duration: 200,
+        delay: 100,
+        useNativeDriver: true
+      }).start()
+    })
   }
 
   disableSubcategoryVisibility = () => {
@@ -348,12 +341,12 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
     })
   }
 
-  onSelectCategory = (type: any) => {
-    this.setState({type})
+  onSelectCategory = (type: string) => {
+    this.setState({ type })
   }
 
   onFocusFiatAmount = () => {
-    this.refs._scrollView.scrollTo({x: 0, y: 90, animated: true})
+    this.refs._scrollView.scrollTo({ x: 0, y: 90, animated: true })
   }
 
   amountAreaOpenModal = () => {
@@ -367,27 +360,25 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
     } else {
       category = undefined
     }
-    const {name, notes, bizId, miscJson} = this.state
+    const { name, notes, bizId, miscJson } = this.state
     const txid = this.props.abcTransaction.txid
     const newAmountFiat = this.state.amountFiat
-    const amountFiat:number = (!newAmountFiat) ? 0.00 : Number.parseFloat(newAmountFiat)
-    const abcMetadata: AbcMetadata = {name, category, notes, amountFiat, bizId, miscJson}
+    const amountFiat: number = !newAmountFiat ? 0.0 : Number.parseFloat(newAmountFiat)
+    const abcMetadata: AbcMetadata = { name, category, notes, amountFiat, bizId, miscJson }
     this.props.setTransactionDetails(txid, this.props.abcTransaction.currencyCode, abcMetadata)
   }
 
   componentDidMount () {
     if (!this.props.contacts) {
-      Permissions.check('contacts').then((response) => {
+      Permissions.check('contacts').then(response => {
         if (response === 'authorized') {
           Contacts.getAll((err, contacts) => {
             if (err === 'denied') {
               // error
             } else {
               const filteredContacts = contacts
-              .filter(item => item.givenName)
-              .sort((a, b) =>
-                a.givenName.toUpperCase().localeCompare(b.givenName.toUpperCase())
-              )
+                .filter(item => item.givenName)
+                .sort((a, b) => a.givenName.toUpperCase().localeCompare(b.givenName.toUpperCase()))
               this.props.setContactList(filteredContacts)
             }
           })
@@ -400,9 +391,9 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
   componentWillMount () {
     // check if metaToken, is not then do not set walletDefaultProps to anything other than initial blank values
     if (UTILS.isCryptoParentCurrency(this.guiWallet, this.props.abcTransaction.currencyCode)) {
-      this.setState({walletDefaultDenomProps: UTILS.getWalletDefaultDenomProps(this.guiWallet, this.props.settings)})
+      this.setState({ walletDefaultDenomProps: UTILS.getWalletDefaultDenomProps(this.guiWallet, this.props.settings) })
     } else {
-      this.setState({walletDefaultDenomProps: UTILS.getWalletDefaultDenomProps(this.guiWallet, this.props.settings, this.props.abcTransaction.currencyCode)})
+      this.setState({ walletDefaultDenomProps: UTILS.getWalletDefaultDenomProps(this.guiWallet, this.props.settings, this.props.abcTransaction.currencyCode) })
     }
   }
 
@@ -450,20 +441,24 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
     }
     return (
       <SafeAreaView>
-        <View style={[{width: '100%', height: platform.usableHeight + platform.toolbarHeight}, UTILS.border()]}>
+        <View style={[{ width: '100%', height: PLATFORM.usableHeight + PLATFORM.toolbarHeight }, UTILS.border()]}>
           <Gradient style={styles.headerGradient} />
-          <View style={{position: 'relative', top: 66}}>
-            {this.state.contactSearchVisibility &&
-              <Animated.View id='payeeSearchResults'
-                style={[{
-                  opacity: this.state.payeeOpacity,
-                  width: '100%',
-                  backgroundColor: THEME.COLORS.WHITE,
-                  position: 'absolute',
-                  top: 4,
-                  height: platform.usableHeight,
-                  zIndex: 99999
-                }]}>
+          <View style={{ position: 'relative', top: 66 }}>
+            {this.state.contactSearchVisibility && (
+              <Animated.View
+                id="payeeSearchResults"
+                style={[
+                  {
+                    opacity: this.state.payeeOpacity,
+                    width: '100%',
+                    backgroundColor: THEME.COLORS.WHITE,
+                    position: 'absolute',
+                    top: 4,
+                    height: PLATFORM.usableHeight,
+                    zIndex: 99999
+                  }
+                ]}
+              >
                 <View style={[styles.payeeNameArea]}>
                   <View style={[styles.payeeNameWrap]}>
                     <TextInput
@@ -471,11 +466,11 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
                       autoFocus
                       blurOnSubmit
                       onSubmitEditing={this.onBlurPayee}
-                      autoCapitalize='words'
+                      autoCapitalize="words"
                       autoCorrect={false}
                       onChangeText={this.onChangePayee}
                       style={[styles.payeeNameInput, UTILS.inputBottomPadding()]}
-                      placeholder='Payee'
+                      placeholder="Payee"
                       defaultValue={this.state.name}
                       placeholderTextColor={THEME.COLORS.GRAY_2}
                       returnKeyType={'done'}
@@ -485,59 +480,68 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
                 <ContactSearchResults
                   onChangePayee={this.onSelectPayee}
                   contacts={this.props.contacts}
-                  style={[{width: '100%'}]}
-                  usableHeight={platform.usableHeight}
+                  style={[{ width: '100%' }]}
+                  usableHeight={PLATFORM.usableHeight}
                   currentPayeeText={this.state.name || ''}
-                  dimensions={platform.dimensions}
+                  dimensions={PLATFORM.dimensions}
                   onSelectPayee={this.onSelectPayee}
                   blurOnSubmit
                   onBlur={this.onBlurPayee}
                 />
               </Animated.View>
-            }
-            {this.state.subCategorySelectVisibility &&
-                <Animated.View id='subcategorySearchResults'
-                  style={[{
+            )}
+            {this.state.subCategorySelectVisibility && (
+              <Animated.View
+                id="subcategorySearchResults"
+                style={[
+                  {
                     opacity: this.state.subcategoryOpacity,
                     width: '100%',
                     backgroundColor: THEME.COLORS.WHITE,
                     position: 'absolute',
-                    height: platform.usableHeight,
+                    height: PLATFORM.usableHeight,
                     zIndex: 99999
-                  }]}
-                >
-                  <View style={[styles.modalCategoryRow]}>
-                    <TouchableOpacity style={[styles.categoryLeft, {borderColor: categoryColor}]} disabled>
-                      <FormattedText style={[{color: categoryColor}, styles.categoryLeftText]}>{type.syntax}</FormattedText>
-                    </TouchableOpacity>
-                    <View style={[styles.modalCategoryInputArea]}>
-                      <TextInput
-                        underlineColorAndroid={'transparent'}
-                        autoFocus
-                        blurOnSubmit
-                        autoCapitalize='words'
-                        onBlur={this.onExitSubcategories}
-                        onChangeText={this.onChangeSubcategory}
-                        style={[styles.categoryInput, UTILS.inputBottomPadding()]}
-                        defaultValue={this.state.subCategory || ''}
-                        placeholder={s.strings.transaction_details_category_title}
-                        autoCorrect={false}
-                        onSubmitEditing={this.onSubcategoriesKeyboardReturn}
-                        placeholderTextColor={THEME.COLORS.GRAY_2}
-                        initialNumToRender={8}
-                        returnKeyType={'done'}
-                      />
-                    </View>
+                  }
+                ]}
+              >
+                <View style={[styles.modalCategoryRow]}>
+                  <TouchableOpacity style={[styles.categoryLeft, { borderColor: categoryColor }]} disabled>
+                    <FormattedText style={[{ color: categoryColor }, styles.categoryLeftText]}>{type.syntax}</FormattedText>
+                  </TouchableOpacity>
+                  <View style={[styles.modalCategoryInputArea]}>
+                    <TextInput
+                      underlineColorAndroid={'transparent'}
+                      autoFocus
+                      blurOnSubmit
+                      autoCapitalize="words"
+                      onBlur={this.onExitSubcategories}
+                      onChangeText={this.onChangeSubcategory}
+                      style={[styles.categoryInput, UTILS.inputBottomPadding()]}
+                      defaultValue={this.state.subCategory || ''}
+                      placeholder={s.strings.transaction_details_category_title}
+                      autoCorrect={false}
+                      onSubmitEditing={this.onSubcategoriesKeyboardReturn}
+                      placeholderTextColor={THEME.COLORS.GRAY_2}
+                      initialNumToRender={8}
+                      returnKeyType={'done'}
+                    />
                   </View>
-                  <SubCategorySelect
-                    onPressFxn={this.onSelectSubCategory}
-                    enteredSubcategory={this.state.subCategory}
-                    usableHeight={platform.usableHeight}
-                    subcategoriesList={sortedSubcategories}
-                  />
-                </Animated.View>
-            }
-            <ScrollView keyboardShouldPersistTaps='handled' style={UTILS.border()} ref='_scrollView' scrollEnabled={!this.state.subCategorySelectVisibility} overScrollMode='never' >
+                </View>
+                <SubCategorySelect
+                  onPressFxn={this.onSelectSubCategory}
+                  enteredSubcategory={this.state.subCategory}
+                  usableHeight={PLATFORM.usableHeight}
+                  subcategoriesList={sortedSubcategories}
+                />
+              </Animated.View>
+            )}
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              style={UTILS.border()}
+              ref="_scrollView"
+              scrollEnabled={!this.state.subCategorySelectVisibility}
+              overScrollMode="never"
+            >
               <View style={[styles.container]}>
                 <View>
                   <Gradient style={[styles.expandedHeader]}>
@@ -549,7 +553,7 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
                     <View style={[styles.payeeNameWrap]}>
                       <TextInput
                         underlineColorAndroid={'transparent'}
-                        autoCapitalize='words'
+                        autoCapitalize="words"
                         onFocus={this.onFocusPayee}
                         autoCorrect={false}
                         style={[styles.payeeNameInput, UTILS.inputBottomPadding()]}
@@ -582,9 +586,9 @@ export class TransactionDetails extends Component<Props & DispatchProps, State> 
                     type={type}
                     onEnterCategories={this.onEnterCategories}
                     onExitCategories={this.onExitCategories}
-                    usableHeight={platform.usableHeight}
+                    usableHeight={PLATFORM.usableHeight}
                     onSubcategoryKeyboardReturn={this.onSubcategoriesKeyboardReturn}
-                    dimensions={platform.dimensions}
+                    dimensions={PLATFORM.dimensions}
                     onNotesKeyboardReturn={this.onNotesKeyboardReturn}
                     onFocusNotes={this.onFocusNotes}
                     onBlurNotes={this.onBlurNotes}

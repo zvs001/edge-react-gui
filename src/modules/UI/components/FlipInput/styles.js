@@ -1,6 +1,7 @@
 // @flow
 
-import {StyleSheet} from 'react-native'
+import { StyleSheet } from 'react-native'
+
 import THEME from '../../../../theme/variables/airbitz'
 
 export const styles = StyleSheet.create({
@@ -9,7 +10,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1
   },
   container: {
-    flex: 1,
+    height: 110,
     marginVertical: 0,
     marginHorizontal: 14,
     alignSelf: 'stretch',

@@ -1,12 +1,13 @@
 // @flow
 
-import {Platform} from 'react-native'
-import {div, mul, gte, eq, toFixed} from 'biggystring'
+import { bns, div, eq, gte, mul, toFixed } from 'biggystring'
 import getSymbolFromCurrency from 'currency-symbol-map'
-import type {AbcDenomination, AbcCurrencyInfo, AbcCurrencyPlugin, AbcTransaction, AbcMetaToken} from 'edge-login'
-import type {GuiDenomination, ExchangeData, GuiWallet, CustomTokenInfo} from '../types'
+import type { AbcCurrencyInfo, AbcCurrencyPlugin, AbcDenomination, AbcMetaToken, AbcTransaction } from 'edge-login'
 import _ from 'lodash'
+import { Platform } from 'react-native'
+
 import borderColors from '../theme/variables/css3Colors'
+import type { CustomTokenInfo, ExchangeData, GuiDenomination, GuiWallet } from '../types'
 
 const DIVIDE_PRECISION = 18
 
@@ -21,7 +22,6 @@ export const cutOffText = (str: string, lng: number) => {
 }
 
 export const findDenominationSymbol = (denoms: Array<AbcDenomination>, value: string) => {
-  // console.log('in findDenominationSymbol, denoms is: ', denoms, ' , and value is : ', value)
   for (const v of denoms) {
     if (v.name === value) {
       return v.symbol
@@ -30,12 +30,13 @@ export const findDenominationSymbol = (denoms: Array<AbcDenomination>, value: st
 }
 
 export const getWalletDefaultDenomProps = (wallet: Object, settingsState: Object, currencyCode?: string /* for metaTokens */): AbcDenomination => {
-  // console.log('in getWalletDefaultDenomProps, wallet is: ', wallet, ' , and settingsState is: ', settingsState)
   const allWalletDenoms = wallet.allDenominations
   let walletCurrencyCode
-  if (currencyCode) { // if metaToken
+  if (currencyCode) {
+    // if metaToken
     walletCurrencyCode = currencyCode
-  } else { // if not a metaToken
+  } else {
+    // if not a metaToken
     walletCurrencyCode = wallet.currencyCode
   }
   const currencySettings = settingsState[walletCurrencyCode] // includes 'denomination', currencyName, and currencyCode
@@ -46,12 +47,10 @@ export const getWalletDefaultDenomProps = (wallet: Object, settingsState: Object
     // This is likely a custom token which has no denom setup in allWalletDenominations
     denomProperties = currencySettings.denominations[0]
   }
-  // console.log('in getWalletDefaultDenomProps, denomProperties is: ', denomProperties)
   return denomProperties
 }
 
 export const getFiatSymbol = (code: string) => {
-  // console.log('inside utils.getFiatSymbol, code is: ', code)
   code = code.replace('iso:', '')
   return getSymbolFromCurrency(code)
 }
@@ -94,10 +93,12 @@ export const inputBottomPadding = () => {
 // $FlowFixMe
 export const mergeTokens = (preferredAbcMetaTokens: Array<AbcMetaToken | CustomTokenInfo>, abcMetaTokens: Array<CustomTokenInfo>) => {
   const tokensEnabled = [...preferredAbcMetaTokens] // initially set the array to currencyInfo (from plugin), since it takes priority
-  for (const x of abcMetaTokens) { // loops through the account-level array
+  for (const x of abcMetaTokens) {
+    // loops through the account-level array
     let found = false // assumes it is not present in the currencyInfo from plugin
-    for (const val of tokensEnabled) { // loops through currencyInfo array to see if already present
-      if ((x.currencyCode === val.currencyCode)) {
+    for (const val of tokensEnabled) {
+      // loops through currencyInfo array to see if already present
+      if (x.currencyCode === val.currencyCode) {
         found = true // if present, then set 'found' to true
       }
     }
@@ -109,8 +110,9 @@ export const mergeTokens = (preferredAbcMetaTokens: Array<AbcMetaToken | CustomT
 export const mergeTokensRemoveInvisible = (preferredAbcMetaTokens: Array<AbcMetaToken>, abcMetaTokens: Array<CustomTokenInfo>) => {
   const tokensEnabled = [...preferredAbcMetaTokens] // initially set the array to currencyInfo (from plugin), since it takes priority
   const tokensToAdd = []
-  for (const x of abcMetaTokens) { // loops through the account-level array
-    if ((x.isVisible !== false) && (_.findIndex(tokensEnabled, (walletToken) => walletToken.currencyCode === x.currencyCode) === -1)) {
+  for (const x of abcMetaTokens) {
+    // loops through the account-level array
+    if (x.isVisible !== false && _.findIndex(tokensEnabled, walletToken => walletToken.currencyCode === x.currencyCode) === -1) {
       tokensToAdd.push(x)
     }
   }
@@ -122,7 +124,7 @@ export const getRandomColor = () => borderColors[Math.floor(Math.random() * bord
 // Used to reject non-numeric (expect '.') values in the FlipInput
 export const isValidInput = (input: string): boolean =>
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Arithmetic_Operators#Unary_plus_()
-   !isNaN(+input) || input === '.'
+  !isNaN(+input) || input === '.'
 
 // Used to limit the decimals of a displayAmount
 // TODO every function that calls this function needs to be flowed
@@ -134,7 +136,9 @@ export const truncateDecimals = (input: string, precision: number, allowBlank: b
       input = '0'
     }
   }
-  if (!input.includes('.')) { return input }
+  if (!input.includes('.')) {
+    return input
+  }
   const [integers, decimals] = input.split('.')
   return `${integers}.${decimals.slice(0, precision)}`
 }
@@ -153,22 +157,24 @@ export const formatNumber = (input: string): string => {
 }
 
 export const decimalOrZero = (input: string, decimalPlaces: number): string => {
-  if (gte(input, '1')) { // do nothing to numbers greater than one
+  if (gte(input, '1')) {
+    // do nothing to numbers greater than one
     return input
   } else {
     const truncatedToDecimals = toFixed(input, decimalPlaces, decimalPlaces)
-    if (eq(truncatedToDecimals, '0')) { // cut off to number of decimal places equivalent to zero?
+    if (eq(truncatedToDecimals, '0')) {
+      // cut off to number of decimal places equivalent to zero?
       return '0' // then return zero
-    } else { // if not equivalent to zero
+    } else {
+      // if not equivalent to zero
       return truncatedToDecimals.replace(/0+$/, '') // then return the truncation
     }
   }
 }
 
 // Used to convert outputs from core into other denominations (exchangeDenomination, displayDenomination)
-export const convertNativeToDenomination = (nativeToTargetRatio: string) =>
-  (nativeAmount: string): string =>
-    div(nativeAmount, nativeToTargetRatio, DIVIDE_PRECISION)
+export const convertNativeToDenomination = (nativeToTargetRatio: string) => (nativeAmount: string): string =>
+  div(nativeAmount, nativeToTargetRatio, DIVIDE_PRECISION)
 
 // Alias for convertNativeToDenomination
 // Used to convert outputs from core to amounts ready for display
@@ -178,24 +184,19 @@ export const convertNativeToDisplay = convertNativeToDenomination
 export const convertNativeToExchange = convertNativeToDenomination
 
 // Used to convert amounts from display to core inputs
-export const convertDisplayToNative = (nativeToDisplayRatio: string) =>
-  (displayAmount: string): string =>
-    !displayAmount ? '' : mul(displayAmount, nativeToDisplayRatio)
+export const convertDisplayToNative = (nativeToDisplayRatio: string) => (displayAmount: string): string =>
+  !displayAmount ? '' : mul(displayAmount, nativeToDisplayRatio)
 
 export const isCryptoParentCurrency = (wallet: GuiWallet, currencyCode: string) => currencyCode === wallet.currencyCode
 
-export const getNewArrayWithoutItem = (array: Array<any>, targetItem: any) =>
-  array.filter((item) => item !== targetItem)
+export const getNewArrayWithoutItem = (array: Array<any>, targetItem: any) => array.filter(item => item !== targetItem)
 
-export const getNewArrayWithItem = (array: Array<any>, item: any) =>
-  !array.includes(item) ? [...array, item] : array
+export const getNewArrayWithItem = (array: Array<any>, item: any) => (!array.includes(item) ? [...array, item] : array)
 
-const restrictedCurrencyCodes = [
-  'BTC'
-]
+const restrictedCurrencyCodes = ['BTC']
 
 export function getDenomFromIsoCode (currencyCode: string): GuiDenomination {
-  if (restrictedCurrencyCodes.findIndex((item) => item === currencyCode) !== -1) {
+  if (restrictedCurrencyCodes.findIndex(item => item === currencyCode) !== -1) {
     return {
       name: '',
       currencyCode: '',
@@ -230,13 +231,11 @@ export function getAllDenomsOfIsoCurrencies (): Array<GuiDenomination> {
   return denomArray
 }
 
-export const getSupportedFiats = (): Array<{label: string, value: string}> => {
+export const getSupportedFiats = (): Array<{ label: string, value: string }> => {
   const currencySymbolsFromCurrencyCode = currencySymbolMap
   const entries = Object.entries(currencySymbolsFromCurrencyCode)
-  const objectFromArrayPair = (entry) => {
-    const entry1 = typeof entry[1] === 'string'
-      ? entry[1]
-      : ''
+  const objectFromArrayPair = entry => {
+    const entry1 = typeof entry[1] === 'string' ? entry[1] : ''
 
     return {
       label: `${entry[0]} - ${entry1}`,
@@ -307,10 +306,8 @@ export const decimalPlacesToDenomination = (decimalPlaces: string): string => {
   return denomination
 }
 
-export const isReceivedTransaction = (abcTransaction: AbcTransaction): boolean =>
-  gte(abcTransaction.nativeAmount, '0')
-export const isSentTransaction = (abcTransaction: AbcTransaction): boolean =>
-  !isReceivedTransaction(abcTransaction)
+export const isReceivedTransaction = (abcTransaction: AbcTransaction): boolean => gte(abcTransaction.nativeAmount, '0')
+export const isSentTransaction = (abcTransaction: AbcTransaction): boolean => !isReceivedTransaction(abcTransaction)
 
 export const getTimeMeasurement = (inMinutes: number): string => {
   switch (true) {
@@ -331,21 +328,21 @@ export const getTimeMeasurement = (inMinutes: number): string => {
   }
 }
 
-export const getTimeWithMeasurement = (inMinutes: number): {measurement: string, value: number} => {
+export const getTimeWithMeasurement = (inMinutes: number): { measurement: string, value: number } => {
   const measurement = getTimeMeasurement(inMinutes)
 
   const measurements = {
-    'seconds' (minutes) {
+    seconds (minutes) {
       const val = Math.round(minutes * 60)
       return val
     },
-    'minutes' (minutes) {
+    minutes (minutes) {
       return minutes
     },
-    'hours' (minutes) {
+    hours (minutes) {
       return minutes / 60
     },
-    'days' (minutes) {
+    days (minutes) {
       return minutes / 24 / 60
     }
   }
@@ -353,27 +350,27 @@ export const getTimeWithMeasurement = (inMinutes: number): {measurement: string,
 
   if (!strategy) {
     console.error(`No strategy for particular measurement: ${measurement}`)
-    return {measurement: '', value: Infinity}
+    return { measurement: '', value: Infinity }
   }
   return {
     measurement,
     value: strategy(inMinutes)
   }
 }
-export const getTimeInMinutes = (params: {measurement: string, value: number}): number => {
-  const {measurement, value} = params
+export const getTimeInMinutes = (params: { measurement: string, value: number }): number => {
+  const { measurement, value } = params
   const measurementStrategies = {
-    'seconds' (v) {
+    seconds (v) {
       const val = Math.round(v / 60 * 100) / 100
       return val
     },
-    'minutes' (v) {
+    minutes (v) {
       return v
     },
-    'hours' (v) {
+    hours (v) {
       return v * 60
     },
-    'days' (v) {
+    days (v) {
       return v * 24 * 60
     }
   }
@@ -395,6 +392,32 @@ export const convertAbcToGuiDenomination = (abcDenomination: AbcDenomination): G
     precision: 0
   }
   return guiDenomination
+}
+
+export type PrecisionAdjustParams = {
+  exchangeSecondaryToPrimaryRatio: number,
+  secondaryExchangeMultiplier: string,
+  primaryExchangeMultiplier: string
+}
+
+export function precisionAdjust (params: PrecisionAdjustParams): number {
+  const order = Math.floor(Math.log(params.exchangeSecondaryToPrimaryRatio) / Math.LN10 + 0.000000001) // because float math sucks like that
+  const exchangeRateOrderOfMagnitude = Math.pow(10, order)
+
+  // Get the exchange rate in pennies
+  const exchangeRateString = bns.mul(exchangeRateOrderOfMagnitude.toString(), params.secondaryExchangeMultiplier)
+
+  const precisionAdjust = bns.div(exchangeRateString, params.primaryExchangeMultiplier, DIVIDE_PRECISION)
+
+  if (bns.lt(precisionAdjust, '1')) {
+    const fPrecisionAdject = parseFloat(precisionAdjust)
+    let order = 2 + Math.floor(Math.log(fPrecisionAdject) / Math.LN10 - 0.000000001) // because float math sucks like that
+    order = Math.abs(order)
+    if (order > 0) {
+      return order
+    }
+  }
+  return 0
 }
 
 export const noOp = (optionalArgument: any = null) => {

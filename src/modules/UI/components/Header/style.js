@@ -1,6 +1,8 @@
 // @flow
 
-import {StyleSheet} from 'react-native'
+import { StyleSheet } from 'react-native'
+
+import * as Styles from '../../../../styles/indexStyles'
 import THEME from '../../../../theme/variables/airbitz'
 
 export default StyleSheet.create({
@@ -33,5 +35,18 @@ export default StyleSheet.create({
   default: {
     backgroundColor: THEME.COLORS.TRANSPARENT,
     color: THEME.COLORS.WHITE
+  },
+  headerNameContainer: {
+    display: 'flex',
+    flexDirection: 'row'
+  },
+  cCode: {
+    fontWeight: 'bold'
   }
 })
+
+export const walletSelectorStyles = {
+  ...Styles.TextAndIconButtonStyle,
+  content: { ...Styles.TextAndIconButtonStyle.content, position: 'relative', width: '80%' },
+  centeredContent: { ...Styles.TextAndIconButtonStyle.centeredContent, position: 'relative', width: '80%' }
+}

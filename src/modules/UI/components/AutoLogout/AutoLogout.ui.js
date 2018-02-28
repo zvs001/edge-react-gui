@@ -1,7 +1,7 @@
 // @flow
 
-import {Component} from 'react'
-import {AppState} from 'react-native'
+import { Component } from 'react'
+import { AppState } from 'react-native'
 
 type AppStateType = 'active' | 'background' | 'inactive'
 type State = {
@@ -28,8 +28,7 @@ export default class AutoLogout extends Component<Props, State> {
   }
 
   handleAppStateChange = (nextAppState: AppStateType) => {
-    console.log('APP STATE CHANGED')
-    console.log(`${this.state.appState} -> ${nextAppState}`)
+    console.log(`APP STATE CHANGED ${this.state.appState} -> ${nextAppState}`)
     const newTimestamp = new Date()
     const oldTimeStamp = this.state.timestamp
     const durationInSeconds = this.props.autoLogoutTimeInSeconds || Infinity
@@ -37,7 +36,7 @@ export default class AutoLogout extends Component<Props, State> {
       this.props.autoLogout()
     }
 
-    this.setState((state) => ({
+    this.setState(state => ({
       ...state,
       timestamp: newTimestamp,
       appState: nextAppState
@@ -53,7 +52,7 @@ export default class AutoLogout extends Component<Props, State> {
   }
 
   isTimeExpired (durationInSeconds: number, newTimestamp: Date, oldTimeStamp: Date): boolean {
-    const differenceInMilliseconds: number = (newTimestamp - oldTimeStamp)
+    const differenceInMilliseconds: number = newTimestamp - oldTimeStamp
     const differenceInSeconds: number = differenceInMilliseconds / 1000
     return differenceInSeconds > durationInSeconds
   }

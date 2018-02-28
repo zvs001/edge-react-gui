@@ -36,27 +36,27 @@ export const EXCHANGE_NOT_USED = 'exchange_notused'
 export const CREATE_WALLET = 'createWallet'
 
 export const CURRENCY_SETTINGS = {
-  // 'btcSettings': {
-  //   pluginName: 'bitcoin',
-  //   currencyCode: 'BTC'
-  // },
-  // 'bchSettings': {
-  //   pluginName: 'bitcoinCash',
-  //   currencyCode: 'BCH'
-  // },
-  // 'ethSettings': {
-  //   pluginName: 'ethereum',
-  //   currencyCode: 'ETH'
-  // },
-  // 'ltcSettings': {
-  //   pluginName: 'litecoin',
-  //   currencyCode: 'LTC'
-  // },
-  // 'dashSettings': {
-  //   pluginName: 'dash',
-  //   currencyCode: 'DASH'
-  // },
-  'bluSettings': {
+  btcSettings: {
+    pluginName: 'bitcoin',
+    currencyCode: 'BTC'
+  },
+  bchSettings: {
+    pluginName: 'bitcoinCash',
+    currencyCode: 'BCH'
+  },
+  ethSettings: {
+    pluginName: 'ethereum',
+    currencyCode: 'ETH'
+  },
+  ltcSettings: {
+    pluginName: 'litecoin',
+    currencyCode: 'LTC'
+  },
+  dashSettings: {
+    pluginName: 'dash',
+    currencyCode: 'DASH'
+  },
+  bluSettings: {
     pluginName: 'bluecoin',
     currencyCode: 'BLU'
   }

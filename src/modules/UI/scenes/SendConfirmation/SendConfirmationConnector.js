@@ -1,34 +1,26 @@
+import { bns } from 'biggystring'
+import type { AbcTransaction } from 'edge-login'
 // @flow
 import { connect } from 'react-redux'
-import {SendConfirmation, type SendConfirmationStateProps, type SendConfirmationDispatchProps} from './SendConfirmation.ui'
-import type { State, Dispatch } from '../../../ReduxTypes'
+
 import type { GuiWallet } from '../../../../types'
-import type { AbcTransaction } from 'edge-login'
-import { bns } from 'biggystring'
-import { getExchangeRate, getCurrencyConverter } from '../../../Core/selectors.js'
+import { getCurrencyConverter, getExchangeRate } from '../../../Core/selectors.js'
+import type { Dispatch, State } from '../../../ReduxTypes'
+import { getExchangeDenomination, getSelectedCurrencyCode, getSelectedWallet } from '../../selectors.js'
 import { getDisplayDenomination } from '../../Settings/selectors.js'
+import { reset, signBroadcastAndSave, updateAmount, updateSpendPending } from './action.js'
 import {
-  getSelectedWallet,
-  getSelectedCurrencyCode,
-  getExchangeDenomination
-} from '../../selectors.js'
-import {
-  getTransaction,
-  getPending,
-  getNativeAmount,
   getError,
-  getPublicAddress,
+  getForceUpdateGuiCounter,
   getKeyboardIsVisible,
   getLabel,
-  getForceUpdateGuiCounter,
-  getNetworkFee
+  getNativeAmount,
+  getNetworkFee,
+  getPending,
+  getPublicAddress,
+  getTransaction
 } from './selectors'
-import {
-  signBroadcastAndSave,
-  updateSpendPending,
-  updateAmount,
-  reset
-} from './action.js'
+import { SendConfirmation, SendConfirmationDispatchProps, SendConfirmationStateProps } from './SendConfirmation.ui'
 
 const mapStateToProps = (state: State): SendConfirmationStateProps => {
   let fiatPerCrypto = 0
@@ -45,9 +37,14 @@ const mapStateToProps = (state: State): SendConfirmationStateProps => {
   const transaction: AbcTransaction = getTransaction(state)
   const pending = getPending(state)
   const nativeAmount = getNativeAmount(state)
-  const error = getError(state)
+  let error = getError(state)
 
   let errorMsg = null
+  let resetSlider = false
+  if (error && error.message === 'broadcastError') {
+    error = null
+    resetSlider = true
+  }
   if (error && nativeAmount && bns.gt(nativeAmount, '0')) {
     errorMsg = error.message
   }
@@ -59,6 +56,7 @@ const mapStateToProps = (state: State): SendConfirmationStateProps => {
     currencyCode,
     pending,
     secondaryeExchangeCurrencyCode,
+    resetSlider,
     fiatCurrencyCode: guiWallet.fiatCurrencyCode,
     primaryDisplayDenomination: getDisplayDenomination(state, currencyCode),
     primaryExchangeDenomination: getExchangeDenomination(state, currencyCode),
@@ -74,8 +72,7 @@ const mapStateToProps = (state: State): SendConfirmationStateProps => {
 }
 
 const mapDispatchToProps = (dispatch: Dispatch): SendConfirmationDispatchProps => ({
-  updateAmount: (nativeAmount: string, exchangeAmount: string, fiatPerCrypto: string) =>
-    dispatch(updateAmount(nativeAmount, exchangeAmount, fiatPerCrypto)),
+  updateAmount: (nativeAmount: string, exchangeAmount: string, fiatPerCrypto: string) => dispatch(updateAmount(nativeAmount, exchangeAmount, fiatPerCrypto)),
   reset: () => dispatch(reset()),
   updateSpendPending: (pending: boolean): any => dispatch(updateSpendPending(pending)),
   signBroadcastAndSave: (): any => dispatch(signBroadcastAndSave())

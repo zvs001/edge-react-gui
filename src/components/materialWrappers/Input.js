@@ -21,10 +21,11 @@ type Props = {
   secureTextEntry: boolean,
   returnKeyType: string,
   keyboardType: string,
+  placeholder: string,
   onFocus(): void,
   onSubmitEditing(): void,
   onBlur(): void,
-  onChangeText(string): void,
+  onChangeText(string): void
 }
 
 type State = {
@@ -40,7 +41,8 @@ class Input extends Component<Props, State> {
     forceFocus: false,
     returnKeyType: 'go',
     onFocus: null,
-    keyboardType: 'default'
+    keyboardType: 'default',
+    placeholder: ''
   }
   textInput: TextField
   componentWillMount () {
@@ -74,16 +76,7 @@ class Input extends Component<Props, State> {
   render () {
     const value = this.props.value ? this.props.value : ''
     const error = this.props.error ? this.props.error : ''
-    const {
-      containerStyle,
-      baseColor,
-      tintColor,
-      textColor,
-      errorColor,
-      titleTextStyle,
-      secureTextEntry,
-      returnKeyType
-    } = this.props
+    const { containerStyle, baseColor, tintColor, textColor, errorColor, titleTextStyle, secureTextEntry, returnKeyType } = this.props
     return (
       <TextField
         ref={this.addRef}
@@ -105,6 +98,7 @@ class Input extends Component<Props, State> {
         onSubmitEditing={this.onSubmitEditing}
         labelHeight={26}
         keyboardType={this.props.keyboardType}
+        placeholder={this.props.placeholder}
       />
     )
   }
