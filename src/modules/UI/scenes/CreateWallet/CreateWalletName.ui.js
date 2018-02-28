@@ -28,7 +28,7 @@ export class CreateWalletName extends Component<CreateWalletNameOwnProps, State>
   constructor (props: CreateWalletNameOwnProps) {
     super(props)
     this.state = {
-      walletName: sprintf(s.strings.my_crypto_wallet_name, this.props.selectedWalletType.label)
+      walletName: sprintf(s.strings.my_crypto_wallet_name, 'Bluecoins') // this.props.selectedWalletType.label
     }
   }
 

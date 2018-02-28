@@ -97,6 +97,7 @@
     "react-native-animatable": "^1.1.0",
     "react-native-background-fetch": "^2.2.1",
     "react-native-background-task": "^0.2.1",
+    "react-native-ble-manager": "git+https://github.com/zvs001/react-native-ble-manager.git#socket",
     "react-native-blur": "^3.2.0",
     "react-native-camera": "^0.12.0",
     "react-native-contacts": "^0.9.0",

@@ -18,6 +18,7 @@ import type { ExchangedFlipInputAmounts } from '../../components/FlipInput/Excha
 import Gradient from '../../components/Gradient/Gradient.ui'
 import QRCode from '../../components/QRCode/index.js'
 import RequestStatus from '../../components/RequestStatus/index.js'
+import BluetoothStatus from '../../components/BluetoothStatus/index'
 import SafeAreaView from '../../components/SafeAreaView/index.js'
 import ShareButtons from '../../components/ShareButtons/index.js'
 import styles from './styles.js'
@@ -159,6 +160,7 @@ export class Request extends Component<Props, State> {
 
             <QRCode value={this.state.encodedURI} />
             <RequestStatus requestAddress={this.state.publicAddress} amountRequestedInCrypto={0} amountReceivedInCrypto={0} />
+            <BluetoothStatus encodedURI={this.state.encodedURI} requestAddress={this.state.publicAddress} amountRequestedInCrypto={0} amountReceivedInCrypto={0} />
           </View>
 
           <View style={styles.shareButtonsContainer}>

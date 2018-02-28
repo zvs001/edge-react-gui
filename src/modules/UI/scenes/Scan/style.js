@@ -48,6 +48,14 @@ export const styles = {
     paddingRight: 8,
     paddingLeft: 8
   },
+  overlayTabAreaWrap: {
+    height: 56,
+    flexDirection: 'row',
+    paddingTop: 3,
+    paddingBottom: 3,
+    paddingRight: 8,
+    paddingLeft: 8
+  },
   overLayButtonArea: {
     flex: 1,
     justifyContent: 'center',
@@ -64,6 +72,17 @@ export const styles = {
     height: 50,
     marginLeft: 1,
     marginRight: 1
+  },
+  bottomButtonDisabled: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: `${THEME.COLORS.WHITE}${THEME.ALPHA.LOW}`,
+    borderRadius: 3,
+    height: 50,
+    marginLeft: 1,
+    marginRight: 1,
+    opacity: 0.3
   },
   bottomButtonTextWrap: {
     flexDirection: 'column',
@@ -92,6 +111,16 @@ export const styles = {
     fontSize: 16,
     height: 16,
     transform: [{ scaleX: -1.0 }]
+  },
+  addressCameraIcon: {
+    color: THEME.COLORS.WHITE,
+    fontSize: 24,
+    height: 22
+  },
+  addressBluetoothIcon: {
+    color: THEME.COLORS.WHITE,
+    fontSize: 26,
+    height: 26
   },
   cameraIcon: {
     color: THEME.COLORS.WHITE,
@@ -188,6 +217,36 @@ export const styles = {
   },
   doneUnderlay: {
     color: THEME.COLORS.PRIMARY
+  },
+  bluetoothList: {
+    width: '100%'
+  },
+  bluetoothItem: {
+    backgroundColor: THEME.COLORS.WHITE,
+    paddingBottom: 15,
+    paddingTop: 15,
+    paddingLeft: 10,
+    paddingRight: 10,
+    flex: 1,
+    flexDirection: 'row',
+
+    borderStyle: 'solid',
+    borderTopWidth: 1,
+    borderLeftColor: 'transparent',
+    borderTopColor: THEME.COLORS.SECONDARY
+  },
+  bluetoothItemStatus: {
+    width: 30,
+    justifyContent: 'space-between',
+    alignSelf: 'center'
+  },
+  bluetoothItemText: {
+    fontSize: 16
+  },
+  bluetoothItemStatusBle: {
+    width: 23,
+    height: 23
   }
 }
+
 export default StyleSheet.create(styles)

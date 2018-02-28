@@ -10,12 +10,14 @@ export const styles = StyleSheet.create({
     borderWidth: 1
   },
   container: {
-    height: 110,
+    height: 90,
     marginVertical: 0,
     marginHorizontal: 14,
     alignSelf: 'stretch',
     backgroundColor: THEME.COLORS.TRANSPARENT,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    minHeight: 90,
+    maxHeight: 100
   },
   flipContainerFront: {
     flex: 1,

@@ -42,8 +42,6 @@ const RequestStatus = props => {
   const getDisplayRequestStatus = () => {
     const waitingForPayment = (
       <View style={styles.view}>
-        <Text style={styles.text}>{s.strings.request_qr_your_receiving_wallet_address}</Text>
-
         <T numberOfLines={1} ellipsizeMode="middle" style={[b(), styles.text]}>
           {requestAddress}
         </T>

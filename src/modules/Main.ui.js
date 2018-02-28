@@ -1,6 +1,6 @@
 // @flow
 
-import { bitcoinCurrencyPluginFactory, bitcoincashCurrencyPluginFactory, dashCurrencyPluginFactory, litecoinCurrencyPluginFactory } from 'edge-currency-bitcoin'
+import { bitcoinCurrencyPluginFactory, bitcoincashCurrencyPluginFactory, dashCurrencyPluginFactory, litecoinCurrencyPluginFactory, bluecoinCurrencyPluginFactory } from 'edge-currency-bitcoin'
 import { ethereumCurrencyPluginFactory } from 'edge-currency-ethereum'
 import { coinbasePlugin, shapeshiftPlugin } from 'edge-exchange-plugins'
 import type { AbcContext, AbcContextCallbacks, AbcCurrencyPlugin, EdgeCorePluginFactory } from 'edge-login'
@@ -72,16 +72,21 @@ import TransactionListConnector from './UI/scenes/TransactionList/TransactionLis
 import { HwBackButtonHandler } from './UI/scenes/WalletList/components/HwBackButtonHandler'
 import WalletList from './UI/scenes/WalletList/WalletListConnector'
 
+import bluecoinExchangePlugin from 'edge-exchange-bluecoin'
+
 const pluginFactories: Array<EdgeCorePluginFactory> = [
   // Exchanges:
-  coinbasePlugin,
-  shapeshiftPlugin,
+  // coinbasePlugin,
+  // shapeshiftPlugin,
+  bluecoinExchangePlugin,
+
   // Currencies:
-  bitcoincashCurrencyPluginFactory,
-  bitcoinCurrencyPluginFactory,
-  dashCurrencyPluginFactory,
-  ethereumCurrencyPluginFactory,
-  litecoinCurrencyPluginFactory
+  // bitcoincashCurrencyPluginFactory,
+  // bitcoinCurrencyPluginFactory,
+  // dashCurrencyPluginFactory,
+  // ethereumCurrencyPluginFactory,
+  // litecoinCurrencyPluginFactory,
+  bluecoinCurrencyPluginFactory
 ]
 
 const localeInfo = Locale.constants() // should likely be moved to login system and inserted into Redux
@@ -362,24 +367,24 @@ export default class Main extends Component<Props, State> {
                         />
                       </Stack>
 
-                      <Stack key={Constants.EXCHANGE} icon={this.icon(Constants.EXCHANGE)} tabBarLabel={EXCHANGE}>
-                        <Scene
-                          key={Constants.EXCHANGE_NOT_USED}
-                          navTransparent={true}
-                          component={ExchangeConnector}
-                          renderTitle={this.renderTitle(EXCHANGE)}
-                          renderLeftButton={this.renderExchangeButton()}
-                          renderRightButton={this.renderMenuButton()}
-                        />
-                        <Scene
-                          key={Constants.CHANGE_MINING_FEE_EXCHANGE}
-                          navTransparent={true}
-                          component={ChangeMiningFeeExchange}
-                          renderTitle={this.renderTitle(CHANGE_MINING_FEE)}
-                          renderLeftButton={this.renderBackButton()}
-                          renderRightButton={this.renderHelpButton()}
-                        />
-                      </Stack>
+                      {/* <Stack key={Constants.EXCHANGE} icon={this.icon(Constants.EXCHANGE)} tabBarLabel={EXCHANGE}> */}
+                      {/* <Scene */}
+                      {/* key={Constants.EXCHANGE_NOT_USED} */}
+                      {/* navTransparent={true} */}
+                      {/* component={ExchangeConnector} */}
+                      {/* renderTitle={this.renderTitle(EXCHANGE)} */}
+                      {/* renderLeftButton={this.renderExchangeButton()} */}
+                      {/* renderRightButton={this.renderMenuButton()} */}
+                      {/* /> */}
+                      {/* <Scene */}
+                      {/* key={Constants.CHANGE_MINING_FEE_EXCHANGE} */}
+                      {/* navTransparent={true} */}
+                      {/* component={ChangeMiningFeeExchange} */}
+                      {/* renderTitle={this.renderTitle(CHANGE_MINING_FEE)} */}
+                      {/* renderLeftButton={this.renderBackButton()} */}
+                      {/* renderRightButton={this.renderHelpButton()} */}
+                      {/* /> */}
+                      {/* </Stack> */}
                     </Tabs>
 
                     <Stack key={Constants.SEND_CONFIRMATION} hideTabBar>
