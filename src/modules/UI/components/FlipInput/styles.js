@@ -14,7 +14,8 @@ export const styles = StyleSheet.create({
     marginHorizontal: 14,
     alignSelf: 'stretch',
     backgroundColor: THEME.COLORS.TRANSPARENT,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    minHeight: 20
   },
   flipContainerFront: {
     flex: 1,

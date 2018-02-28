@@ -27,9 +27,6 @@ import * as Constants from '../../../../constants/indexConstants'
 
 import type {PermissionStatus} from '../../../ReduxTypes'
 
-import BluetoothScan from './BluetoothScan.ui'
-import CameraScan from './CameraScan.ui'
-
 type Props = {
   cameraPermission: PermissionStatus,
   abcWallet: AbcCurrencyWallet,
@@ -70,38 +67,39 @@ export default class Scan extends Component<Props> {
 
   render () {
     return (
-      <SafeAreaView>
-        <View style={{ flex: 1 }}>
-          <Gradient style={styles.gradient} />
+      <View style={styles.container}>
+        {this.renderCamera()}
 
-          <Gradient style={[styles.overlayTabAreaWrap]}>
+        <View style={[styles.overlay, UTILS.border()]}>
 
-            <TouchableHighlight
-              style={this.state.currentTab === 'camera' ? styles.bottomButton : styles.bottomButtonDisabled}
-              onPress={() => this.changeToTab('camera')} underlayColor={styleRaw.underlay.color}>
+          <AddressModal onExitButtonFxn={this._onToggleAddressModal} />
+
+          <View style={[styles.overlayTop]}>
+            <T style={[styles.overlayTopText]}>{HEADER_TEXT}</T>
+          </View>
+
+          <View style={[styles.overlayBlank]} />
+
+          <Gradient style={[styles.overlayButtonAreaWrap]}>
+
+            <TouchableHighlight style={styles.bottomButton} onPress={this._onToggleAddressModal} underlayColor={styleRaw.underlay.color}>
               <View style={styles.bottomButtonTextWrap}>
-                <FAIcon style={[styles.addressCameraIcon]} name="camera" />
+                <FAIcon style={[styles.addressBookIcon]} name="address-book-o" size={18} />
+                <T style={[styles.addressButtonText, styles.bottomButtonText]}>{ADDRESS_TEXT}</T>
               </View>
             </TouchableHighlight>
 
-            <TouchableHighlight
-              style={this.state.currentTab === 'bluetooth' ? styles.bottomButton : styles.bottomButtonDisabled}
-              onPress={() => this.changeToTab('bluetooth')} underlayColor={styleRaw.underlay.color}>
+            <TouchableHighlight style={styles.bottomButton} onPress={this._onToggleTorch} underlayColor={styleRaw.underlay.color}>
               <View style={styles.bottomButtonTextWrap}>
-                <FAIcon style={[styles.addressBluetoothIcon]} name="bluetooth" />
+                <Ionicon style={[styles.flashIcon]} name="ios-flash-outline" size={24} />
+                <T style={[styles.flashButtonText, styles.bottomButtonText]}>{FLASH_TEXT}</T>
               </View>
             </TouchableHighlight>
 
           </Gradient>
-
-          <View style={styles.topSpacer} />
-
-          {this.state.currentTab === 'camera' && <CameraScan {...this.props} />}
-          {this.state.currentTab === 'bluetooth' && <BluetoothScan {...this.props} />}
-
-          {this.renderDropUp()}
         </View>
-      </SafeAreaView>
+        <ABAlert />
+      </View>
     )
   }
 

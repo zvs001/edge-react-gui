@@ -18,6 +18,7 @@ import { ExchangedFlipInput, type ExchangedFlipInputAmounts } from '../../compon
 import ExchangedExchangeRate from '../../components/ExchangeRate/ExchangedExchangeRate.ui.js'
 import QRCode from '../../components/QRCode/index.js'
 import RequestStatus from '../../components/RequestStatus/index.js'
+import BluetoothStatus from '../../components/BluetoothStatus/index'
 import ShareButtons from '../../components/ShareButtons/index.js'
 import ContactsWrapper from 'react-native-contacts-wrapper'
 import Gradient from '../../components/Gradient/Gradient.ui'
@@ -164,6 +165,7 @@ export class Request extends Component<Props, State> {
 
             <QRCode value={this.state.encodedURI} />
             <RequestStatus requestAddress={this.state.publicAddress} amountRequestedInCrypto={0} amountReceivedInCrypto={0} />
+            <BluetoothStatus encodedURI={this.state.encodedURI} requestAddress={this.state.publicAddress} amountRequestedInCrypto={0} amountReceivedInCrypto={0} />
           </View>
 
           <View style={styles.shareButtonsContainer}>
