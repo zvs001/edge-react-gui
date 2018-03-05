@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from 'react'
-import { ActivityIndicator, Alert, Text, View, TouchableHighlight, FlatList, NativeEventEmitter, NativeModules, Image } from 'react-native'
+import { ActivityIndicator, Alert, Text, View, TouchableHighlight, FlatList, Image } from 'react-native'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 // $FlowFixMe
@@ -11,26 +11,16 @@ import Camera from 'react-native-camera'
 import type { AbcCurrencyWallet, AbcParsedUri } from 'edge-login'
 
 import s from '../../../../locales/strings.js'
-import T from '../../components/FormattedText'
-import Gradient from '../../components/Gradient/Gradient.ui'
-import SafeAreaView from '../../components/SafeAreaView'
-import AddressModal from './components/AddressModalConnector'
-import { AUTHORIZED, DENIED } from '../../permissions'
 import * as WALLET_API from '../../../Core/Wallets/api.js'
 import * as UTILS from '../../../utils.js'
 
-import styles, { styles as styleRaw } from './style'
+import styles from './style'
 import ABAlert from '../../components/ABAlert/indexABAlert'
-
-import WalletListModal from '../../../UI/components/WalletListModal/WalletListModalConnector'
-import * as Constants from '../../../../constants/indexConstants'
 
 import type {PermissionStatus} from '../../../ReduxTypes'
 
 import BleManager from 'react-native-ble-manager'
-
-const BleManagerModule = NativeModules.BleManager
-const bleManagerEmitter = new NativeEventEmitter(BleManagerModule)
+import bleHelper from './BluetoothWatcher'
 
 type Props = {
   cameraPermission: PermissionStatus,
@@ -49,14 +39,6 @@ type Props = {
   toggleScanToWalletListModal: () => void
 }
 
-const HEADER_TEXT = s.strings.send_scan_header_text
-
-const DENIED_PERMISSION_TEXT = '' // blank string because way off-centered (not sure reason why)
-// const TRANSFER_TEXT = s.strings.fragment_send_transfer
-const ADDRESS_TEXT = s.strings.fragment_send_address
-// const PHOTOS_TEXT   = s.strings.fragment_send_photos
-const FLASH_TEXT = s.strings.fragment_send_flash
-
 export default class Scan extends Component<Props> {
   constructor () {
     super()
@@ -73,36 +55,14 @@ export default class Scan extends Component<Props> {
     await BleManager.enableBluetooth()
     const list = await BleManager.getBondedPeripherals()
     this.setState({ bluetoothDevices: list })
-
-    this.watcherSocket = bleManagerEmitter.addListener('BleSocketServiceEvent', (msg) => {
-      console.log('BleSocketServiceEvent SCAN', msg)
-      switch (msg.event) {
-        case 'STATE_LISTEN|NONE':
-          this.setState({status: ''})
-          break
-        case 'STATE_CONNECTING':
-          this.setState({status: 'Connecting'})
-          break
-        case 'STATE_CONNECTED':
-          this.setState({status: 'Connected'})
-          break
-        case 'read': // here we will receive parsedUriString
-          this.parseURI(msg.text)
-          break
-      }
-    })
-  }
-
-  componentWillUnmount () {
-    if (this.watcherSocket) this.watcherSocket.remove()
   }
 
   render () {
-    console.log(this.props)
     return (
       <View style={styles.container}>
         <View style={{width: '100%'}}>
           <FlatList
+            extraData={this.state}
             style={styles.bluetoothList}
             data={this.state.bluetoothDevices}
             renderItem={item => this.renderBluetoothItem(item)}
@@ -115,15 +75,18 @@ export default class Scan extends Component<Props> {
   }
 
   renderBluetoothItem ({ item }) {
-    console.log(item)
     return (
       <TouchableHighlight onPress={() => this.onItemClick(item.id)}>
         <View style={styles.bluetoothItem}>
           <View style={styles.bluetoothItemStatus}>
-            <Image
-              style={styles.bluetoothItemStatusBle}
-              source={require('../../../../assets/images/bluecoin/bluetooth.png')}
-            />
+            {
+              item.connecting
+                ? <ActivityIndicator size="small" color="#1998C7"/>
+                : <Image
+                  style={styles.bluetoothItemStatusBle}
+                  source={require('../../../../assets/images/bluecoin/bluetooth.png')}
+                />
+            }
           </View>
           <Text style={styles.bluetoothItemText}>{item.name}</Text>
         </View>
@@ -131,12 +94,34 @@ export default class Scan extends Component<Props> {
     )
   }
 
-  onItemClick (id) {
-    BleManager.socketConnect(id).then(res => {
-      console.log('socketConnect success', res)
-    }).catch(
-      err => console.error('err', err)
-    )
+  async onItemClick (id) {
+    this._connectingStatus(id)
+    try {
+      await BleManager.enableBluetooth()
+      await BleManager.socketConnect(id)
+      await bleHelper.bleWatcherListener(BleManager.emitter, 'STATE_CONNECTED')
+      setTimeout(() => {
+        BleManager.socketWrite('getTxURI')
+      }, 700)
+      const uri = await bleHelper.bleWatcherListener(BleManager.emitter, 'READ')
+      this.parseURI(uri)
+      console.log('Bluetooth URI', uri)
+    } catch (e) {
+      console.log('onItemClick Error', e)
+    }
+    this._connectingStatus()
+    BleManager.socketClose()
+  }
+
+  _connectingStatus (id) {
+    const { bluetoothDevices } = this.state
+    bluetoothDevices.forEach(item => {
+      delete item.connecting
+      if (item.id === id) item.connecting = true
+    })
+    this.setState({ bluetoothDevices })
+    console.log(bluetoothDevices)
+    this.render()
   }
 
   parseURI = (uri: string) => {
