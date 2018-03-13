@@ -12,6 +12,7 @@ import * as Constants from '../../../../constants/indexConstants'
 import styles from './styles'
 
 import BleManager from 'react-native-ble-manager'
+import BluetoothSerial from 'react-native-android-bluetooth-discovery'
 
 const BLE_ACTIVE = require('../../../../assets/images/bluecoin/bluetooth.png')
 const BLE_DISABLED = require('../../../../assets/images/bluecoin/bluetooth-disabled.png')
@@ -56,6 +57,7 @@ class BluetoothStatus extends Component<Props, State> {
     try {
       await BleManager.enableBluetooth()
       await BleManager.socketListen()
+      BluetoothSerial.enableDiscoverable()
       BleManager.emitter.on('READ', this._watcherConnections)
       this.setState({isConnected: true})
     } catch (e) {
@@ -65,6 +67,7 @@ class BluetoothStatus extends Component<Props, State> {
   }
 
   async _disable () {
+    BluetoothSerial.disableDiscoverable()
     BleManager.emitter.off('READ', this._watcherConnections)
     BleManager.socketClose()
     this.setState({
