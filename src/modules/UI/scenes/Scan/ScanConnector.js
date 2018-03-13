@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { loginWithEdge } from '../../../../actions/EdgeLoginActions.js'
 import * as Constants from '../../../../constants/indexConstants'
 import { getCameraPermission } from '../../../../reducers/permissions/selectors'
+import { requestPermission } from '../../../../reducers/permissions/actions'
 import * as CORE_SELECTORS from '../../../Core/selectors.js'
 import type { Dispatch, State } from '../../../ReduxTypes'
 import { toggleScanToWalletListModal } from '../../components/WalletListModal/action'
@@ -32,6 +33,7 @@ const mapStateToProps = (state: State) => {
 }
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
+  requestPermission: permission => dispatch(requestPermission(permission)),
   dispatchEnableScan: () => dispatch(enableScan()),
   dispatchDisableScan: () => dispatch(disableScan()),
   toggleEnableTorch: () => dispatch(toggleEnableTorch()),

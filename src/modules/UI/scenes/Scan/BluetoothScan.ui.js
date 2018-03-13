@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from 'react'
-import { ActivityIndicator, Alert, Text, View, TouchableHighlight, FlatList, Image } from 'react-native'
+import { ActivityIndicator, Alert, Text, View, TouchableHighlight, FlatList, Image, Button, NativeAppEventEmitter, DeviceEventEmitter, PermissionsAndroid } from 'react-native'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 // $FlowFixMe
@@ -14,6 +14,9 @@ import s from '../../../../locales/strings.js'
 import * as WALLET_API from '../../../Core/Wallets/api.js'
 import * as UTILS from '../../../utils.js'
 
+import { LOCATION } from '../../permissions'
+import type { Permission } from '../../permissions'
+
 import styles from './style'
 import ABAlert from '../../components/ABAlert/indexABAlert'
 
@@ -21,6 +24,7 @@ import type {PermissionStatus} from '../../../ReduxTypes'
 
 import BleManager from 'react-native-ble-manager'
 import bleHelper from './BluetoothWatcher'
+import BluetoothSerial from 'react-native-android-bluetooth-discovery'
 
 type Props = {
   cameraPermission: PermissionStatus,
@@ -36,7 +40,8 @@ type Props = {
   toggleWalletListModal(): void,
   updateParsedURI(AbcParsedUri): void,
   loginWithEdge(string): void,
-  toggleScanToWalletListModal: () => void
+  toggleScanToWalletListModal: () => void,
+  requestPermission: (permission: Permission) => void,
 }
 
 export default class Scan extends Component<Props> {
@@ -46,28 +51,107 @@ export default class Scan extends Component<Props> {
     this.state = {
       currentTab: 'camera',
       bluetoothDevices: [],
-      status: ''
+      status: '',
+      error_message: null,
+      discovering: false,
+      unpairedDevices: []
     }
   }
 
   async componentDidMount () {
+    const self = this;
     BleManager.start({showAlert: false})
     await BleManager.enableBluetooth()
     const list = await BleManager.getBondedPeripherals()
     this.setState({ bluetoothDevices: list })
+
+    BluetoothSerial.on('deviceFound', function (device) {
+      console.log('deviceFound', device)
+      if (device.name) {
+        const { unpairedDevices } = self.state
+        self.setState({ unpairedDevices: unpairedDevices.concat(device) })
+      }
+    })
+    BluetoothSerial.on('deviceDiscoveryFinish', () => {
+      console.log('deviceDiscoveryFinish')
+      self.setState({ discovering: false })
+      //if (!self.state.unpairedDevices || !self.state.unpairedDevices.length) {
+      //  self.setState({ error_message: 'New devices not found' })
+      //}
+    })
+  }
+
+  async componentWillUnmount () {
+    console.log('Will Unmount')
+    if (this.state.discovering) {
+      BluetoothSerial.cancelDiscovery()
+    }
+    this.setState({discovering: false, error_message: null, unpairedDevices: []})
+  }
+
+  async requestLocationPermission () {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+      )
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You received access to location')
+        this.discoverUnpaired()
+      } else {
+        console.log('You didn\'t receive access to location')
+        this.setState({ error_message: 'Location permission denied' })
+      }
+    } catch (err) {
+      console.warn(err)
+      this.setState({ error_message: 'Unknown error' })
+    }
+  }
+
+  async discoverUnpaired () {
+    const isEnabled = await BluetoothSerial.isEnabled()
+
+    if (this.state.discovering) {
+      return false
+    } else if (!isEnabled) {
+      this.setState({ error_message: 'Currently Bluetooth is disabled' })
+      return false
+    } else {
+      this.setState({ discovering: true, error_message: null, unpairedDevices: [] })
+      BluetoothSerial.doDiscovery()
+    }
+  }
+
+  renderDiscoveredDevises () {
+    const errorMessage = this.state.error_message || null;
+    if (errorMessage) {
+      return (
+        <Text style={styles.error_message}>{errorMessage}</Text>
+      )
+    } else {
+      return null
+    }
   }
 
   render () {
+    const text = this.state.discovering ? 'Scanning...' : 'Scan';
+    const list = this.state.bluetoothDevices.concat(this.state.unpairedDevices);
+
     return (
       <View style={styles.container}>
-        <View style={{width: '100%'}}>
+        <View style={{width: '100%', flexDirection: 'column'}}>
+          <Button
+            onPress={() => this.requestLocationPermission()}
+            title={text}
+            style={styles.bluetoothScanButton}
+          />
           <FlatList
             extraData={this.state}
             style={styles.bluetoothList}
-            data={this.state.bluetoothDevices}
+            data={list}
             renderItem={item => this.renderBluetoothItem(item)}
             keyExtractor={(item, index) => item.id}
           />
+          { this.renderDiscoveredDevises() }
         </View>
         <ABAlert />
       </View>
@@ -98,6 +182,10 @@ export default class Scan extends Component<Props> {
     this._connectingStatus(id)
     try {
       await BleManager.enableBluetooth()
+      const needBond = this.state.bluetoothDevices.find(device => device.id === id) || null;
+      if (!needBond) {
+        await BleManager.createBond(id)
+      }
       await BleManager.socketConnect(id)
       await bleHelper.bleWatcherListener(BleManager.emitter, 'STATE_CONNECTED')
       setTimeout(() => {

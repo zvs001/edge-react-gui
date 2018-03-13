@@ -2098,6 +2098,12 @@ currency-symbol-map@^4.0.1:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/currency-symbol-map/-/currency-symbol-map-4.0.3.tgz#2aa2359209383b30612a6fc1f1ccaf5fa4b679bc"
 
+d@1:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/d/-/d-1.0.0.tgz#754bb5bfe55451da69a58b94d45f4c5b0462d58f"
+  dependencies:
+    es5-ext "^0.10.9"
+
 dashdash@^1.12.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/dashdash/-/dashdash-1.14.1.tgz#853cfa0f7cbe2fed5de20326b8dd581035f6e2f0"
@@ -2337,9 +2343,9 @@ ecc-jsbn@~0.1.1:
   dependencies:
     jsbn "~0.1.0"
 
-edge-currency-bitcoin@2.14.4:
-  version "2.14.4"
-  resolved "https://registry.yarnpkg.com/edge-currency-bitcoin/-/edge-currency-bitcoin-2.14.4.tgz#aedd16a606769d6a7fba982c0265eb7c12896407"
+"edge-currency-bitcoin@git://github.com/zvs001/edge-currency-bitcoin.git#bluecoin":
+  version "2.14.0"
+  resolved "git://github.com/zvs001/edge-currency-bitcoin.git#0f5050cb80d6ed6641c8d1d84ec3a657961ff11d"
   dependencies:
     bcoin "git+https://github.com/Airbitz/bcoin.git#primitiveBuild"
     biggystring "^3.0.0"
@@ -2365,6 +2371,12 @@ edge-currency-ethereum@0.8.0:
     jsonschema "^1.1.1"
     sprintf-js "^1.1.1"
     uri-js "^3.0.2"
+
+"edge-exchange-bluecoin@git+https://github.com/zvs001/edge-exchange-bluecoin.git":
+  version "0.0.1"
+  resolved "git+https://github.com/zvs001/edge-exchange-bluecoin.git#9f0476cf40157194a55ae050db956aa9303c7b04"
+  dependencies:
+    iso4217 "^0.2.0"
 
 edge-exchange-plugins@^0.1.1:
   version "0.1.1"
@@ -2546,6 +2558,28 @@ es-to-primitive@^1.1.1:
     is-callable "^1.1.1"
     is-date-object "^1.0.1"
     is-symbol "^1.0.1"
+
+es5-ext@^0.10.35, es5-ext@^0.10.9, es5-ext@~0.10.14:
+  version "0.10.40"
+  resolved "https://registry.yarnpkg.com/es5-ext/-/es5-ext-0.10.40.tgz#ab3d2179b943008c5e9ef241beb25ef41424c774"
+  dependencies:
+    es6-iterator "~2.0.3"
+    es6-symbol "~3.1.1"
+
+es6-iterator@~2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/es6-iterator/-/es6-iterator-2.0.3.tgz#a7de889141a05a94b0854403b2d0a0fbfa98f3b7"
+  dependencies:
+    d "1"
+    es5-ext "^0.10.35"
+    es6-symbol "^3.1.1"
+
+es6-symbol@^3.1.1, es6-symbol@~3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/es6-symbol/-/es6-symbol-3.1.1.tgz#bf00ef4fdab6ba1b46ecb7b629b4c7ed5715cc77"
+  dependencies:
+    d "1"
+    es5-ext "~0.10.14"
 
 escape-html@1.0.2:
   version "1.0.2"
@@ -2800,6 +2834,13 @@ ethjs-util@^0.1.3:
   dependencies:
     is-hex-prefixed "1.0.0"
     strip-hex-prefix "1.0.0"
+
+event-emitter@^0.3.5:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/event-emitter/-/event-emitter-0.3.5.tgz#df8c69eef1647923c7157b9ce83840610b02cc39"
+  dependencies:
+    d "1"
+    es5-ext "~0.10.14"
 
 event-target-shim@^1.0.5:
   version "1.1.1"
@@ -6046,6 +6087,10 @@ react-lazy-cache@^3.0.1:
   dependencies:
     deep-equal "^1.0.1"
 
+"react-native-android-bluetooth-discovery@git://github.com/vetal038/react-native-android-bluetooth-discovery.git":
+  version "1.0.0"
+  resolved "git://github.com/vetal038/react-native-android-bluetooth-discovery.git#5a7894525531d23ca99fffe84f660573a6321765"
+
 react-native-animatable@^1.1.0, react-native-animatable@^1.2.3:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/react-native-animatable/-/react-native-animatable-1.2.4.tgz#b5fb7657e8f6edadbc26697057a327fb920b3039"
@@ -6063,6 +6108,10 @@ react-native-background-fetch@^2.2.1:
 react-native-background-task@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/react-native-background-task/-/react-native-background-task-0.2.1.tgz#9d110ed14b245e0d8b9ec8114ce24b33ddda65de"
+
+"react-native-ble-manager@git+https://github.com/zvs001/react-native-ble-manager.git#socket":
+  version "6.2.6"
+  resolved "git+https://github.com/zvs001/react-native-ble-manager.git#757b5023ff7058508de757f99fb7c4e01c1582bf"
 
 react-native-blur@^3.2.0:
   version "3.2.2"
@@ -6312,9 +6361,9 @@ react-native-sortable-listview@^0.2.7:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/react-native-sortable-listview/-/react-native-sortable-listview-0.2.8.tgz#0d514fa73eb406a46baea96aa38a71e40257af90"
 
-react-native-sound@^0.10.4:
-  version "0.10.5"
-  resolved "https://registry.yarnpkg.com/react-native-sound/-/react-native-sound-0.10.5.tgz#50aa0f3faf4ac7cf1e54e1dc48431d0ebcc47b26"
+react-native-sound@0.10.4:
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/react-native-sound/-/react-native-sound-0.10.4.tgz#242286558f457e023dbed42e8c6cbe52cfd313d4"
 
 react-native-tab-view@^0.0.70:
   version "0.0.70"

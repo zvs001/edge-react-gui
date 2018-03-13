@@ -50,5 +50,7 @@ include ':react-native-contacts'
 project(':react-native-contacts').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-contacts/android')
 include ':react-native-camera'
 project(':react-native-camera').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-camera/android')
+include ':react-native-android-bluetooth-discovery'
+project(':react-native-android-bluetooth-discovery').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-bluetooth-discovery/android')
 
 include ':app'

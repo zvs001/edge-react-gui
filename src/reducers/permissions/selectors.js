@@ -18,6 +18,10 @@ export const getPhotosPermission = (state: State) => {
   return state.permissions.photos
 }
 
+export const getLocationPermission = (state: State) => {
+  return state.permissions.location
+}
+
 export const getPermissionStatus = (state: State, permission: Permission) => {
   return state.permissions[permission]
 }

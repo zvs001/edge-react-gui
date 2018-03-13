@@ -154,6 +154,7 @@ if (hasProperty('storeFile')) {
 
 dependencies {
     compile project(':react-native-ble-manager')
+    compile project(':react-native-android-bluetooth-discovery')
     compile project(':react-native-mail')
     compile project(':react-native-smart-splash-screen')
     compile project(':react-native-background-task')

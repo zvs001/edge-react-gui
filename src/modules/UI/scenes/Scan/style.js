@@ -95,6 +95,12 @@ export const styles = {
     fontSize: 14,
     backgroundColor: THEME.COLORS.TRANSPARENT
   },
+  error_message: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginTop: 10,
+    marginBottom: 10
+  },
   transferArrowIcon: {
     color: THEME.COLORS.WHITE,
     fontSize: 22,
@@ -220,6 +226,11 @@ export const styles = {
   },
   bluetoothList: {
     width: '100%'
+  },
+  bluetoothScanButton: {
+    width: '100%',
+    color: '#841584',
+    flex: 1
   },
   bluetoothItem: {
     backgroundColor: THEME.COLORS.WHITE,
