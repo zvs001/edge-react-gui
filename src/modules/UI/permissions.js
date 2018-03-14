@@ -29,3 +29,7 @@ export const request = (permissions: Permissions): Promise<boolean> => {
 const singleRequest = permission => {
   return RNPermissions.request(permission).catch(console.log)
 }
+
+export const isAuthorized = (permissionStatus: PermissionStatus) => {
+  return permissionStatus === AUTHORIZED
+}
