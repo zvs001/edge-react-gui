@@ -7,8 +7,8 @@ DEFAULT_WALLET="bluecoin"; #should be in lowercase
 
 
 # set up image at top of login screen
-${BASH_SOURCE%/*}/airbitz-core-js-ui/make-logo.sh
-${BASH_SOURCE%/*}/airbitz-core-js-ui/rename.sh
+${BASH_SOURCE%/*}/edge-login-ui-rn/make-logo.sh
+${BASH_SOURCE%/*}/edge-login-ui-rn/rename.sh
 
 # rename application
 react-native-rename $APP_NAME;

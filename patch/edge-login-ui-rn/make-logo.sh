@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # path where we will override images
-PATH_OUTPUT="node_modules/airbitz-core-js-ui/src/native/assets/edgeLogo/";
+PATH_OUTPUT="node_modules/edge-login-ui-rn/src/native/assets/edgeLogo/";
 
 #our image
 IMAGE="${BASH_SOURCE%/*}/image.png";

@@ -1,7 +1,7 @@
 // @flow
 
 const strings = {
-  app_name: 'Edge Wallet',
+  app_name: 'Bluecoin Wallet',
   bitcoin_received: '%1$s Received',
   bitcoin_remaining: '%1$s Remaining…',
   calculator_done: 'Done',
@@ -75,7 +75,7 @@ const strings = {
   fragment_wallets_resync_wallet: 'Resync Wallet',
   fragment_wallets_split_wallet: 'Split Wallet',
   fragment_wallets_get_seed_wallet: 'Get Seed',
-  fragment_wallets_seed_share_title: 'Edge Wallet (%s) Seed',
+  fragment_wallets_seed_share_title: 'Bluecoin Wallet (%s) Seed',
   fragment_wallets_header: 'My Wallets',
   fragment_wallets_rename_wallet: 'Rename Wallet',
   fragment_wallets_resync_wallet_first_confirm_message_mobile: 'Are you sure you want to resync ',
@@ -102,7 +102,7 @@ const strings = {
   mining_fee_standard_label_choice: 'Standard',
   request_qr_email_title: '%1$s Bitcoin Request',
   request_qr_your_receiving_wallet_address: 'Your Receiving Wallet Address',
-  request_share_edge_request: 'Share Edge Request',
+  request_share_edge_request: 'Share Bluecoin Request',
   select_recv_wallet: 'Select Receiving Wallet',
   select_src_wallet: 'Select Source Wallet',
   send_confirmation_fee_line: 'Fee: + %s (%s)',
