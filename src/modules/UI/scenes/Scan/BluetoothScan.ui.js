@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from 'react'
-import { ActivityIndicator, Alert, Text, View, TouchableHighlight, FlatList, Image, Button, NativeAppEventEmitter, DeviceEventEmitter, PermissionsAndroid } from 'react-native'
+import { ActivityIndicator, Alert, Text, View, TouchableHighlight, FlatList, Image, TouchableOpacity, NativeAppEventEmitter, DeviceEventEmitter, PermissionsAndroid } from 'react-native'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 // $FlowFixMe
@@ -68,8 +68,11 @@ export default class Scan extends Component<Props> {
     BluetoothSerial.on('deviceFound', function (device) {
       console.log('deviceFound', device)
       if (device.name) {
-        const { unpairedDevices } = self.state
-        self.setState({ unpairedDevices: unpairedDevices.concat(device) })
+        const { unpairedDevices } = self.state;
+        const isPresent = unpairedDevices.find(savedDevise => savedDevise.id === device.id) || null;
+        if (!isPresent) {
+          self.setState({ unpairedDevices: unpairedDevices.concat(device) })
+        }
       }
     })
     BluetoothSerial.on('deviceDiscoveryFinish', () => {
@@ -139,11 +142,11 @@ export default class Scan extends Component<Props> {
     return (
       <View style={styles.container}>
         <View style={{width: '100%', flexDirection: 'column'}}>
-          <Button
-            onPress={() => this.requestLocationPermission()}
-            title={text}
-            style={styles.bluetoothScanButton}
-          />
+          <TouchableOpacity onPress={() => this.requestLocationPermission()}>
+            <View style={styles.bluetoothScanButton}>
+              <Text style={styles.bluetoothScanButtonText}>{text}</Text>
+            </View>
+          </TouchableOpacity>
           <FlatList
             extraData={this.state}
             style={styles.bluetoothList}
