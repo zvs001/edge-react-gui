@@ -250,7 +250,7 @@ export class FlipInput extends Component<FlipInputOwnProps, State> {
           value={amount}
           onChangeText={onChangeText}
           autoCorrect={false}
-          keyboardType="numeric"
+          keyboardType={Platform.OS === 'ios' ? 'numeric' : 'phone-pad'}
           selectionColor="white"
           returnKeyType="done"
           underlineColorAndroid={'transparent'}
@@ -276,7 +276,7 @@ export class FlipInput extends Component<FlipInputOwnProps, State> {
           value={amount}
           onChangeText={onChangeText}
           autoCorrect={false}
-          keyboardType="numeric"
+          keyboardType={Platform.OS === 'ios' ? 'numeric' : 'phone-pad'}
           selectionColor="white"
           returnKeyType="done"
           underlineColorAndroid={'transparent'}

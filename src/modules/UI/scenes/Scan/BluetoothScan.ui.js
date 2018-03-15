@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component } from 'react'
-import { ActivityIndicator, Alert, Text, View, TouchableHighlight, FlatList, Image, Button, NativeAppEventEmitter, DeviceEventEmitter, PermissionsAndroid } from 'react-native'
+import { ActivityIndicator, Alert, Text, View, TouchableHighlight, FlatList, Image, TouchableOpacity, NativeAppEventEmitter, DeviceEventEmitter, PermissionsAndroid } from 'react-native'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 import _ from 'lodash'
@@ -137,11 +137,11 @@ export default class Scan extends Component<Props> {
     return (
       <View style={styles.container}>
         <View style={{width: '100%', flexDirection: 'column'}}>
-          <Button
-            onPress={() => this.requestLocationPermission()}
-            title={text}
-            style={styles.bluetoothScanButton}
-          />
+          <TouchableOpacity onPress={() => this.requestLocationPermission()}>
+            <View style={styles.bluetoothScanButton}>
+              <Text style={styles.bluetoothScanButtonText}>{text}</Text>
+            </View>
+          </TouchableOpacity>
           <FlatList
             extraData={this.state}
             style={styles.bluetoothList}

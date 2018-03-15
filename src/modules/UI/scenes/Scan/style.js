@@ -229,8 +229,15 @@ export const styles = {
   },
   bluetoothScanButton: {
     width: '100%',
-    color: '#841584',
-    flex: 1
+    backgroundColor: '#2b90ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8
+  },
+  bluetoothScanButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '600'
   },
   bluetoothItem: {
     backgroundColor: THEME.COLORS.WHITE,
