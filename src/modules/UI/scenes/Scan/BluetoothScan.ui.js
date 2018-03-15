@@ -4,6 +4,7 @@ import React, { Component } from 'react'
 import { ActivityIndicator, Alert, Text, View, TouchableHighlight, FlatList, Image, Button, NativeAppEventEmitter, DeviceEventEmitter, PermissionsAndroid } from 'react-native'
 import FAIcon from 'react-native-vector-icons/FontAwesome'
 import Ionicon from 'react-native-vector-icons/Ionicons'
+import _ from 'lodash'
 // $FlowFixMe
 import ImagePicker from 'react-native-image-picker'
 import { Actions } from 'react-native-router-flux'
@@ -59,25 +60,22 @@ export default class Scan extends Component<Props> {
   }
 
   async componentDidMount () {
-    const self = this;
     BleManager.start({showAlert: false})
     await BleManager.enableBluetooth()
     const list = await BleManager.getBondedPeripherals()
     this.setState({ bluetoothDevices: list })
 
-    BluetoothSerial.on('deviceFound', function (device) {
+    BluetoothSerial.on('deviceFound', (device) => {
       console.log('deviceFound', device)
       if (device.name) {
-        const { unpairedDevices } = self.state
-        self.setState({ unpairedDevices: unpairedDevices.concat(device) })
+        const { unpairedDevices } = this.state
+        if (_.findIndex(unpairedDevices, device) === -1) {
+          this.setState({unpairedDevices: unpairedDevices.concat(device)})
+        }
       }
     })
     BluetoothSerial.on('deviceDiscoveryFinish', () => {
-      console.log('deviceDiscoveryFinish')
-      self.setState({ discovering: false })
-      //if (!self.state.unpairedDevices || !self.state.unpairedDevices.length) {
-      //  self.setState({ error_message: 'New devices not found' })
-      //}
+      this.setState({ discovering: false })
     })
   }
 
@@ -122,7 +120,7 @@ export default class Scan extends Component<Props> {
   }
 
   renderDiscoveredDevises () {
-    const errorMessage = this.state.error_message || null;
+    const errorMessage = this.state.error_message || null
     if (errorMessage) {
       return (
         <Text style={styles.error_message}>{errorMessage}</Text>
@@ -133,8 +131,8 @@ export default class Scan extends Component<Props> {
   }
 
   render () {
-    const text = this.state.discovering ? 'Scanning...' : 'Scan';
-    const list = this.state.bluetoothDevices.concat(this.state.unpairedDevices);
+    const text = this.state.discovering ? 'Scanning...' : 'Scan'
+    const list = this.state.bluetoothDevices.concat(this.state.unpairedDevices)
 
     return (
       <View style={styles.container}>
@@ -182,7 +180,7 @@ export default class Scan extends Component<Props> {
     this._connectingStatus(id)
     try {
       await BleManager.enableBluetooth()
-      const needBond = this.state.bluetoothDevices.find(device => device.id === id) || null;
+      const needBond = this.state.bluetoothDevices.find(device => device.id === id) || null
       if (!needBond) {
         await BleManager.createBond(id)
       }
