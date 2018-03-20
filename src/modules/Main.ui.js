@@ -1,8 +1,8 @@
 // @flow
 
 import { bitcoinCurrencyPluginFactory, bitcoincashCurrencyPluginFactory, dashCurrencyPluginFactory, litecoinCurrencyPluginFactory, bluecoinCurrencyPluginFactory } from 'edge-currency-bitcoin'
-import { ethereumCurrencyPluginFactory } from 'edge-currency-ethereum'
-import { coinbasePlugin, shapeshiftPlugin } from 'edge-exchange-plugins'
+// import { ethereumCurrencyPluginFactory } from 'edge-currency-ethereum'
+// import { coinbasePlugin, shapeshiftPlugin } from 'edge-exchange-plugins'
 import type { AbcContext, AbcContextCallbacks, AbcCurrencyPlugin, EdgeCorePluginFactory } from 'edge-core-js'
 import React, { Component } from 'react'
 import { Image, Keyboard, Linking, Platform, StatusBar, TouchableWithoutFeedback } from 'react-native'

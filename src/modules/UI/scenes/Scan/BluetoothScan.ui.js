@@ -200,13 +200,16 @@ export default class Scan extends Component<Props> {
   }
 
   _connectingStatus (id) {
-    const { bluetoothDevices } = this.state
+    const { bluetoothDevices, unpairedDevices } = this.state
     bluetoothDevices.forEach(item => {
       delete item.connecting
       if (item.id === id) item.connecting = true
     })
-    this.setState({ bluetoothDevices })
-    console.log(bluetoothDevices)
+    unpairedDevices.forEach(item => {
+      delete item.connecting
+      if (item.id === id) item.connecting = true
+    })
+    this.setState({ bluetoothDevices, unpairedDevices })
     this.render()
   }
 
